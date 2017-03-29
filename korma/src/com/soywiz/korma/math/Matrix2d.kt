@@ -160,10 +160,18 @@ class Matrix2d(
 	fun clone() = Matrix2d(a, b, c, d, tx, ty)
 
 	fun createBox(scaleX: Double, scaleY: Double, rotation: Double = 0.0, tx: Double = 0.0, ty: Double = 0.0): Unit {
-		identity()
-		rotate(rotation)
-		scale(scaleX, scaleY)
-		translate(tx, ty)
+		val u = Math.cos(rotation);
+		val v = Math.sin(rotation);
+		this.a = u * scaleX;
+		this.b = v * scaleY;
+		this.c = -v * scaleX;
+		this.d = u * scaleY;
+		this.tx = tx;
+		this.ty = ty;
+	}
+
+	fun createGradientBox(width: Double, height: Double, rotation: Double = 0.0, tx: Double = 0.0, ty: Double = 0.0): Unit {
+		this.createBox(width / 1638.4, height / 1638.4, rotation, tx + width / 2, ty + height / 2);
 	}
 
 	data class Transform(
