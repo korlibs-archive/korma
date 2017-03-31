@@ -1,5 +1,6 @@
 package com.soywiz.korma.geom
 
+import com.soywiz.korio.util.niceStr
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
@@ -50,7 +51,7 @@ data class Rectangle(
 
 	fun clone() = Rectangle(x, y, width, height)
 
-	override fun toString(): String = "Rectangle($x, $y, $width, $height)"
+	override fun toString(): String = "Rectangle([${left.niceStr}, ${top.niceStr}]-[${right.niceStr}, ${bottom.niceStr}])"
 
 	companion object {
 		fun fromBounds(left: Double, top: Double, right: Double, bottom: Double): Rectangle = Rectangle().setBounds(left, top, right, bottom)

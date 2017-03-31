@@ -1,5 +1,6 @@
 package com.soywiz.korma
 
+import com.soywiz.korio.util.niceStr
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
@@ -64,7 +65,7 @@ data class Vector2(var x: Double = 0.0, var y: Double = x) : MutableInterpolable
 		}
 	}
 
-	override fun toString(): String = "Vector2($x, $y)"
+	override fun toString(): String = "Vector2(${x.niceStr}, ${y.niceStr})"
 
 	override fun interpolateWith(other: Vector2, ratio: Double): Vector2 = Vector2().setToInterpolated(this, other, ratio)
 	override fun setToInterpolated(l: Vector2, r: Vector2, ratio: Double): Vector2 = this.setTo(ratio.interpolate(l.x, r.x), ratio.interpolate(l.y, r.y))

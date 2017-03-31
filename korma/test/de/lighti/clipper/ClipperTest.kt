@@ -8,24 +8,16 @@ class ClipperTest {
 	@Test
 	fun name() {
 		val clipper = DefaultClipper()
-		val path1 = Path(4)
-		path1.add(Point2d(0, 0))
-		path1.add(Point2d(10, 0))
-		path1.add(Point2d(10, 10))
-		path1.add(Point2d(0, 10))
-
-		val path2 = Path(4)
-		path2.add(Point2d(5 + 0, 0))
-		path2.add(Point2d(5 + 10, 0))
-		path2.add(Point2d(5 + 10, 10))
-		path2.add(Point2d(5 + 0, 10))
-
+		val path1 = Path(Point2d(0, 0), Point2d(10, 0), Point2d(10, 10), Point2d(0, 10))
+		val path2 = Path(Point2d(5 + 0, 0), Point2d(5 + 10, 0), Point2d(5 + 10, 10), Point2d(5 + 0, 10))
 		val paths = Paths()
 
 		clipper.addPath(path1, Clipper.PolyType.CLIP, true)
 		clipper.addPath(path2, Clipper.PolyType.SUBJECT, true)
 		clipper.execute(Clipper.ClipType.INTERSECTION, paths)
 
-		Assert.assertEquals("[[Point [x=10, y=10, z=0], Point [x=5, y=10, z=0], Point [x=5, y=0, z=0], Point [x=10, y=0, z=0]]]", paths.toString())
+
+		Assert.assertEquals("[[Vector2(10, 10), Vector2(5, 10), Vector2(5, 0), Vector2(10, 0)]]", paths.toString())
+		Assert.assertEquals("Rectangle([5, 0]-[10, 10])", paths.bounds.toString())
 	}
 }
