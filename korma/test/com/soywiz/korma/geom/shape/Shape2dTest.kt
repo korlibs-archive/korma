@@ -1,5 +1,6 @@
 package com.soywiz.korma.geom.shape
 
+import com.soywiz.korma.geom.Rectangle
 import com.soywiz.korma.geom.VectorPath
 import org.junit.Assert
 import org.junit.Test
@@ -27,8 +28,16 @@ class Shape2dTest {
 	}
 
 	@Test
-	fun name2() {
+	fun vectorPathToShape2d() {
 		val vp = VectorPath().apply { circle(0.0, 0.0, 100.0) }
 		Assert.assertEquals(78, vp.toShape2d().paths.totalVertices)
+	}
+
+	@Test
+	fun triangulate() {
+		Assert.assertEquals(
+			"[Triangle(Point(0, 100), Point(100, 0), Point(100, 100)), Triangle(Point(0, 100), Point(0, 0), Point(100, 0))]",
+			Rectangle(0, 0, 100, 100).toShape().triangulate().toString()
+		)
 	}
 }

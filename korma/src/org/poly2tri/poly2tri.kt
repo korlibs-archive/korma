@@ -834,15 +834,15 @@ class SweepContext() {
 	val basin: Basin = Basin()
 	var edge_event: EdgeEvent = EdgeEvent()
 
-	constructor(polyline: ArrayList<Point>) : this() {
+	constructor(polyline: List<Point>) : this() {
 		this.addPolyline(polyline)
 	}
 
-	protected fun addPoints(points: ArrayList<Point>): Unit {
+	protected fun addPoints(points: List<Point>): Unit {
 		for (point in points) this.points.add(point)
 	}
 
-	fun addPolyline(polyline: ArrayList<Point>): Unit {
+	fun addPolyline(polyline: List<Point>): Unit {
 		this.initEdges(polyline)
 		this.addPoints(polyline)
 	}
@@ -856,7 +856,7 @@ class SweepContext() {
 		addPolyline(polyline)
 	}
 
-	protected fun initEdges(polyline: ArrayList<Point>): Unit {
+	protected fun initEdges(polyline: List<Point>): Unit {
 		for (n in 0 until polyline.size) {
 			this.edge_list.add(Edge(polyline[n], polyline[(n + 1) % polyline.size]))
 		}
