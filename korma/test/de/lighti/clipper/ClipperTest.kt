@@ -8,16 +8,16 @@ class ClipperTest {
 	fun name() {
 		val clipper = DefaultClipper()
 		val path1 = Path(4)
-		path1.add(Point.LongPoint(0, 0))
-		path1.add(Point.LongPoint(10, 0))
-		path1.add(Point.LongPoint(10, 10))
-		path1.add(Point.LongPoint(0, 10))
+		path1.add(LongPoint(0, 0))
+		path1.add(LongPoint(10, 0))
+		path1.add(LongPoint(10, 10))
+		path1.add(LongPoint(0, 10))
 
 		val path2 = Path(4)
-		path2.add(Point.LongPoint(5 + 0, 0))
-		path2.add(Point.LongPoint(5 + 10, 0))
-		path2.add(Point.LongPoint(5 + 10, 10))
-		path2.add(Point.LongPoint(5 + 0, 10))
+		path2.add(LongPoint(5 + 0, 0))
+		path2.add(LongPoint(5 + 10, 0))
+		path2.add(LongPoint(5 + 10, 10))
+		path2.add(LongPoint(5 + 0, 10))
 
 		val paths = Paths()
 

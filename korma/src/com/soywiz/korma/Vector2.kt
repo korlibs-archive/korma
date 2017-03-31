@@ -6,6 +6,7 @@ import com.soywiz.korma.interpolation.interpolate
 
 data class Vector2(var x: Double = 0.0, var y: Double = x) : MutableInterpolable<Vector2>, Interpolable<Vector2> {
 	constructor(x: Int, y: Int) : this(x.toDouble(), y.toDouble())
+	constructor(v: Vector2) : this(v.x, v.y)
 
 	fun setTo(x: Double, y: Double): Vector2 {
 		this.x = x
