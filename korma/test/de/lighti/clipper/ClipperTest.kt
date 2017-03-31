@@ -1,5 +1,6 @@
 package de.lighti.clipper
 
+import com.soywiz.korma.geom.Point2d
 import org.junit.Assert
 import org.junit.Test
 
@@ -8,16 +9,16 @@ class ClipperTest {
 	fun name() {
 		val clipper = DefaultClipper()
 		val path1 = Path(4)
-		path1.add(LongPoint(0, 0))
-		path1.add(LongPoint(10, 0))
-		path1.add(LongPoint(10, 10))
-		path1.add(LongPoint(0, 10))
+		path1.add(Point2d(0, 0))
+		path1.add(Point2d(10, 0))
+		path1.add(Point2d(10, 10))
+		path1.add(Point2d(0, 10))
 
 		val path2 = Path(4)
-		path2.add(LongPoint(5 + 0, 0))
-		path2.add(LongPoint(5 + 10, 0))
-		path2.add(LongPoint(5 + 10, 10))
-		path2.add(LongPoint(5 + 0, 10))
+		path2.add(Point2d(5 + 0, 0))
+		path2.add(Point2d(5 + 10, 0))
+		path2.add(Point2d(5 + 10, 10))
+		path2.add(Point2d(5 + 0, 10))
 
 		val paths = Paths()
 

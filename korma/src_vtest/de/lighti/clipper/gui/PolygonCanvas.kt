@@ -1,6 +1,7 @@
 package de.lighti.clipper.gui
 
 import com.soywiz.korio.crypto.Base64
+import com.soywiz.korma.geom.Point2d
 import de.lighti.clipper.*
 import de.lighti.clipper.Clipper.*
 
@@ -257,7 +258,7 @@ class PolygonCanvas(private val statusBar: StatusBar) : JPanel() {
 				for (j in 0..vertCnt - 1) {
 					val x = polyStream.readFloat() * scale
 					val y = polyStream.readFloat() * scale
-					pg.add(LongPoint(x.toInt().toLong(), y.toInt().toLong()))
+					pg.add(Point2d(x.toInt(), y.toInt()))
 				}
 				subjects.add(pg)
 			}
@@ -293,7 +294,7 @@ class PolygonCanvas(private val statusBar: StatusBar) : JPanel() {
 			while (!pit.isDone) {
 				val type = pit.currentSegment(coords)
 				when (type) {
-					PathIterator.SEG_LINETO -> clip.add(LongPoint((coords[0] * scale).toInt().toLong(), (coords[1] * scale).toInt().toLong()))
+					PathIterator.SEG_LINETO -> clip.add(Point2d((coords[0] * scale).toInt(), (coords[1] * scale).toInt()))
 					else -> {
 					}
 				}
@@ -307,8 +308,8 @@ class PolygonCanvas(private val statusBar: StatusBar) : JPanel() {
 
 	}
 
-	private fun GenerateRandomPoint(l: Int, t: Int, r: Int, b: Int, rand: Random): LongPoint {
-		return LongPoint((rand.nextInt(r) + l).toLong(), (rand.nextInt(b) + t).toLong())
+	private fun GenerateRandomPoint(l: Int, t: Int, r: Int, b: Int, rand: Random): Point2d {
+		return Point2d((rand.nextInt(r) + l).toLong(), (rand.nextInt(b) + t).toLong())
 	}
 
 	fun generateRandomPolygon() {

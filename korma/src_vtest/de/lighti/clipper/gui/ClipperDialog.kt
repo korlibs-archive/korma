@@ -1,24 +1,21 @@
 package de.lighti.clipper.gui
 
-import de.lighti.clipper.Clipper.ClipType
-import de.lighti.clipper.Clipper.PolyFillType
-import de.lighti.clipper.Clipper.PolyType
+import com.soywiz.korma.geom.Point2d
+import de.lighti.clipper.Clipper.*
 import de.lighti.clipper.Path
 import de.lighti.clipper.Paths
-import de.lighti.clipper.LongPoint
-
-import javax.swing.*
-import javax.swing.event.ChangeEvent
-import javax.swing.event.ChangeListener
-import java.awt.*
+import java.awt.BorderLayout
+import java.awt.Color
+import java.awt.Dimension
+import java.awt.FlowLayout
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 import java.io.IOException
-import java.text.DecimalFormat
-import java.util.StringTokenizer
+import java.util.*
+import javax.swing.*
 
 class ClipperDialog : JFrame() {
 	private lateinit var statusStrip1: StatusBar
@@ -480,9 +477,9 @@ class ClipperDialog : JFrame() {
 							x = java.lang.Long.parseLong(tokens.nextToken())
 							y = java.lang.Long.parseLong(tokens.nextToken())
 
-							x = x + xOffset
-							y = y + yOffset
-							pg.add(LongPoint(x, y))
+							x += xOffset
+							y += yOffset
+							pg.add(Point2d(x, y))
 						}
 					} else {
 						for (j in 0..vertCnt - 1) {
@@ -499,7 +496,7 @@ class ClipperDialog : JFrame() {
 
 							x = x * scaling + xOffset
 							y = y * scaling + yOffset
-							pg.add(LongPoint(Math.round(x).toInt().toLong(), Math.round(y).toInt().toLong()))
+							pg.add(Point2d(Math.round(x).toInt().toLong(), Math.round(y).toInt().toLong()))
 						}
 					}
 				}

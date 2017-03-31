@@ -1,17 +1,14 @@
 package de.lighti.clipper.gui
 
+import com.soywiz.korma.geom.Rectangle
+import de.lighti.clipper.Clipper.PolyFillType
+import de.lighti.clipper.Path
+import de.lighti.clipper.Paths
 import java.awt.Color
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.IOException
-import java.util.ArrayList
-import java.util.Locale
-
-import de.lighti.clipper.Clipper.PolyFillType
-import de.lighti.clipper.LongRect
-import de.lighti.clipper.Path
-import de.lighti.clipper.Paths
-import de.lighti.clipper.LongPoint
+import java.util.*
 
 //a very simple class that builds an SVG file with any number of
 //polygons of the specified formats ...
@@ -121,7 +118,7 @@ class SVGBuilder {
 		if (i == PolyInfoList.size) {
 			return false
 		}
-		val rec = LongRect()
+		val rec = Rectangle()
 		rec.left = PolyInfoList[i].polygons!![j].x
 		rec.right = rec.left
 		rec.top = PolyInfoList[0].polygons!![j].y
@@ -145,10 +142,10 @@ class SVGBuilder {
 
 		}
 
-		rec.left = (rec.left * scale).toInt().toLong()
-		rec.top = (rec.top * scale).toInt().toLong()
-		rec.right = (rec.right * scale).toInt().toLong()
-		rec.bottom = (rec.bottom * scale).toInt().toLong()
+		rec.left = (rec.left * scale).toInt().toDouble()
+		rec.top = (rec.top * scale).toInt().toDouble()
+		rec.right = (rec.right * scale).toInt().toDouble()
+		rec.bottom = (rec.bottom * scale).toInt().toDouble()
 		val offsetX = -rec.left + margin
 		val offsetY = -rec.top + margin
 
