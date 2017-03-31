@@ -6,10 +6,8 @@ import com.soywiz.korma.geom.triangle.PathFind
 import com.soywiz.korma.geom.triangle.PathFindChannel
 import com.soywiz.korma.geom.triangle.SpatialMesh
 
-fun List<Triangle>.pathFind(): PathFind {
-	val sm = SpatialMesh.fromTriangles(this)
-	return PathFind(sm)
-}
+fun List<Triangle>.toSpatialMesh(): SpatialMesh = SpatialMesh.fromTriangles(this)
+fun List<Triangle>.pathFind(): PathFind = PathFind(this.toSpatialMesh())
 
 fun PathFind.funnel(p0: Point2d, p1: Point2d): List<Point2d> {
 	val pf = this
@@ -22,8 +20,8 @@ fun PathFind.funnel(p0: Point2d, p1: Point2d): List<Point2d> {
 }
 
 fun List<Triangle>.funnel(p0: Point2d, p1: Point2d): List<Point2d> = this.pathFind().funnel(p0, p1)
-
 fun List<Triangle>.pathFind(p0: Point2d, p1: Point2d): List<Point2d> = this.pathFind().funnel(p0, p1)
 
+fun Shape2d.toSpatialMesh(): SpatialMesh = SpatialMesh.fromTriangles(this.triangulate())
 fun Shape2d.pathFind(): PathFind = this.triangulate().pathFind()
 fun Shape2d.pathFind(p0: Point2d, p1: Point2d): List<Point2d> = this.triangulate().pathFind().funnel(p0, p1)
