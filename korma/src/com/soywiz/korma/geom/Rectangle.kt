@@ -1,6 +1,13 @@
 package com.soywiz.korma.geom
 
-data class Rectangle(var x: Double = 0.0, var y: Double = 0.0, var width: Double = 0.0, var height: Double = 0.0) {
+import com.soywiz.korma.interpolation.Interpolable
+import com.soywiz.korma.interpolation.MutableInterpolable
+import com.soywiz.korma.interpolation.interpolate
+
+data class Rectangle(
+	var x: Double = 0.0, var y: Double = 0.0,
+	var width: Double = 0.0, var height: Double = 0.0
+) : MutableInterpolable<Rectangle>, Interpolable<Rectangle> {
 	constructor(x: Int, y: Int, width: Int, height: Int) : this(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 
 	var left: Double; get() = x; set(value) = run { x = value }
@@ -50,4 +57,13 @@ data class Rectangle(var x: Double = 0.0, var y: Double = 0.0, var width: Double
 		fun fromBounds(left: Int, top: Int, right: Int, bottom: Int): Rectangle = Rectangle().setBounds(left, top, right, bottom)
 		fun isContainedIn(a: Rectangle, b: Rectangle): Boolean = a.x >= b.x && a.y >= b.y && a.x + a.width <= b.x + b.width && a.y + a.height <= b.y + b.height
 	}
+
+	override fun interpolateWith(other: Rectangle, ratio: Double): Rectangle = Rectangle().setToInterpolated(this, other, ratio)
+
+	override fun setToInterpolated(l: Rectangle, r: Rectangle, ratio: Double): Rectangle = this.setTo(
+		ratio.interpolate(l.x, r.x),
+		ratio.interpolate(l.y, r.y),
+		ratio.interpolate(l.width, r.width),
+		ratio.interpolate(l.height, r.height)
+	)
 }

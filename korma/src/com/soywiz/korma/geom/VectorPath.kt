@@ -2,7 +2,7 @@ package com.soywiz.korma.geom
 
 import com.soywiz.korio.ds.DoubleArrayList
 import com.soywiz.korio.ds.IntArrayList
-import com.soywiz.korma.math.Vector2
+import com.soywiz.korma.Vector2
 
 open class VectorPath(
 	val commands: IntArrayList = IntArrayList(),
