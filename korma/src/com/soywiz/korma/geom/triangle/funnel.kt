@@ -131,7 +131,6 @@ class PathFind(val spatialMesh: SpatialMesh) {
 	protected fun reset(): Unit {
 		openedList = PriorityQueue<SpatialNode>(java.util.Comparator({ l, r -> Integer.compare(l.F, r.F)}))
 		for (node in this.spatialMesh.nodes) {
-			val node = node!!
 			node.parent = null
 			node.G = 0
 			node.H = 0
