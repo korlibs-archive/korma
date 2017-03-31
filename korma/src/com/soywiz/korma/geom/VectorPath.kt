@@ -364,9 +364,13 @@ open class VectorPath(
 		ax: Double, ay: Double,
 		bx0: Double, by0: Double, bx1: Double, by1: Double, bx2: Double, by2: Double
 	): Int {
-		return Bezier.quadToCubic(bx0, by0, bx1, by1, bx2, by2) { x0, y0, x1, y1, x2, y2, x3, y3 ->
-			intersectsH0LineBezier(ax, ay, x0, y0, x1, y1, x2, y2, x3, y3)
-		}
+		var count = 0
+		segmentEmitter.emit(4, curveGen = { p, t ->
+			Bezier.quadCalc(bx0, by0, bx1, by1, bx2, by2, t, p)
+		}, gen = { p0, p1 ->
+			count += intersectsH0LineLine(ax, ay, p0.x, p0.y, p1.x, p1.y)
+		})
+		return count
 	}
 
 	val segmentEmitter = SegmentEmitter()
