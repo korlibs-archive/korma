@@ -4,6 +4,7 @@ import com.soywiz.korio.ds.DoubleArrayList
 import com.soywiz.korio.ds.IntArrayList
 import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.bezier.Bezier
+import com.soywiz.korma.geom.bezier.SegmentEmitter
 
 open class VectorPath(
 	val commands: IntArrayList = IntArrayList(),
@@ -363,34 +364,26 @@ open class VectorPath(
 		ax: Double, ay: Double,
 		bx0: Double, by0: Double, bx1: Double, by1: Double, bx2: Double, by2: Double
 	): Int {
-		return Bezier.quadToBezier(bx0, by0, bx1, by1, bx2, by2) { x0, y0, x1, y1, x2, y2, x3, y3 ->
+		return Bezier.quadToCubic(bx0, by0, bx1, by1, bx2, by2) { x0, y0, x1, y1, x2, y2, x3, y3 ->
 			intersectsH0LineBezier(ax, ay, x0, y0, x1, y1, x2, y2, x3, y3)
 		}
 	}
+
+	val segmentEmitter = SegmentEmitter()
 
 	private fun intersectsH0LineBezier(
 		ax: Double, ay: Double,
 		bx0: Double, by0: Double, bx1: Double, by1: Double, bx2: Double, by2: Double, bx3: Double, by3: Double
 	): Int {
-		// @TODO: Proper bezier intersection
-		return intersectsH0LineLine(ax, ay, bx0, by0, bx2, by2)
+		//return intersectsH0LineLine(ax, ay, bx0, by0, bx3, by3)
+		var count = 0
+		segmentEmitter.emit(4, curveGen = { p, t ->
+			Bezier.cubicCalc(bx0, by0, bx1, by1, bx2, by2, bx3, by3, t, p)
+		}, gen = { p0, p1 ->
+			count += intersectsH0LineLine(ax, ay, p0.x, p0.y, p1.x, p1.y)
+		})
+		return count
 	}
-
-	//private fun intersectsLineLine(
-	//	ax0: Double, ay0: Double, ax1: Double, ay1: Double,
-	//	bx0: Double, by0: Double, bx1: Double, by1: Double
-	//): Boolean {
-	//	var intersects = false
-	//	return intersects
-	//}
-//
-	//private fun intersectsLineBezier(
-	//	ax0: Double, ay0: Double, ax1: Double, ay1: Double,
-	//	bx0: Double, by0: Double, bx1: Double, by1: Double, bx2: Double, by2: Double, bx3: Double, by3: Double
-	//): Boolean {
-	//	// @TODO: Proper bezier intersection
-	//	return intersectsLineLine(ax0, ay0, ax1, ay1, bx0, by0, bx2, by2)
-	//}
 
 	object Command {
 		//val CUBIC_CURVE_TO = 6

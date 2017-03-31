@@ -19,6 +19,17 @@ class VectorPathTest {
 	}
 
 	@Test
+	fun testCircle() {
+		val g = VectorPath()
+		g.circle(0.0, 0.0, 100.0)
+		Assert.assertEquals(true, g.containsPoint(0, 0))
+		Assert.assertEquals(false, g.containsPoint(120, 0))
+		Assert.assertEquals(false, g.containsPoint(-100, -100))
+		Assert.assertEquals(true, g.containsPoint(64, 64))
+		Assert.assertEquals(false, g.containsPoint(78, 78))
+	}
+
+	@Test
 	fun testSquareWithHole() {
 		val g = VectorPath()
 		g.moveTo(0, 0)
