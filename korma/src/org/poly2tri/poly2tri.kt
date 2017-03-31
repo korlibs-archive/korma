@@ -942,12 +942,12 @@ class SweepContext() {
 	}
 }
 
-class Triangle(
-	p1: Point,
-	p2: Point,
-	p3: Point,
-	fixOrientation: Boolean = false,
-	checkOrientation: Boolean = true
+data class Triangle(
+	var p1: Point,
+	var p2: Point,
+	var p3: Point,
+	var fixOrientation: Boolean = false,
+	var checkOrientation: Boolean = true
 ) {
 	// Triangle points
 	//var points = arrayOfNulls<Point>(3) // [null, null, null]

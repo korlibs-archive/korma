@@ -1,5 +1,6 @@
 package com.soywiz.korma.geom.shape
 
+import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.Rectangle
 import com.soywiz.korma.geom.VectorPath
 import org.junit.Assert
@@ -39,5 +40,11 @@ class Shape2dTest {
 			"[Triangle(Point(0, 100), Point(100, 0), Point(100, 100)), Triangle(Point(0, 100), Point(0, 0), Point(100, 0))]",
 			Rectangle(0, 0, 100, 100).toShape().triangulate().toString()
 		)
+	}
+
+	@Test
+	fun pathFind() {
+		Assert.assertEquals("[Vector2(10, 10), Vector2(90, 90)]", Rectangle(0, 0, 100, 100).toShape().pathFind(Point2d(10, 10), Point2d(90, 90)).toString())
+		Assert.assertEquals("[Vector2(10, 10), Vector2(100, 50), Vector2(120, 52)]", (Rectangle(0, 0, 100, 100).toShape() + Rectangle(100, 50, 50, 50).toShape()).pathFind(Point2d(10, 10), Point2d(120, 52)).toString())
 	}
 }

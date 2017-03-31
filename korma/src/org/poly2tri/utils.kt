@@ -119,9 +119,7 @@ class NewFunnel {
 	data class Portal(val left: Point, val right: Point)
 }
 
-class PathFind(
-	protected var spatialMesh: SpatialMesh
-) {
+class PathFind(val spatialMesh: SpatialMesh) {
 	protected var openedList = PriorityQueue<SpatialNode>(Comparator({ l, r -> Integer.compare(l.F, r.F)}))
 
 	init {
@@ -206,7 +204,7 @@ class PathFind(
 }
 
 object PathFindChannel {
-	fun channelToPortals(startPoint: Point, endPoint: Point, channel: ArrayList<SpatialNode>): NewFunnel {
+	fun channelToPortals(startPoint: Point, endPoint: Point, channel: List<SpatialNode>): NewFunnel {
 		val portals = NewFunnel()
 
 		portals.push(startPoint)
@@ -306,15 +304,27 @@ object PathFindChannel {
 
 class PathFindException(message: String = "", val index: Int = 0) : Error(message)
 
-class SpatialMesh {
+class SpatialMesh() {
 	protected var mapTriangleToSpatialNode = hashMapOf<Triangle, SpatialNode>()
-	var nodes = arrayListOf<SpatialNode?>()
+	var nodes = arrayListOf<SpatialNode>()
+
+	constructor(triangles: Iterable<Triangle>) : this() {
+		for (triangle in triangles) {
+			val node = getNodeFromTriangle(triangle)
+			if (node != null) nodes.add(node)
+		}
+	}
 
 	fun spatialNodeFromPoint(point: Point): SpatialNode {
 		for (node in nodes) {
-			if (node!!.triangle!!.pointInsideTriangle(point)) return node
+			if (node.triangle!!.pointInsideTriangle(point)) return node
 		}
 		throw Error("Point not inside triangles")
+	}
+
+	fun getNodeAt(point: Point): SpatialNode? {
+		for (node in nodes) if (node.triangle!!.containsPoint(point)) return node
+		return null
 	}
 
 	fun getNodeFromTriangle(triangle: Triangle?): SpatialNode? {
@@ -322,30 +332,27 @@ class SpatialMesh {
 
 		if (!mapTriangleToSpatialNode.containsKey(triangle)) {
 			val tp = triangle.points
-			mapTriangleToSpatialNode[triangle] = SpatialNode(
+			val sn = SpatialNode(
 				x = ((tp[0].x + tp[1].x + tp[2].x) / 3).toInt().toDouble(),
 				y = ((tp[0].y + tp[1].y + tp[2].y) / 3).toInt().toDouble(),
 				z = 0.0,
 				triangle = triangle,
 				G = 0,
-				H = 0,
-				neighbors = arrayOf(if (triangle.constrained_edge[0]) null else getNodeFromTriangle(triangle.neighbors[0]),
-					if (triangle.constrained_edge[1]) null else getNodeFromTriangle(triangle.neighbors[1]),
-					if (triangle.constrained_edge[2]) null else getNodeFromTriangle(triangle.neighbors[2])
-				)
+				H = 0
+			)
+			mapTriangleToSpatialNode[triangle] = sn
+			sn.neighbors = arrayOf(if (triangle.constrained_edge[0]) null else getNodeFromTriangle(triangle.neighbors[0]),
+				if (triangle.constrained_edge[1]) null else getNodeFromTriangle(triangle.neighbors[1]),
+				if (triangle.constrained_edge[2]) null else getNodeFromTriangle(triangle.neighbors[2])
 			)
 		}
 		return mapTriangleToSpatialNode[triangle]
 	}
 
+
+
 	companion object {
-		fun fromTriangles(triangles: ArrayList<Triangle>): SpatialMesh {
-			val sm = SpatialMesh()
-			for (triangle in triangles) {
-				sm.nodes.add(sm.getNodeFromTriangle(triangle))
-			}
-			return sm
-		}
+		fun fromTriangles(triangles: Iterable<Triangle>): SpatialMesh = SpatialMesh(triangles)
 	}
 
 	override fun toString() = "SpatialMesh(" + nodes.toString() + ")"
