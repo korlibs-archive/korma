@@ -1,9 +1,9 @@
 package org.poly2tri.tests.tests {
 	import asunit.framework.TestCase;
-	import org.poly2tri.Edge;
+	import com.soywiz.korma.geom.triangle.Edge;
 	import org.poly2tri.Point;
-	import org.poly2tri.Sweep;
-	import org.poly2tri.SweepContext;
+	import com.soywiz.korma.geom.triangle.Sweep;
+	import com.soywiz.korma.geom.triangle.SweepContext;
 	import org.poly2tri.Triangle;
 
 	public class SweepTest extends TestCase {

@@ -1,7 +1,10 @@
 package com.soywiz.korma.geom.shape
 
 import com.soywiz.korma.geom.Point2d
-import org.poly2tri.*
+import com.soywiz.korma.geom.triangle.Triangle
+import com.soywiz.korma.geom.triangle.PathFind
+import com.soywiz.korma.geom.triangle.PathFindChannel
+import com.soywiz.korma.geom.triangle.SpatialMesh
 
 fun List<Triangle>.pathFind(): PathFind {
 	val sm = SpatialMesh.fromTriangles(this)
@@ -11,8 +14,8 @@ fun List<Triangle>.pathFind(): PathFind {
 fun PathFind.funnel(p0: Point2d, p1: Point2d): List<Point2d> {
 	val pf = this
 	val sm = pf.spatialMesh
-	val pointStart = Point(p0.x, p0.y)
-	val pointEnd = Point(p1.x, p1.y)
+	val pointStart = Point2d(p0.x, p0.y)
+	val pointEnd = Point2d(p1.x, p1.y)
 	val pathNodes = pf.find(sm.spatialNodeFromPoint(pointStart), sm.spatialNodeFromPoint(pointEnd))
 	val portals = PathFindChannel.channelToPortals(pointStart, pointEnd, pathNodes)
 	return portals.path.map { Point2d(it.x, it.y) }

@@ -1,9 +1,9 @@
 package de.lighti.clipper.gui
 
 import com.soywiz.korma.geom.Point2d
-import de.lighti.clipper.Clipper.*
-import de.lighti.clipper.Path
-import de.lighti.clipper.Paths
+import com.soywiz.korma.geom.clipper.Clipper.*
+import com.soywiz.korma.geom.clipper.Path
+import com.soywiz.korma.geom.clipper.Paths
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension

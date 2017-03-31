@@ -3,8 +3,8 @@ package com.soywiz.korma.geom.shape
 import com.soywiz.korio.util.niceStr
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point2d
-import de.lighti.clipper.Path
-import de.lighti.clipper.Paths
+import com.soywiz.korma.geom.clipper.Path
+import com.soywiz.korma.geom.clipper.Paths
 
 interface Shape2d {
 	val paths: Paths

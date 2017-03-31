@@ -1,9 +1,9 @@
 package de.lighti.clipper.gui
 
 import com.soywiz.korma.geom.Rectangle
-import de.lighti.clipper.Clipper.PolyFillType
-import de.lighti.clipper.Path
-import de.lighti.clipper.Paths
+import com.soywiz.korma.geom.clipper.Clipper.PolyFillType
+import com.soywiz.korma.geom.clipper.Path
+import com.soywiz.korma.geom.clipper.Paths
 import java.awt.Color
 import java.io.BufferedWriter
 import java.io.FileWriter

@@ -2,8 +2,9 @@ package de.lighti.clipper.gui
 
 import com.soywiz.korio.crypto.Base64
 import com.soywiz.korma.geom.Point2d
+import com.soywiz.korma.geom.clipper.*
 import de.lighti.clipper.*
-import de.lighti.clipper.Clipper.*
+import com.soywiz.korma.geom.clipper.Clipper.*
 
 import javax.swing.*
 import java.awt.*

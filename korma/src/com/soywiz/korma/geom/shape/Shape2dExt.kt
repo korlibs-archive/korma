@@ -1,13 +1,14 @@
 package com.soywiz.korma.geom.shape
 
+import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.Rectangle
 import com.soywiz.korma.geom.VectorPath
 import com.soywiz.korma.geom.bezier.Bezier
+import com.soywiz.korma.geom.clipper.*
+import com.soywiz.korma.geom.triangle.Triangle
 import de.lighti.clipper.*
-import org.poly2tri.Point
-import org.poly2tri.Sweep
-import org.poly2tri.SweepContext
-import org.poly2tri.Triangle
+import com.soywiz.korma.geom.triangle.Sweep
+import com.soywiz.korma.geom.triangle.SweepContext
 
 fun Path.toShape2d(): Shape2d {
 	if (this.size == 4) {
@@ -131,7 +132,7 @@ fun Shape2d.getAllPoints() = this.paths.flatMap { it }
 fun Shape2d.toPolygon() = if (this is Shape2d.Polygon) this else Shape2d.Polygon(this.getAllPoints())
 
 fun Shape2d.triangulate(): List<Triangle> {
-	val sc = SweepContext(this.getAllPoints().map { Point(it.x, it.y) })
+	val sc = SweepContext(this.getAllPoints().map { Point2d(it.x, it.y) })
 	val s = Sweep(sc)
 	s.triangulate()
 	return sc.triangles.toList()

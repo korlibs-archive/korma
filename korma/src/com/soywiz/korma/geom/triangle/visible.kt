@@ -1,4 +1,4 @@
-package org.poly2tri
+package com.soywiz.korma.geom.triangle
 
 /*
 public class VisiblePolygon {

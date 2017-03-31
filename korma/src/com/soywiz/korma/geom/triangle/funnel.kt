@@ -1,16 +1,18 @@
-package org.poly2tri
+package com.soywiz.korma.geom.triangle
 
+import com.soywiz.korma.geom.Point2d
+import com.soywiz.korma.geom.triangle.Triangle
 import java.util.*
 import kotlin.Comparator
 
-data class FunnelPortal(var left: Point, var right: Point)
+data class FunnelPortal(var left: Point2d, var right: Point2d)
 
 class NewFunnel {
 	private val portals = ArrayList<Portal>()
-	var path = arrayListOf<Point>()
+	var path = arrayListOf<Point2d>()
 
 	companion object {
-		protected fun triarea2(a: Point, b: Point, c: Point): Double {
+		protected fun triarea2(a: Point2d, b: Point2d, c: Point2d): Double {
 			val ax = b.x - a.x
 			val ay = b.y - a.y
 			val bx = c.x - a.x
@@ -18,17 +20,17 @@ class NewFunnel {
 			return bx * ay - ax * by
 		}
 
-		protected fun vdistsqr(a: Point, b: Point): Double {
+		protected fun vdistsqr(a: Point2d, b: Point2d): Double {
 			return Math.hypot(b.x - a.x, b.y - a.y)
 		}
 
-		protected fun vequal(a: Point, b: Point): Boolean {
+		protected fun vequal(a: Point2d, b: Point2d): Boolean {
 			return vdistsqr(a, b) < (0.001 * 0.001)
 		}
 	}
 
 
-	fun push(p1: Point, p2: Point = p1): Unit {
+	fun push(p1: Point2d, p2: Point2d = p1): Unit {
 		this.portals.add(Portal(p1, p2))
 		/*if (p2 == p1) {
 			trace('channel.push(' + p1 + ');');
@@ -37,12 +39,12 @@ class NewFunnel {
 		}*/
 	}
 
-	fun stringPull(): ArrayList<Point> {
-		val pts = ArrayList<Point>()
+	fun stringPull(): ArrayList<Point2d> {
+		val pts = ArrayList<Point2d>()
 		// Init scan state
-		var portalApex: Point
-		var portalLeft: Point
-		var portalRight: Point
+		var portalApex: Point2d
+		var portalLeft: Point2d
+		var portalRight: Point2d
 		var apexIndex: Int = 0
 		var leftIndex: Int = 0
 		var rightIndex: Int = 0
@@ -116,18 +118,18 @@ class NewFunnel {
 		return pts
 	}
 
-	data class Portal(val left: Point, val right: Point)
+	data class Portal(val left: Point2d, val right: Point2d)
 }
 
 class PathFind(val spatialMesh: SpatialMesh) {
-	protected var openedList = PriorityQueue<SpatialNode>(Comparator({ l, r -> Integer.compare(l.F, r.F)}))
+	protected var openedList = PriorityQueue<SpatialNode>(java.util.Comparator({ l, r -> Integer.compare(l.F, r.F)}))
 
 	init {
 		reset()
 	}
 
 	protected fun reset(): Unit {
-		openedList = PriorityQueue<SpatialNode>(Comparator({ l, r -> Integer.compare(l.F, r.F)}))
+		openedList = PriorityQueue<SpatialNode>(java.util.Comparator({ l, r -> Integer.compare(l.F, r.F)}))
 		for (node in this.spatialMesh.nodes) {
 			val node = node!!
 			node.parent = null
@@ -204,7 +206,7 @@ class PathFind(val spatialMesh: SpatialMesh) {
 }
 
 object PathFindChannel {
-	fun channelToPortals(startPoint: Point, endPoint: Point, channel: List<SpatialNode>): NewFunnel {
+	fun channelToPortals(startPoint: Point2d, endPoint: Point2d, channel: List<SpatialNode>): NewFunnel {
 		val portals = NewFunnel()
 
 		portals.push(startPoint)
@@ -219,8 +221,8 @@ object PathFindChannel {
 
 			val startVertex = Triangle.getNotCommonVertex(firstTriangle, secondTriangle)
 
-			var vertexCW0: Point = startVertex
-			var vertexCCW0: Point = startVertex
+			var vertexCW0: Point2d = startVertex
+			var vertexCCW0: Point2d = startVertex
 
 			//trace(startVertex);
 
@@ -244,13 +246,13 @@ object PathFindChannel {
 		return portals
 	}
 
-	fun channelToPortals2(startPoint: Point, endPoint: Point, channel: ArrayList<SpatialNode>): NewFunnel {
+	fun channelToPortals2(startPoint: Point2d, endPoint: Point2d, channel: ArrayList<SpatialNode>): NewFunnel {
 		/*
-		var nodeStart:SpatialNode   = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point(50, 50)));
-		//var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point(73, 133)));
-		//var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point(191, 152)));
-		//var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point(316, 100)));
-		var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point(300, 300)));
+		var nodeStart:SpatialNode   = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point2d(50, 50)));
+		//var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point2d(73, 133)));
+		//var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point2d(191, 152)));
+		//var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point2d(316, 100)));
+		var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point2d(300, 300)));
 		channel[0].triangle.pointInsideTriangle();
 		channel[0].triangle.points[0]
 		*/
@@ -268,8 +270,8 @@ object PathFindChannel {
 
 		// Add portals.
 
-		var currentVertexCW: Point = firstTriangle.points[startVertexIndex]
-		var currentVertexCCW: Point = firstTriangle.points[startVertexIndex]
+		var currentVertexCW: Point2d = firstTriangle.points[startVertexIndex]
+		var currentVertexCCW: Point2d = firstTriangle.points[startVertexIndex]
 		//var currentTriangle:Triangle = firstTriangle;
 
 		portals.push(startPoint)
@@ -315,14 +317,14 @@ class SpatialMesh() {
 		}
 	}
 
-	fun spatialNodeFromPoint(point: Point): SpatialNode {
+	fun spatialNodeFromPoint(point: Point2d): SpatialNode {
 		for (node in nodes) {
 			if (node.triangle!!.pointInsideTriangle(point)) return node
 		}
-		throw Error("Point not inside triangles")
+		throw Error("Point2d not inside triangles")
 	}
 
-	fun getNodeAt(point: Point): SpatialNode? {
+	fun getNodeAt(point: Point2d): SpatialNode? {
 		for (node in nodes) if (node.triangle!!.containsPoint(point)) return node
 		return null
 	}

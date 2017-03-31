@@ -1,6 +1,10 @@
-package de.lighti.clipper
+package com.soywiz.korma.geom.clipper
 
 import com.soywiz.korma.geom.Point2d
+import com.soywiz.korma.geom.clipper.Clipper
+import com.soywiz.korma.geom.clipper.DefaultClipper
+import com.soywiz.korma.geom.clipper.Path
+import com.soywiz.korma.geom.clipper.Paths
 import org.junit.Assert
 import org.junit.Test
 

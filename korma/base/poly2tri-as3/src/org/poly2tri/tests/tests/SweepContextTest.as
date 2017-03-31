@@ -1,7 +1,7 @@
 package org.poly2tri.tests.tests {
 	import asunit.framework.TestCase;
 	import org.poly2tri.Point;
-	import org.poly2tri.SweepContext;
+	import com.soywiz.korma.geom.triangle.SweepContext;
 
 	public class SweepContextTest extends TestCase {
 		protected var initialPoints:Vector.<Point>;

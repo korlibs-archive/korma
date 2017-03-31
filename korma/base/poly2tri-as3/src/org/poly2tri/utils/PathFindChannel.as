@@ -1,5 +1,5 @@
 package org.poly2tri.utils {
-	import org.poly2tri.Edge;
+	import com.soywiz.korma.geom.triangle.Edge;
 	import org.poly2tri.Point;
 	import org.poly2tri.Triangle;
 

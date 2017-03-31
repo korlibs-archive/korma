@@ -37,7 +37,7 @@ class Shape2dTest {
 	@Test
 	fun triangulate() {
 		Assert.assertEquals(
-			"[Triangle(Point(0, 100), Point(100, 0), Point(100, 100)), Triangle(Point(0, 100), Point(0, 0), Point(100, 0))]",
+			"[Triangle(Vector2(0, 100), Vector2(100, 0), Vector2(100, 100)), Triangle(Vector2(0, 100), Vector2(0, 0), Vector2(100, 0))]",
 			Rectangle(0, 0, 100, 100).toShape().triangulate().toString()
 		)
 	}
