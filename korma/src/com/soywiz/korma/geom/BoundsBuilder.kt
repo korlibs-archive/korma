@@ -15,7 +15,7 @@ class BoundsBuilder {
 		ymax = Double.MIN_VALUE
 	}
 
-	fun add(x: Double, y: Double) {
+	fun add(x: Double, y: Double) = this.apply {
 		xmin = Math.min(xmin, x)
 		xmax = Math.max(xmax, x)
 		ymin = Math.min(ymin, y)
@@ -25,7 +25,9 @@ class BoundsBuilder {
 
 	fun add(p: Vector2) = add(p.x, p.y)
 
-	fun add(rect: Rectangle) {
+	fun add(ps: Iterable<Vector2>) = this.apply {for (p in ps) add(p) }
+
+	fun add(rect: Rectangle) = this.apply {
 		add(rect.left, rect.top)
 		add(rect.bottom, rect.right)
 	}

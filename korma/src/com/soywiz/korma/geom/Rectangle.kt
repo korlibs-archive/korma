@@ -51,7 +51,8 @@ data class Rectangle(
 
 	fun clone() = Rectangle(x, y, width, height)
 
-	override fun toString(): String = "Rectangle([${left.niceStr}, ${top.niceStr}]-[${right.niceStr}, ${bottom.niceStr}])"
+	//override fun toString(): String = "Rectangle([${left.niceStr}, ${top.niceStr}]-[${right.niceStr}, ${bottom.niceStr}])"
+	override fun toString(): String = "Rectangle(x=${left.niceStr}, y=${top.niceStr}, width=${right.niceStr}, height=${bottom.niceStr})"
 
 	companion object {
 		fun fromBounds(left: Double, top: Double, right: Double, bottom: Double): Rectangle = Rectangle().setBounds(left, top, right, bottom)

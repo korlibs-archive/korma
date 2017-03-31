@@ -18,6 +18,6 @@ class ClipperTest {
 
 
 		Assert.assertEquals("[[Vector2(10, 10), Vector2(5, 10), Vector2(5, 0), Vector2(10, 0)]]", paths.toString())
-		Assert.assertEquals("Rectangle([5, 0]-[10, 10])", paths.bounds.toString())
+		Assert.assertEquals("Rectangle(x=5, y=0, width=10, height=10)", paths.bounds.toString())
 	}
 }

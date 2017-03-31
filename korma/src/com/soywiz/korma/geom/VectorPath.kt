@@ -3,6 +3,7 @@ package com.soywiz.korma.geom
 import com.soywiz.korio.ds.DoubleArrayList
 import com.soywiz.korio.ds.IntArrayList
 import com.soywiz.korma.Vector2
+import com.soywiz.korma.geom.bezier.Bezier
 
 open class VectorPath(
 	val commands: IntArrayList = IntArrayList(),
@@ -221,6 +222,19 @@ open class VectorPath(
 		close()
 	}
 
+	fun roundRect(x: Double, y: Double, w: Double, h: Double, rx: Double, ry: Double = rx) {
+		if (rx == 0.0 && ry == 0.0) {
+			rect(x, y, w, h)
+		} else {
+			val r = if (w < 2 * rx) w / 2.0 else if (h < 2 * rx) h / 2.0 else rx
+			this.moveTo(x + r, y);
+			this.arcTo(x + w, y, x + w, y + h, r);
+			this.arcTo(x + w, y + h, x, y + h, r);
+			this.arcTo(x, y + h, x, y, r);
+			this.arcTo(x, y, x + w, y, r);
+		}
+	}
+
 	fun arc(x: Double, y: Double, r: Double, start: Double, end: Double) {
 		// http://hansmuller-flex.blogspot.com.es/2011/04/approximating-circular-arc-with-cubic.html
 		val EPSILON = 0.00001
@@ -272,6 +286,8 @@ open class VectorPath(
 		}
 	}
 
+	fun circle(x: Double, y: Double, radius: Double) = arc(x, y, radius, 0.0, Math.PI * 2.0)
+
 	fun getBounds(out: Rectangle = Rectangle(), bb: BoundsBuilder = BoundsBuilder()): Rectangle {
 		var lx = 0.0
 		var ly = 0.0
@@ -290,12 +306,12 @@ open class VectorPath(
 				ly = y
 			},
 			quadTo = { cx, cy, ax, ay ->
-				bb.add(Curves.quadMinMax(lx, ly, cx, cy, ax, ay, out))
+				bb.add(Bezier.quadBounds(lx, ly, cx, cy, ax, ay, out))
 				lx = ax
 				ly = ay
 			},
 			cubicTo = { cx1, cy1, cx2, cy2, ax, ay ->
-				bb.add(Curves.bezierMinMax(lx, ly, cx1, cy1, cx2, cy2, ax, ay, out))
+				bb.add(Bezier.cubicBounds(lx, ly, cx1, cy1, cx2, cy2, ax, ay, out))
 				lx = ax
 				ly = ay
 			},
@@ -347,7 +363,7 @@ open class VectorPath(
 		ax: Double, ay: Double,
 		bx0: Double, by0: Double, bx1: Double, by1: Double, bx2: Double, by2: Double
 	): Int {
-		return Curves.quadToBezier(bx0, by0, bx1, by1, bx2, by2) { x0, y0, x1, y1, x2, y2, x3, y3 ->
+		return Bezier.quadToBezier(bx0, by0, bx1, by1, bx2, by2) { x0, y0, x1, y1, x2, y2, x3, y3 ->
 			intersectsH0LineBezier(ax, ay, x0, y0, x1, y1, x2, y2, x3, y3)
 		}
 	}

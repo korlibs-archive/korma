@@ -13,10 +13,7 @@ interface Clipper {
 	enum class EndType { CLOSED_POLYGON, CLOSED_LINE, OPEN_BUTT, OPEN_SQUARE, OPEN_ROUND }
 	enum class JoinType { SQUARE, ROUND, MITER }
 	enum class PolyFillType { EVEN_ODD, NON_ZERO, POSITIVE, NEGATIVE }
-
-	enum class PolyType {
-		SUBJECT, CLIP
-	}
+	enum class PolyType { SUBJECT, CLIP  }
 
 	//interface ZFillCallback {
 	//	fun zFill(bot1: Point2d, top1: Point2d, bot2: Point2d, top2: Point2d, pt: Point2d)
@@ -3339,6 +3336,8 @@ class Path(initialCapacity: Int = 0) : ArrayList<Point2d>(initialCapacity) {
 		var offPt: Point2d? = null
 	)
 
+	fun addPoint(x: Double, y: Double) = add(Point2d(x, y))
+
 	class OutPt {
 		var idx: Int = 0
 		var pt: Point2d = Point2d(0, 0)
@@ -3632,6 +3631,8 @@ class Paths : ArrayList<Path> {
 	constructor(initialCapacity: Int) : super(initialCapacity) {}
 	constructor(vararg items: Path) : super() { addAll(items) }
 	constructor(items: Iterable<Path>) : super() { addAll(items) }
+
+	val totalVertices: Int get() = this.sumBy { it.size }
 
 	fun addPolyNode(polynode: PolyNode, nt: PolyNode.NodeType) {
 		var match = true

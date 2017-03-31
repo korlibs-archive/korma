@@ -65,6 +65,9 @@ data class Vector2(var x: Double = 0.0, var y: Double = x) : MutableInterpolable
 		}
 	}
 
+	fun distanceTo(x: Double, y: Double) = Math.hypot(x - this.x, y - this.y)
+	fun distanceTo(that: Vector2) = distanceTo(that.x, that.y)
+
 	override fun toString(): String = "Vector2(${x.niceStr}, ${y.niceStr})"
 
 	override fun interpolateWith(other: Vector2, ratio: Double): Vector2 = Vector2().setToInterpolated(this, other, ratio)
