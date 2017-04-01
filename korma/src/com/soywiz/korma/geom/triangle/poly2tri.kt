@@ -1,14 +1,8 @@
 package com.soywiz.korma.geom.triangle
 
-import com.soywiz.korio.error.invalidOp
-import com.soywiz.korio.util.niceStr
 import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.Orientation
 import com.soywiz.korma.geom.Point2d
-import com.soywiz.korma.geom.triangle.Triangle
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashSet
 
 class AdvancingFront(
 	var head: Node,
@@ -191,8 +185,8 @@ class Node(
 		 * Where x = ax*bx + ay*by
 		 *       y = ax*by - ay*bx
 		 */
-		val prev = this.prev ?: invalidOp("Not enough vertices")
-		val next = this.next ?: invalidOp("Not enough vertices")
+		val prev = this.prev ?: throw IllegalStateException("Not enough vertices")
+		val next = this.next ?: throw IllegalStateException("Not enough vertices")
 		val ax: Double = next.point.x - this.point.x
 		val ay: Double = next.point.y - this.point.y
 		val bx: Double = prev.point.x - this.point.x
@@ -204,7 +198,7 @@ class Node(
 	}
 
 	val basinAngle: Double get() {
-		val nextNext = this.next?.next ?: invalidOp("Not enough vertices")
+		val nextNext = this.next?.next ?: throw IllegalStateException("Not enough vertices")
 		return Math.atan2(
 			this.point.y - nextNext.point.y, // ay
 			this.point.x - nextNext.point.x  // ax

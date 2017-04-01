@@ -2,9 +2,6 @@ package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.geom.Orientation
 import com.soywiz.korma.geom.Point2d
-import com.soywiz.korma.geom.triangle.Constants
-import com.soywiz.korma.geom.triangle.Edge
-import com.soywiz.korma.geom.triangle.EdgeContext
 import java.util.*
 
 data class Triangle(

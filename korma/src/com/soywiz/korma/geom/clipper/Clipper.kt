@@ -53,7 +53,7 @@ interface Clipper {
 	enum class EndType { CLOSED_POLYGON, CLOSED_LINE, OPEN_BUTT, OPEN_SQUARE, OPEN_ROUND }
 	enum class JoinType { SQUARE, ROUND, MITER }
 	enum class PolyFillType { EVEN_ODD, NON_ZERO, POSITIVE, NEGATIVE }
-	enum class PolyType { SUBJECT, CLIP  }
+	enum class PolyType { SUBJECT, CLIP }
 
 	//interface ZFillCallback {
 	//	fun zFill(bot1: Point2d, top1: Point2d, bot2: Point2d, top2: Point2d, pt: Point2d)
@@ -3155,7 +3155,7 @@ class DefaultClipper @JvmOverloads constructor(InitOptions: Int = 0) //construct
 }//------------------------------------------------------------------------------
 
 class Edge {
-	enum class Side { LEFT, RIGHT  }
+	enum class Side { LEFT, RIGHT }
 
 	var bot: Point2d = Point2d(); set(v) = run { field.copyFrom(v) }
 	var current: Point2d = Point2d(); set(v) = run { field.copyFrom(v) }
@@ -3366,9 +3366,17 @@ class Edge {
  * @author Tobias Mahlmann
 </IntPoint> */
 class Path(initialCapacity: Int = 0) : ArrayList<Point2d>(initialCapacity) {
-	constructor(vararg points: Point2d) : this(points.size) { addAll(points) }
-	constructor(points: List<Point2d>) : this(points.size) { addAll(points) }
-	constructor(points: Iterable<Point2d>) : this() { addAll(points) }
+	constructor(vararg points: Point2d) : this(points.size) {
+		addAll(points)
+	}
+
+	constructor(points: List<Point2d>) : this(points.size) {
+		addAll(points)
+	}
+
+	constructor(points: Iterable<Point2d>) : this() {
+		addAll(points)
+	}
 
 	class Join(
 		var outPt1: OutPt? = null,
@@ -3669,8 +3677,13 @@ class Paths : ArrayList<Path> {
 	constructor() : super() {}
 
 	constructor(initialCapacity: Int) : super(initialCapacity) {}
-	constructor(vararg items: Path) : super() { addAll(items) }
-	constructor(items: Iterable<Path>) : super() { addAll(items) }
+	constructor(vararg items: Path) : super() {
+		addAll(items)
+	}
+
+	constructor(items: Iterable<Path>) : super() {
+		addAll(items)
+	}
 
 	val totalVertices: Int get() = this.sumBy { it.size }
 

@@ -1,5 +1,8 @@
 # Kotlin cORoutines MAthematics library
 
+[![Build Status](https://travis-ci.org/soywiz/korma.svg?branch=master)](https://travis-ci.org/soywiz/korma)
+[![Maven Version](https://img.shields.io/github/tag/soywiz/korma.svg?style=flat&label=maven)](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22korma%22)
+
 This is a mathematical library. Mostly focused on geometry. It is not related to kotlin coroutines at all.
 But it is part of the [soywiz's korlibs](https://github.com/soywiz/korlibs) libraries and thus the name.
 

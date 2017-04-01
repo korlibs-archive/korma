@@ -1,9 +1,7 @@
 package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.geom.Point2d
-import com.soywiz.korma.geom.triangle.Triangle
 import java.util.*
-import kotlin.Comparator
 
 data class FunnelPortal(var left: Point2d, var right: Point2d)
 
@@ -122,14 +120,14 @@ class NewFunnel {
 }
 
 class PathFind(val spatialMesh: SpatialMesh) {
-	protected var openedList = PriorityQueue<SpatialNode>(java.util.Comparator({ l, r -> Integer.compare(l.F, r.F)}))
+	protected var openedList = PriorityQueue<SpatialNode>(java.util.Comparator({ l, r -> Integer.compare(l.F, r.F) }))
 
 	init {
 		reset()
 	}
 
 	protected fun reset(): Unit {
-		openedList = PriorityQueue<SpatialNode>(java.util.Comparator({ l, r -> Integer.compare(l.F, r.F)}))
+		openedList = PriorityQueue<SpatialNode>(java.util.Comparator({ l, r -> Integer.compare(l.F, r.F) }))
 		for (node in this.spatialMesh.nodes) {
 			node.parent = null
 			node.G = 0
@@ -349,7 +347,6 @@ class SpatialMesh() {
 		}
 		return mapTriangleToSpatialNode[triangle]
 	}
-
 
 
 	companion object {

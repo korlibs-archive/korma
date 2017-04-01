@@ -1,10 +1,9 @@
 package com.soywiz.korma
 
-import com.soywiz.korio.util.Extra
-import com.soywiz.korio.util.niceStr
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
+import com.soywiz.korma.numeric.niceStr
 import java.util.*
 
 data class Vector2(var x: Double = 0.0, var y: Double = x) : MutableInterpolable<Vector2>, Interpolable<Vector2> {
@@ -25,6 +24,7 @@ data class Vector2(var x: Double = 0.0, var y: Double = x) : MutableInterpolable
 
 	/// Negate this point.
 	fun neg() = setTo(-x, -y)
+
 	fun mul(s: Double) = setTo(x * s, y * s)
 	fun add(p: Vector2) = this.setToAdd(this, p)
 	fun sub(p: Vector2) = this.setToSub(this, p)

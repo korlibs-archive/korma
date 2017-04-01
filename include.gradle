@@ -42,7 +42,6 @@ sourceSets {
 }
 
 dependencies {
-    compile "com.soywiz:korio-core:$korVersion"
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 }

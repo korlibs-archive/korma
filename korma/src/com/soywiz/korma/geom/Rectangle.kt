@@ -1,9 +1,9 @@
 package com.soywiz.korma.geom
 
-import com.soywiz.korio.util.niceStr
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
+import com.soywiz.korma.numeric.niceStr
 
 data class Rectangle(
 	var x: Double = 0.0, var y: Double = 0.0,
@@ -50,6 +50,13 @@ data class Rectangle(
 	}
 
 	fun clone() = Rectangle(x, y, width, height)
+
+	fun setToAnchoredRectangle(small: Rectangle, anchor: Anchor, big: Rectangle) = setTo(
+		anchor.sx * (big.width - small.width),
+		anchor.sy * (big.height - small.height),
+		small.width,
+		small.height
+	)
 
 	//override fun toString(): String = "Rectangle([${left.niceStr}, ${top.niceStr}]-[${right.niceStr}, ${bottom.niceStr}])"
 	override fun toString(): String = "Rectangle(x=${left.niceStr}, y=${top.niceStr}, width=${right.niceStr}, height=${bottom.niceStr})"

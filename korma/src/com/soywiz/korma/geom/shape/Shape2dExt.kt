@@ -1,15 +1,13 @@
 package com.soywiz.korma.geom.shape
 
-import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.Rectangle
 import com.soywiz.korma.geom.VectorPath
 import com.soywiz.korma.geom.bezier.Bezier
 import com.soywiz.korma.geom.clipper.*
-import com.soywiz.korma.geom.triangle.Triangle
-import de.lighti.clipper.*
 import com.soywiz.korma.geom.triangle.Sweep
 import com.soywiz.korma.geom.triangle.SweepContext
+import com.soywiz.korma.geom.triangle.Triangle
 
 fun Path.toShape2d(): Shape2d {
 	if (this.size == 4) {

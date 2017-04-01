@@ -1,10 +1,9 @@
 package com.soywiz.korma.geom
 
-import com.soywiz.korio.ds.DoubleArrayList
-import com.soywiz.korio.ds.IntArrayList
+import com.soywiz.korma.util.DoubleArrayList
+import com.soywiz.korma.util.IntArrayList
 import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.bezier.Bezier
-import com.soywiz.korma.geom.bezier.SegmentEmitter
 import com.soywiz.korma.geom.shape.HorizontalLine
 
 open class VectorPath(

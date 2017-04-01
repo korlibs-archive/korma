@@ -25,7 +25,7 @@ class BoundsBuilder {
 
 	fun add(p: Vector2) = add(p.x, p.y)
 
-	fun add(ps: Iterable<Vector2>) = this.apply {for (p in ps) add(p) }
+	fun add(ps: Iterable<Vector2>) = this.apply { for (p in ps) add(p) }
 
 	fun add(rect: Rectangle) = this.apply {
 		add(rect.left, rect.top)

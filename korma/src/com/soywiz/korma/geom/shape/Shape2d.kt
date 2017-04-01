@@ -1,10 +1,10 @@
 package com.soywiz.korma.geom.shape
 
-import com.soywiz.korio.util.niceStr
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.clipper.Path
 import com.soywiz.korma.geom.clipper.Paths
+import com.soywiz.korma.numeric.niceStr
 
 abstract class Shape2d {
 	abstract val paths: Paths
