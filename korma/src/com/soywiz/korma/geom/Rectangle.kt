@@ -59,7 +59,7 @@ data class Rectangle(
 	)
 
 	//override fun toString(): String = "Rectangle([${left.niceStr}, ${top.niceStr}]-[${right.niceStr}, ${bottom.niceStr}])"
-	override fun toString(): String = "Rectangle(x=${left.niceStr}, y=${top.niceStr}, width=${right.niceStr}, height=${bottom.niceStr})"
+	override fun toString(): String = "Rectangle(x=${x.niceStr}, y=${y.niceStr}, width=${width.niceStr}, height=${height.niceStr})"
 
 	companion object {
 		fun fromBounds(left: Double, top: Double, right: Double, bottom: Double): Rectangle = Rectangle().setBounds(left, top, right, bottom)

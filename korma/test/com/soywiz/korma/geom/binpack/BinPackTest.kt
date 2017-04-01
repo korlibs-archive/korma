@@ -11,7 +11,7 @@ class BinPackTest {
 		val result = factory.addBatch(listOf(Size(20, 10), Size(10, 30), Size(100, 20), Size(20, 80)))
 		//result.filterNotNull().render().showImageAndWaitExt()
 		Assert.assertEquals(
-			"[Rectangle(x=20, y=50, width=40, height=60), Rectangle(x=20, y=20, width=30, height=50), Rectangle(x=0, y=0, width=100, height=20), Rectangle(x=0, y=20, width=20, height=100)]",
+			"[Rectangle(x=20, y=50, width=20, height=10), Rectangle(x=20, y=20, width=10, height=30), Rectangle(x=0, y=0, width=100, height=20), Rectangle(x=0, y=20, width=20, height=80)]",
 			result.toString()
 		)
 	}

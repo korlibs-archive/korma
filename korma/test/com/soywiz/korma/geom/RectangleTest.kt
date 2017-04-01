@@ -18,4 +18,14 @@ class RectangleTest {
 		Assert.assertTrue(big intersects small)
 		Assert.assertFalse(big intersects out)
 	}
+
+	@Test
+	fun name2() {
+		val r1 = Rectangle(20, 0, 30, 10)
+		val r2 = Rectangle(100, 0, 100, 50)
+		val ro = r1.copy()
+		ro.setToAnchoredRectangle(ro, Anchor.MIDDLE_CENTER, r2)
+		//Assert.assertEquals(Rectangle(0, 0, 0, 0), r1)
+		Assert.assertEquals(Rectangle(35, 20, 30, 10), ro)
+	}
 }
