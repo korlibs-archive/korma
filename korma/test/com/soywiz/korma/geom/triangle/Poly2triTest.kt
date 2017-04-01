@@ -451,6 +451,12 @@ class TriangleTest {
 	}
 
 	@Test
+	fun testArea(): Unit {
+		val triangle = Triangle(Point2d(0, 0), Point2d(0, -10), Point2d(+10, 0))
+		assertEquals(50.0, triangle.area, 0.0001)
+	}
+
+	@Test
 	fun testInstantiated(): Unit {
 		assertTrue(t1 is Triangle)
 	}

@@ -1,5 +1,6 @@
 package com.soywiz.korma.geom.shape
 
+import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.Rectangle
 import com.soywiz.korma.geom.VectorPath
@@ -53,6 +54,7 @@ fun Shape2d.clipperOp(other: Shape2d, op: Clipper.ClipType): Shape2d {
 	return solution.toShape2d()
 }
 
+infix fun Shape2d.collidesWith(other: Shape2d): Boolean = this.clipperOp(other, Clipper.ClipType.INTERSECTION) != Shape2d.Empty
 infix fun Shape2d.intersection(other: Shape2d): Shape2d = this.clipperOp(other, Clipper.ClipType.INTERSECTION)
 infix fun Shape2d.union(other: Shape2d): Shape2d = this.clipperOp(other, Clipper.ClipType.UNION)
 infix fun Shape2d.xor(other: Shape2d): Shape2d = this.clipperOp(other, Clipper.ClipType.XOR)
@@ -131,9 +133,21 @@ fun VectorPath.toShape2d() = this.toPaths().toShape2d()
 fun Shape2d.getAllPoints() = this.paths.flatMap { it }
 fun Shape2d.toPolygon() = if (this is Shape2d.Polygon) this else Shape2d.Polygon(this.getAllPoints())
 
-fun Shape2d.triangulate(): List<Triangle> {
-	val sc = SweepContext(this.getAllPoints().map { Point2d(it.x, it.y) })
+fun List<Point2d>.triangulate(): List<Triangle> {
+	val sc = SweepContext(this)
 	val s = Sweep(sc)
 	s.triangulate()
 	return sc.triangles.toList()
+}
+
+fun Shape2d.triangulate(): List<Triangle> = this.getAllPoints().map { Point2d(it.x, it.y) }.triangulate()
+
+fun List<Point2d>.containsPoint(x: Double, y: Double): Boolean {
+	var intersections = 0
+	for (n in 0 until this.size - 1) {
+		val p1 = this[n + 0]
+		val p2 = this[n + 1]
+		intersections += HorizontalLine.intersectionsWithLine(x, y, p1.x, p1.y, p2.x, p2.y)
+	}
+	return (intersections % 2) != 0
 }

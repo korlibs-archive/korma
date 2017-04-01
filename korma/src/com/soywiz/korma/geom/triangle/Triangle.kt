@@ -11,7 +11,7 @@ data class Triangle(
 	var p1: Point2d,
 	var p2: Point2d,
 	var p3: Point2d,
-	val ctx: EdgeContext,
+	val ctx: EdgeContext = EdgeContext(),
 	var fixOrientation: Boolean = false,
 	var checkOrientation: Boolean = true
 ) {
@@ -286,6 +286,16 @@ data class Triangle(
 		} else {
 			return (_product(p1, p2, pp) <= 0) && (_product(p2, p3, pp)) <= 0 && (_product(p3, p1, pp) <= 0)
 		}
+	}
+
+	val area: Double get() {
+		val a = p2.x - p1.x
+		val b = p2.y - p1.y
+
+		val c = p3.x - p1.x
+		val d = p3.y - p1.y
+
+		return Math.abs(a * d - b * c) / 2.0
 	}
 
 	override fun toString(): String = "Triangle(${this.points[0]}, ${this.points[1]}, ${this.points[2]})"

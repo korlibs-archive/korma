@@ -6,11 +6,11 @@ But it is part of the [soywiz's korlibs](https://github.com/soywiz/korlibs) libr
 This library includes:
 
 * Geometry 2d primitives (Matrix2d/AffineTransform, Point2d, Rectangle, Size, Anchor, ScaleMode)
-* Interpolation facilities
-* Bezier curves calculations
-* VectorPath to define vector shapes with lines and bezier curves
-* BinPacker using max rects to allocate rectangles in a bidimensional space
-* [Clipper](https://sourceforge.net/projects/polyclipping/) (includes an embedded version of the awesome clipper library ported to Kotlin) to do boolean operation on polygons + growing
+* Mutable and Immutable interpolation facilities and integration with primitives
+* Bezier curves quad and cubic calculations/bounds/length
+* VectorPath to define vector shapes with lines and bezier quad and cubic curves with fully-featured canvas-like API to creating complex shapes
+* BinPacker using max rects to allocate rectangles in bidimensional spaces (eg. Atlas Generation/Allocation)
+* [Clipper](https://sourceforge.net/projects/polyclipping/) (includes an embedded version of the awesome clipper library ported to Kotlin) to do boolean operation on polygons union, intersection, subtraction, xor, collision between two shapes) + growing/shrinking
 * poly2tri library to convert polygons to simple triangles
-* funnel algorithm integrated with poly2tri to do pathfinding in a SpatialMesh
-* Shape2d classes integrated with clipper and poly2tri to perform boolean operations + growing + triangulation + pathfinding of arbitrary shapes + rasterizing VectorPath
+* TA* + Funnel algorithms integrated with poly2tri to do pathfinding in a SpatialMesh that can be obtained from a Shape2d or VectorShape
+* Shape2d classes with a simplified interface completely integrated with clipper and poly2tri to perform boolean operations (union, intersection, subtraction, xor, collision between two shapes) + growing/shrinking + triangulation + pathfinding in arbitrary shapes + approximating VectorPath to Polygons/Shape2d
