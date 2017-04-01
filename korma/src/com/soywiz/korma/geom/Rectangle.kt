@@ -76,3 +76,6 @@ data class Rectangle(
 		ratio.interpolate(l.height, r.height)
 	)
 }
+
+// @TODO: Check if this avoid boxing!
+inline fun Rectangle(x: Number, y: Number, width: Number, height: Number) = Rectangle(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())

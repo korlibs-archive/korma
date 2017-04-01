@@ -11,6 +11,7 @@ data class Vector2(var x: Double = 0.0, var y: Double = x) : MutableInterpolable
 	constructor(x: Int, y: Int) : this(x.toDouble(), y.toDouble())
 	constructor(x: Long, y: Long) : this(x.toDouble(), y.toDouble())
 	constructor(v: Vector2) : this(v.x, v.y)
+	//inline constructor(x: Number, y: Number) : this(x.toDouble(), y.toDouble()) // @TODO: Suggest to avoid boxing?
 
 	fun setTo(x: Int, y: Int): Vector2 = setTo(x.toDouble(), y.toDouble())
 
@@ -98,3 +99,6 @@ data class Vector2(var x: Double = 0.0, var y: Double = x) : MutableInterpolable
 		}
 	}
 }
+
+// @TODO: Check if this avoid boxing!
+inline fun Vector2(x: Number, y: Number) = Vector2(x.toDouble(), y.toDouble())

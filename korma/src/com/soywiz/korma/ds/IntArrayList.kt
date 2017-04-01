@@ -1,4 +1,4 @@
-package com.soywiz.korma.util
+package com.soywiz.korma.ds
 
 class IntArrayList(capacity: Int = 7) : Collection<Int> {
 	var data: IntArray = IntArray(capacity); private set

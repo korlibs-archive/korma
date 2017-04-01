@@ -1,6 +1,4 @@
-package com.soywiz.korma.util
-
-import java.util.*
+package com.soywiz.korma.ds
 
 class DoubleArrayList(capacity: Int = 7) : Collection<Double> {
 	var data: DoubleArray = DoubleArray(capacity); private set
