@@ -2,15 +2,13 @@ package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.geom.Orientation
 import com.soywiz.korma.geom.Point2d
-import com.soywiz.korma.geom.triangle.*
-import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Test
 
 class EdgeTest {
-	protected var p1: Point2d = Point2d(0, 0)
-	protected var p2: Point2d = Point2d(-1, 0)
-	protected var e1: Edge = EdgeContext().createEdge(p1, p2)
+	private var p1: Point2d = Point2d(0, 0)
+	private var p2: Point2d = Point2d(-1, 0)
+	private var e1: Edge = EdgeContext().createEdge(p1, p2)
 
 	@Test
 	fun testInstantiated(): Unit {
@@ -175,9 +173,9 @@ class PointTest {
 		private const val DELTA_FLOAT: Double = 0.0001
 	}
 
-	protected var p1: Point2d
-	protected var p2: Point2d
-	protected var p3: Point2d
+	private var p1: Point2d
+	private var p2: Point2d
+	private var p3: Point2d
 
 	init {
 		p1 = Point2d(P1X, P1Y)
@@ -239,9 +237,9 @@ class PointTest {
 
 	@Test
 	fun testEquals(): Unit {
-		assertTrue(p1.equals(p1))
-		assertTrue(p1.equals(Point2d(P1X, P1Y)))
-		assertFalse(p1.equals(p2))
+		assertTrue(p1 == p1)
+		assertTrue(p1 == Point2d(P1X, P1Y))
+		assertFalse(p1 == p2)
 	}
 
 	@Test
@@ -301,6 +299,7 @@ class PriorityQueueTest {
 
 }
 
+@Suppress("unused")
 class SpatialMeshTest {
 	//var points:ArrayList<Point2d>
 	//var triangles:ArrayList<Triangle>
@@ -370,27 +369,28 @@ class SpatialMeshTest {
 }
 
 class SweepContextTest {
-	protected var initialPoints = arrayListOf(Point2d(0, 0), Point2d(0, 100), Point2d(100, 100), Point2d(100, 0))
-	protected var holePoints = arrayListOf(Point2d(10, 10), Point2d(10, 90), Point2d(90, 90), Point2d(90, 10))
-	protected var sweepContext = SweepContext(initialPoints).apply { addHole(holePoints) }
+	private var initialPoints = arrayListOf(Point2d(0, 0), Point2d(0, 100), Point2d(100, 100), Point2d(100, 0))
+	private var holePoints = arrayListOf(Point2d(10, 10), Point2d(10, 90), Point2d(90, 90), Point2d(90, 10))
+	private var sweepContext = SweepContext(initialPoints).apply { addHole(holePoints) }
 
+	@Test
 	fun testInitTriangulation(): Unit {
-		assertEquals("Point2d(0, 0),Point2d(0, 100),Point2d(100, 100),Point2d(100, 0),Point2d(10, 10),Point2d(10, 90),Point2d(90, 90),Point2d(90, 10)", this.sweepContext.points.toString())
+		assertEquals("[Vector2(0, 0), Vector2(0, 100), Vector2(100, 100), Vector2(100, 0), Vector2(10, 10), Vector2(10, 90), Vector2(90, 90), Vector2(90, 10)]", this.sweepContext.points.toString())
 		this.sweepContext.initTriangulation()
-		assertEquals("Point2d(0, 0),Point2d(100, 0),Point2d(10, 10),Point2d(90, 10),Point2d(10, 90),Point2d(90, 90),Point2d(0, 100),Point2d(100, 100)", this.sweepContext.points.toString())
+		assertEquals("[Vector2(0, 0), Vector2(100, 0), Vector2(10, 10), Vector2(90, 10), Vector2(10, 90), Vector2(90, 90), Vector2(0, 100), Vector2(100, 100)]", this.sweepContext.points.toString())
 	}
 }
 
 class SweepTest {
-	protected var initialPoints = arrayListOf(Point2d(0, 0), Point2d(100, 0), Point2d(100, 100), Point2d(0, 100))
-	protected var holePoints = arrayListOf(
+	private var initialPoints = arrayListOf(Point2d(0, 0), Point2d(100, 0), Point2d(100, 100), Point2d(0, 100))
+	private var holePoints = arrayListOf(
 		Point2d(10, 10),
 		Point2d(10, 90),
 		Point2d(90, 90),
 		Point2d(90, 10)
 	)
-	protected var sweepContext: SweepContext = SweepContext(initialPoints)
-	protected var sweep: Sweep = Sweep(this.sweepContext)
+	private var sweepContext: SweepContext = SweepContext(initialPoints)
+	private var sweep: Sweep = Sweep(this.sweepContext)
 
 	@Test
 	fun testBoxTriangulate(): Unit {
@@ -410,19 +410,6 @@ class SweepTest {
 }
 
 class TriangleTest {
-	protected var p1: Point2d
-	var p2: Point2d
-	var p3: Point2d
-	var p4: Point2d
-	var p5: Point2d
-	var p6: Point2d
-	protected var pInside: Point2d
-	var pOutside: Point2d
-	protected var t1: Triangle
-	var t2: Triangle
-	var t3: Triangle
-	var t4: Triangle
-
 	/**
 	 *    p5
 	 *     |\
@@ -435,20 +422,18 @@ class TriangleTest {
 	 * p1      p2
 	 *
 	 */
-	init {
-		p1 = Point2d(-1, 0)
-		p2 = Point2d(+1, 0)
-		p3 = Point2d(0, +1)
-		p4 = Point2d(+1, +1)
-		p5 = Point2d(0, +2)
-		p6 = Point2d(+2, +1)
-		pInside = Point2d(0.3, 0.3)
-		pOutside = Point2d(+1, +1)
-		t1 = Triangle(p1, p2, p3, EdgeContext(), true) // CCW
-		t2 = Triangle(p3, p4, p2, EdgeContext(), true) // CW
-		t3 = Triangle(p4, p5, p3, EdgeContext(), true) // CCW
-		t4 = Triangle(p2, p4, p6, EdgeContext(), true) // CW
-	}
+	private val p1 = Point2d(-1, 0)
+	private val p2 = Point2d(+1, 0)
+	private val p3 = Point2d(0, +1)
+	private val p4 = Point2d(+1, +1)
+	private val p5 = Point2d(0, +2)
+	private val p6 = Point2d(+2, +1)
+	private val pInside = Point2d(0.3, 0.3)
+	private val pOutside = Point2d(+1, +1)
+	private val t1 = Triangle(p1, p2, p3, EdgeContext(), true) // CCW
+	private val t2 = Triangle(p3, p4, p2, EdgeContext(), true) // CW
+	private val t3 = Triangle(p4, p5, p3, EdgeContext(), true) // CCW
+	private val t4 = Triangle(p2, p4, p6, EdgeContext(), true) // CW
 
 	@Test
 	fun testArea(): Unit {
@@ -508,11 +493,11 @@ class TriangleTest {
 
 	@Test
 	fun testPointCW(): Unit {
-		assertTrue(t1.pointCW(p1).equals(p3))
-		assertTrue(t1.pointCCW(p1).equals(p2))
-		assertTrue(t1.pointCW(p2).equals(p1))
+		assertTrue(t1.pointCW(p1) == p3)
+		assertTrue(t1.pointCCW(p1) == p2)
+		assertTrue(t1.pointCW(p2) == p1)
 
-		assertTrue(t2.pointCW(p3).equals(p4))
+		assertTrue(t2.pointCW(p3) == p4)
 	}
 
 	@Test

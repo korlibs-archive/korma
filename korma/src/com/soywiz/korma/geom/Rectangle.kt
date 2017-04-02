@@ -25,6 +25,8 @@ data class Rectangle(
 		this.height = height
 	}
 
+	fun copyFrom(that: Rectangle) = setTo(that.x, that.y, that.width, that.height)
+
 	fun setBounds(left: Double, top: Double, right: Double, bottom: Double) = setTo(left, top, right - left, bottom - top)
 	fun setBounds(left: Int, top: Int, right: Int, bottom: Int) = setTo(left, top, right - left, bottom - top)
 

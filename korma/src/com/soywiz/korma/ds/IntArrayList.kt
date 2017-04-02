@@ -2,7 +2,7 @@ package com.soywiz.korma.ds
 
 class IntArrayList(capacity: Int = 7) : Collection<Int> {
 	var data: IntArray = IntArray(capacity); private set
-	internal val capacity: Int get() = data.size
+	val capacity: Int get() = data.size
 	var length: Int = 0; private set
 	override val size: Int get() = length
 
