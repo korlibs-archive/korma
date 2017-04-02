@@ -4,8 +4,10 @@ import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
 
-class Size(var width: Double, var height: Double) : MutableInterpolable<Size>, Interpolable<Size> {
+class Size(var width: Double, var height: Double) : MutableInterpolable<Size>, Interpolable<Size>, Sizeable {
 	constructor(width: Int, height: Int) : this(width.toDouble(), height.toDouble())
+
+	override val size: Size = this
 
 	fun setTo(width: Double, height: Double) = this.apply {
 		this.width = width
@@ -25,4 +27,10 @@ class Size(var width: Double, var height: Double) : MutableInterpolable<Size>, I
 		ratio.interpolate(l.width, r.width),
 		ratio.interpolate(l.height, r.height)
 	)
+}
+
+inline fun Size(width: Number, height: Number) = Size(width.toDouble(), height.toDouble())
+
+interface Sizeable {
+	val size: Size
 }
