@@ -1,7 +1,7 @@
 package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.geom.Point2d
-import java.util.*
+import kotlin.collections.ArrayList
 
 data class FunnelPortal(var left: Point2d, var right: Point2d)
 
@@ -137,7 +137,7 @@ class PathFind(val spatialMesh: SpatialMesh) {
 	}
 
 	fun find(startNode: SpatialNode?, endNode: SpatialNode?): List<SpatialNode> {
-		val returnList = LinkedList<SpatialNode>()
+		val returnList = ArrayList<SpatialNode>()
 		reset()
 		var currentNode = startNode
 
@@ -175,12 +175,14 @@ class PathFind(val spatialMesh: SpatialMesh) {
 		if (currentNode != endNode) throw(PathFindException("Can't find a path", 1))
 
 		while (currentNode != startNode) {
-			returnList.addFirst(currentNode)
+			returnList.add(currentNode!!)
 			//returnList.push(currentNode);
-			currentNode = currentNode!!.parent
+			currentNode = currentNode.parent
 		}
 
-		returnList.addFirst(startNode)
+		if (startNode != null) returnList.add(startNode)
+
+		returnList.reverse()
 
 		return returnList
 	}

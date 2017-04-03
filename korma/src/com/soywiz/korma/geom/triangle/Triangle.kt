@@ -2,7 +2,6 @@ package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.geom.Orientation
 import com.soywiz.korma.geom.Point2d
-import java.util.*
 
 data class Triangle(
 	var p1: Point2d,
@@ -12,21 +11,11 @@ data class Triangle(
 	var fixOrientation: Boolean = false,
 	var checkOrientation: Boolean = true
 ) {
-	// Triangle points
-	//var points = arrayOfNulls<Point2d>(3) // [null, null, null]
-	var points = Array<Point2d>(3) { Point2d(0.0, 0.0) } // [null, null, null]
-
-	// Neighbor list
-	var neighbors = arrayOfNulls<Triangle>(3) // [null, null, null]
-
-	// Has this triangle been marked as an interior triangle?
-	var interior: Boolean = false
-
-	// Flags to determine if an edge is a Constrained edge
-	var constrained_edge = Array<Boolean>(3) { false } // [false, false, false]
-
-	// Flags to determine if an edge is a Delauney edge
-	var delaunay_edge = Array<Boolean>(3) { false } // [false, false, false]
+	var points = arrayOf(p1, p2, p3)
+	var neighbors = arrayOfNulls<Triangle>(3) // Neighbor list
+	var interior: Boolean = false // Has this triangle been marked as an interior triangle?
+	var constrained_edge = Array<Boolean>(3) { false } // Flags to determine if an edge is a Constrained edge
+	var delaunay_edge = Array<Boolean>(3) { false } // Flags to determine if an edge is a Delauney edge
 
 	init {
 		@Suppress("NAME_SHADOWING")
@@ -272,7 +261,7 @@ data class Triangle(
 		this.delaunay_edge[2] = false
 	}
 
-	fun equals(that: Triangle): Boolean = Arrays.equals(this.points, that.points)
+	override fun equals(other: Any?): Boolean = (other is Triangle) && (this.p1 == other.p1) && (this.p2 == other.p2) && (this.p3 == other.p3)
 
 	fun pointInsideTriangle(pp: Point2d): Boolean {
 		val p1: Point2d = points[0]

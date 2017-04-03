@@ -4,7 +4,6 @@ import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
 import com.soywiz.korma.numeric.niceStr
-import java.util.*
 
 data class Vector2(var x: Double = 0.0, var y: Double = x) : MutableInterpolable<Vector2>, Interpolable<Vector2> {
 	constructor(x: Float, y: Float) : this(x.toDouble(), y.toDouble())

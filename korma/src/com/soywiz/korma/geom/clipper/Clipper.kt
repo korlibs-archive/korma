@@ -45,7 +45,6 @@ package com.soywiz.korma.geom.clipper
 import com.soywiz.korma.geom.BoundsBuilder
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.Rectangle
-import java.util.*
 
 interface Clipper {
 	enum class ClipType { INTERSECTION, UNION, DIFFERENCE, XOR }
@@ -876,15 +875,14 @@ class ClipperOffset @JvmOverloads constructor(private val miterLimit: Double = 2
 			for (i in 0 until polyNodes.childCount) {
 				val node = polyNodes._childs[i]
 				if (node.endType == Clipper.EndType.CLOSED_POLYGON || node.endType == Clipper.EndType.CLOSED_LINE && node.polygon.orientation()) {
-					Collections.reverse(node.polygon)
-
+					node.polygon.reverse()
 				}
 			}
 		} else {
 			for (i in 0 until polyNodes.childCount) {
 				val node = polyNodes._childs[i]
 				if (node.endType == Clipper.EndType.CLOSED_LINE && !node.polygon.orientation()) {
-					Collections.reverse(node.polygon)
+					node.polygon.reverse()
 				}
 			}
 		}
@@ -1664,7 +1662,7 @@ class DefaultClipper @JvmOverloads constructor(InitOptions: Int = 0) //construct
 		//pre-condition: intersections are sorted bottom-most first.
 		//Now it's crucial that intersections are made only between adjacent edges,
 		//so to ensure this the order of intersections may need adjusting ...
-		Collections.sort(intersectList, intersectNodeComparer)
+		intersectList.sortWith(intersectNodeComparer)
 
 		copyAELToSEL()
 		val cnt = intersectList.size
@@ -3080,9 +3078,7 @@ class DefaultClipper @JvmOverloads constructor(InitOptions: Int = 0) //construct
 					quad.add(result[(i + 1) % pathCnt][j % polyCnt])
 					quad.add(result[(i + 1) % pathCnt][(j + 1) % polyCnt])
 					quad.add(result[i % pathCnt][(j + 1) % polyCnt])
-					if (!quad.orientation()) {
-						Collections.reverse(quad)
-					}
+					if (!quad.orientation()) quad.reverse()
 					quads.add(quad)
 				}
 			}
@@ -3648,7 +3644,6 @@ class Path(initialCapacity: Int = 0) : ArrayList<Point2d>(initialCapacity) {
 	}
 
 	fun orientation(): Boolean = area() >= 0
-	fun reverse() = Collections.reverse(this)
 
 	fun translatePath(delta: Point2d): Path {
 		val outPath = Path(size)
@@ -3830,7 +3825,7 @@ open class PolyNode {
 	}
 
 	val childCount: Int get() = _childs.size
-	fun getChilds(): List<PolyNode> = Collections.unmodifiableList(_childs)
+	fun getChilds(): List<PolyNode> = _childs.toList()
 	val contour: List<Point2d> get() = polygon
 
 	val next: PolyNode get() = if (!_childs.isEmpty()) _childs[0] else nextSiblingUp!!
