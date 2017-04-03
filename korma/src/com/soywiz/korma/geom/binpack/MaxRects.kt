@@ -15,7 +15,8 @@ class MaxRects(
 	override fun add(width: Double, height: Double): Rectangle? = quickInsert(width, height)
 
 	fun quickInsert(width: Double, height: Double): Rectangle? {
-		val newNode: Rectangle = quickFindPositionForNewNodeBestAreaFit(width, height)
+		if (width <= 0.0 && height <= 0.0) return Rectangle(0, 0, 0, 0)
+		val newNode = quickFindPositionForNewNodeBestAreaFit(width, height)
 
 		if (newNode.height == 0.0) return null
 

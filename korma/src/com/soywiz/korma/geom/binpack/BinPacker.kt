@@ -7,8 +7,10 @@ import com.soywiz.korma.geom.Sizeable
 class BinPacker(val width: Double, val height: Double, val algo: BinPack = MaxRects(width, height)) {
 	val allocated = arrayListOf<Rectangle>()
 
-	fun add(width: Double, height: Double): Rectangle {
-		val rect = algo.add(width, height) ?: throw IllegalStateException("Size '${this.width}x${this.height}' doesn't fit in '${this.width}x${this.height}'")
+	fun add(width: Double, height: Double): Rectangle = addOrNull(width, height) ?: throw IllegalStateException("Size '${this.width}x${this.height}' doesn't fit in '${this.width}x${this.height}'")
+
+	fun addOrNull(width: Double, height: Double): Rectangle? {
+		val rect = algo.add(width, height) ?: return null
 		allocated += rect
 		return rect
 	}
@@ -46,15 +48,29 @@ class BinPacker(val width: Double, val height: Double, val algo: BinPack = MaxRe
 				currentBinPacker = BinPacker(maxWidth, maxHeight)
 			}
 
+			//for (item in items) {
+			//	var done = false
+			//	while (!done) {
+			//		try {
+			//			val size = getSize(item)
+			//			val rect = currentBinPacker.add(size.width, size.height)
+			//			currentPairs.add(item to rect)
+			//			done = true
+			//		} catch (e: IllegalStateException) {
+			//			emit()
+			//		}
+			//	}
+			//}
+
 			for (item in items) {
 				var done = false
 				while (!done) {
-					try {
-						val size = getSize(item)
-						val rect = currentBinPacker.add(size.width, size.height)
+					val size = getSize(item)
+					val rect = currentBinPacker.addOrNull(size.width, size.height)
+					if (rect != null) {
 						currentPairs.add(item to rect)
 						done = true
-					} catch (e: IllegalStateException) {
+					} else {
 						emit()
 					}
 				}

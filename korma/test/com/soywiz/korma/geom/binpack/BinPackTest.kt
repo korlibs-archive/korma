@@ -26,4 +26,11 @@ class BinPackTest {
 		Assert.assertEquals("[Rectangle(x=0, y=0, width=10, height=5)]", packs[2].rectsStr)
 		Assert.assertEquals("[Rectangle(x=0, y=0, width=5, height=10), Rectangle(x=5, y=0, width=5, height=5)]", packs[3].rectsStr)
 	}
+
+	@Test
+	fun packZero() {
+		val packs = BinPacker.packSeveral(10, 10, listOf(Size(0, 0)))
+		Assert.assertEquals(1, packs.size)
+		Assert.assertEquals("[Rectangle(x=0, y=0, width=0, height=0)]", packs[0].rectsStr)
+	}
 }
