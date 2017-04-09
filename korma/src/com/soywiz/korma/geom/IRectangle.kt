@@ -43,3 +43,5 @@ data class IRectangle(val position: IPosition, val size: ISize) {
 
 	operator fun contains(v: ISize): Boolean = (v.width <= width) && (v.height <= height)
 }
+
+inline fun IRectangle(x: Number, y: Number, width: Number, height: Number) = IRectangle(x.toInt(), y.toInt(), width.toInt(), height.toInt())

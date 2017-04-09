@@ -83,3 +83,5 @@ data class Rectangle(
 
 // @TODO: Check if this avoid boxing!
 inline fun Rectangle(x: Number, y: Number, width: Number, height: Number) = Rectangle(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+
+fun Rectangle.toInt() = IRectangle(x, y, width, height)

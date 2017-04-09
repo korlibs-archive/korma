@@ -4,7 +4,7 @@ import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
 
-class Matrix2d(
+data class Matrix2d(
 	@JvmField var a: Double = 1.0,
 	@JvmField var b: Double = 0.0,
 	@JvmField var c: Double = 0.0,
