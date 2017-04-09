@@ -79,9 +79,9 @@ data class Rectangle(
 		ratio.interpolate(l.width, r.width),
 		ratio.interpolate(l.height, r.height)
 	)
+
+	fun toInt() = IRectangle(x, y, width, height)
 }
 
 // @TODO: Check if this avoid boxing!
 inline fun Rectangle(x: Number, y: Number, width: Number, height: Number) = Rectangle(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
-
-fun Rectangle.toInt() = IRectangle(x, y, width, height)

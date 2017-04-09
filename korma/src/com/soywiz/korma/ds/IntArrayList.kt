@@ -10,6 +10,10 @@ class IntArrayList(capacity: Int = 7) : Collection<Int> {
 		add(other)
 	}
 
+	constructor(other: IntArray) : this() {
+		add(other)
+	}
+
 	private fun ensure(count: Int) {
 		if (length + count > data.size) {
 			data = data.copyOf(Math.max(length + count, data.size * 3))

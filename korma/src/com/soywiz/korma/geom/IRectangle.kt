@@ -42,6 +42,8 @@ data class IRectangle(val position: IPosition, val size: ISize) {
 	fun getAnchorPosition(anchor: Anchor, out: IPosition = IPosition()): IPosition = out.setTo((x + width * anchor.sx).toInt(), (y + height * anchor.sy).toInt())
 
 	operator fun contains(v: ISize): Boolean = (v.width <= width) && (v.height <= height)
+
+	fun toDouble() = Rectangle(x, y, width, height)
 }
 
 inline fun IRectangle(x: Number, y: Number, width: Number, height: Number) = IRectangle(x.toInt(), y.toInt(), width.toInt(), height.toInt())

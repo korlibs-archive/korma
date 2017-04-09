@@ -10,6 +10,10 @@ class DoubleArrayList(capacity: Int = 7) : Collection<Double> {
 		add(other)
 	}
 
+	constructor(other: DoubleArray) : this() {
+		add(other)
+	}
+
 	private fun ensure(count: Int) {
 		if (length + count > data.size) {
 			data = data.copyOf(Math.max(length + count, data.size * 3))

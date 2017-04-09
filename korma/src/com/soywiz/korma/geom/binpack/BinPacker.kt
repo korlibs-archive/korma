@@ -19,8 +19,8 @@ class BinPacker(val width: Double, val height: Double, val algo: BinPack = MaxRe
 	fun addBatch(items: Iterable<Size>): List<Rectangle?> = algo.addBatch(items) { it }.map { it.second }
 
 	class Result<T>(val maxWidth: Double, val maxHeight: Double, val items: List<Pair<T, Rectangle>>) {
-		val width = items.map { it.second.right }.max() ?: 0.0
-		val height = items.map { it.second.bottom }.max() ?: 0.0
+		val width = items.map { it.second.right }.maxBy { it } ?: 0.0
+		val height = items.map { it.second.bottom }.maxBy { it } ?: 0.0
 		val rects get() = items.map { it.second }
 		val rectsStr: String get() = rects.toString()
 	}
