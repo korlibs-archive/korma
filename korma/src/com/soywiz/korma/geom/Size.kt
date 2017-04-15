@@ -3,6 +3,7 @@ package com.soywiz.korma.geom
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
+import com.soywiz.korma.numeric.niceStr
 
 data class Size(var width: Double, var height: Double) : MutableInterpolable<Size>, Interpolable<Size>, Sizeable {
 	constructor(width: Int, height: Int) : this(width.toDouble(), height.toDouble())
@@ -27,6 +28,8 @@ data class Size(var width: Double, var height: Double) : MutableInterpolable<Siz
 		ratio.interpolate(l.width, r.width),
 		ratio.interpolate(l.height, r.height)
 	)
+
+	override fun toString(): String = "Size(width=${width.niceStr}, height=${height.niceStr})"
 }
 
 inline fun Size(width: Number, height: Number) = Size(width.toDouble(), height.toDouble())
