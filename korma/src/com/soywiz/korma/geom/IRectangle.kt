@@ -44,6 +44,8 @@ data class IRectangle(val position: IPosition, val size: ISize) {
 	operator fun contains(v: ISize): Boolean = (v.width <= width) && (v.height <= height)
 
 	fun toDouble() = Rectangle(x, y, width, height)
+
+	override fun toString(): String = "IRectangle(x=$x, y=$y, width=$width, height=$height)"
 }
 
 inline fun IRectangle(x: Number, y: Number, width: Number, height: Number) = IRectangle(x.toInt(), y.toInt(), width.toInt(), height.toInt())

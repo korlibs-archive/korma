@@ -11,6 +11,7 @@ data class Rectangle(
 ) : MutableInterpolable<Rectangle>, Interpolable<Rectangle>, Sizeable {
 	constructor(x: Int, y: Int, width: Int, height: Int) : this(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 
+	val area: Double get() = width * height
 	var left: Double; get() = x; set(value) = run { x = value }
 	var top: Double; get() = y; set(value) = run { y = value }
 	var right: Double; get() = x + width; set(value) = run { width = value - x }
@@ -18,7 +19,7 @@ data class Rectangle(
 
 	override val size: Size get() = Size(width, height)
 
-	fun setTo(x: Int, y: Int, width: Int, height: Int) = this.setTo(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+	inline fun setTo(x: Number, y: Number, width: Number, height: Number) = this.setTo(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 
 	fun setTo(x: Double, y: Double, width: Double, height: Double) = this.apply {
 		this.x = x

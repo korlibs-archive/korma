@@ -76,18 +76,18 @@ data class Matrix2d(
 	fun prerotate(theta: Double) = this.apply {
 		val m = com.soywiz.korma.Matrix2d()
 		m.rotate(theta)
-		this.premulitply(m)
+		this.premultiply(m)
 	}
 
 	fun preskew(skewX: Double, skewY: Double) = this.apply {
 		val m = com.soywiz.korma.Matrix2d()
 		m.skew(skewX, skewY)
-		this.premulitply(m)
+		this.premultiply(m)
 	}
 
-	fun premulitply(m: Matrix2d) = this.premulitply(m.a, m.b, m.c, m.d, m.tx, m.ty)
+	fun premultiply(m: Matrix2d) = this.premultiply(m.a, m.b, m.c, m.d, m.tx, m.ty)
 
-	fun premulitply(la: Double, lb: Double, lc: Double, ld: Double, ltx: Double, lty: Double): Matrix2d = setTo(
+	fun premultiply(la: Double, lb: Double, lc: Double, ld: Double, ltx: Double, lty: Double): Matrix2d = setTo(
 		la * a + lb * c,
 		la * b + lb * d,
 		lc * a + ld * c,
