@@ -4,7 +4,7 @@ import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
 
-class Size(var width: Double, var height: Double) : MutableInterpolable<Size>, Interpolable<Size>, Sizeable {
+data class Size(var width: Double, var height: Double) : MutableInterpolable<Size>, Interpolable<Size>, Sizeable {
 	constructor(width: Int, height: Int) : this(width.toDouble(), height.toDouble())
 
 	override val size: Size = this
