@@ -1,5 +1,6 @@
 package com.soywiz.korma
 
+import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
@@ -109,6 +110,9 @@ data class Matrix2d(
 
 	fun transformX(px: Double, py: Double): Double = this.a * px + this.c * py + this.tx
 	fun transformY(px: Double, py: Double): Double = this.d * py + this.b * px + this.ty
+
+	inline fun transformX(p: Point2d): Double = transformX(p.x, p.y)
+	inline fun transformY(p: Point2d): Double = transformY(p.x, p.y)
 
 	fun transformXf(px: Double, py: Double): Float = (this.a * px + this.c * py + this.tx).toFloat()
 	fun transformYf(px: Double, py: Double): Float = (this.d * py + this.b * px + this.ty).toFloat()
