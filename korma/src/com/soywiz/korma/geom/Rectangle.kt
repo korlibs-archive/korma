@@ -34,6 +34,8 @@ data class Rectangle(
 	fun setBounds(left: Int, top: Int, right: Int, bottom: Int) = setTo(left, top, right - left, bottom - top)
 
 	operator fun contains(that: Rectangle) = isContainedIn(that, this)
+	operator fun contains(that: Point2d) = contains(x, y)
+	fun contains(x: Double, y: Double) = (x >= left && x < right) && (y >= top && y < bottom)
 
 	infix fun intersects(that: Rectangle): Boolean = intersectsX(that) && intersectsY(that)
 
@@ -80,6 +82,8 @@ data class Rectangle(
 		ratio.interpolate(l.width, r.width),
 		ratio.interpolate(l.height, r.height)
 	)
+
+	fun getAnchoredPosition(anchor: Anchor, out: Point2d = Point2d()): Point2d = out.setTo(left + width * anchor.sx, top + height * anchor.sy)
 
 	fun toInt() = IRectangle(x, y, width, height)
 }
