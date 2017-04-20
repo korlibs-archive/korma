@@ -4,7 +4,7 @@ import com.soywiz.korma.geom.IPoint
 import java.util.*
 
 @Suppress("NOTHING_TO_INLINE")
-data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) {
+data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iterable<T> {
 	companion object {
 		//inline operator fun <reified T> invoke(width: Int, height: Int, gen: () -> T) = Array2(width, height, Array(width * height) { gen() })
 		inline operator fun <reified T> invoke(width: Int, height: Int, gen: (n: Int) -> T) = Array2(width, height, Array(width * height) { gen(it) })
@@ -79,4 +79,6 @@ data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) {
 			println()
 		}
 	}
+
+	override fun iterator(): Iterator<T> = data.iterator()
 }
