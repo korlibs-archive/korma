@@ -5,25 +5,59 @@ import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
 
+interface IMatrix2d {
+	val a: Double
+	val b: Double
+	val c: Double
+	val d: Double
+	val tx: Double
+	val ty: Double
+}
+
+inline fun IMatrix2d(a: Number, b: Number, c: Number, d: Number, tx: Number, ty: Number) = Matrix2d.Immutable(
+	a.toDouble(),
+	b.toDouble(),
+	c.toDouble(),
+	d.toDouble(),
+	tx.toDouble(),
+	ty.toDouble()
+)
+
 data class Matrix2d(
-	@JvmField var a: Double = 1.0,
-	@JvmField var b: Double = 0.0,
-	@JvmField var c: Double = 0.0,
-	@JvmField var d: Double = 1.0,
-	@JvmField var tx: Double = 0.0,
-	@JvmField var ty: Double = 0.0
-) : MutableInterpolable<Matrix2d>, Interpolable<Matrix2d> {
-	fun setTo(a: Double, b: Double, c: Double, d: Double, tx: Double, ty: Double): Matrix2d {
+	override var a: Double = 1.0,
+	override var b: Double = 0.0,
+	override var c: Double = 0.0,
+	override var d: Double = 1.0,
+	override var tx: Double = 0.0,
+	override var ty: Double = 0.0
+) : MutableInterpolable<Matrix2d>, Interpolable<Matrix2d>, IMatrix2d {
+	data class Immutable(
+		override val a: Double,
+		override val b: Double,
+		override val c: Double,
+		override val d: Double,
+		override val tx: Double,
+		override val ty: Double
+	) : IMatrix2d {
+		companion object {
+			val IDENTITY = Immutable(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
+		}
+
+		fun toMutable() = Matrix2d(a, b, c, d, tx, ty)
+	}
+
+	fun toImmutable() = Immutable(a, b, c, d, tx, ty)
+
+	fun setTo(a: Double, b: Double, c: Double, d: Double, tx: Double, ty: Double): Matrix2d = this.apply {
 		this.a = a
 		this.b = b
 		this.c = c
 		this.d = d
 		this.tx = tx
 		this.ty = ty
-		return this
 	}
 
-	fun setToInterpolated(ratio: Double, l: Matrix2d, r: Matrix2d) = setTo(
+	fun setToInterpolated(ratio: Double, l: IMatrix2d, r: IMatrix2d) = setTo(
 		ratio.interpolate(l.a, r.a),
 		ratio.interpolate(l.b, r.b),
 		ratio.interpolate(l.c, r.c),
@@ -32,7 +66,7 @@ data class Matrix2d(
 		ratio.interpolate(l.ty, r.ty)
 	)
 
-	fun copyFrom(that: Matrix2d) {
+	fun copyFrom(that: IMatrix2d) {
 		setTo(that.a, that.b, that.c, that.d, that.tx, that.ty)
 	}
 
@@ -86,7 +120,7 @@ data class Matrix2d(
 		this.premultiply(m)
 	}
 
-	fun premultiply(m: Matrix2d) = this.premultiply(m.a, m.b, m.c, m.d, m.tx, m.ty)
+	fun premultiply(m: IMatrix2d) = this.premultiply(m.a, m.b, m.c, m.d, m.tx, m.ty)
 
 	fun premultiply(la: Double, lb: Double, lc: Double, ld: Double, ltx: Double, lty: Double): Matrix2d = setTo(
 		la * a + lb * c,
@@ -97,7 +131,7 @@ data class Matrix2d(
 		ltx * b + lty * d + ty
 	)
 
-	fun multiply(l: Matrix2d, r: Matrix2d): Matrix2d = setTo(
+	fun multiply(l: IMatrix2d, r: IMatrix2d): Matrix2d = setTo(
 		l.a * r.a + l.b * r.c,
 		l.a * r.b + l.b * r.d,
 		l.c * r.a + l.d * r.c,
@@ -123,7 +157,7 @@ data class Matrix2d(
 
 	fun setToIdentity() = setTo(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
 
-	fun setToInverse(matrixToInvert: Matrix2d = this): Matrix2d {
+	fun setToInverse(matrixToInvert: IMatrix2d = this): Matrix2d {
 		val m = matrixToInvert
 		val norm = m.a * m.d - m.b * m.c
 
@@ -166,18 +200,18 @@ data class Matrix2d(
 	fun clone() = Matrix2d(a, b, c, d, tx, ty)
 
 	fun createBox(scaleX: Double, scaleY: Double, rotation: Double = 0.0, tx: Double = 0.0, ty: Double = 0.0): Unit {
-		val u = Math.cos(rotation);
-		val v = Math.sin(rotation);
-		this.a = u * scaleX;
-		this.b = v * scaleY;
-		this.c = -v * scaleX;
-		this.d = u * scaleY;
-		this.tx = tx;
-		this.ty = ty;
+		val u = Math.cos(rotation)
+		val v = Math.sin(rotation)
+		this.a = u * scaleX
+		this.b = v * scaleY
+		this.c = -v * scaleX
+		this.d = u * scaleY
+		this.tx = tx
+		this.ty = ty
 	}
 
 	fun createGradientBox(width: Double, height: Double, rotation: Double = 0.0, tx: Double = 0.0, ty: Double = 0.0): Unit {
-		this.createBox(width / 1638.4, height / 1638.4, rotation, tx + width / 2, ty + height / 2);
+		this.createBox(width / 1638.4, height / 1638.4, rotation, tx + width / 2, ty + height / 2)
 	}
 
 	data class Transform(
@@ -186,7 +220,7 @@ data class Matrix2d(
 		var skewX: Double = 0.0, var skewY: Double = 0.0,
 		var rotation: Double = 0.0
 	) {
-		fun setMatrix(matrix: Matrix2d): Transform {
+		fun setMatrix(matrix: IMatrix2d): Transform {
 			val PI_4 = Math.PI / 4.0
 			this.x = matrix.tx
 			this.y = matrix.ty
@@ -249,3 +283,6 @@ data class Matrix2d(
 
 // This is to be able to mix integers with doubles without boxing at all due to the inline
 inline fun Matrix2d(a: Number, b: Number = 0.0, c: Number = 0.0, d: Number = 1.0, tx: Number = 0.0, ty: Number = 0.0) = Matrix2d(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
+
+fun IMatrix2d.transformX(px: Double, py: Double): Double = this.a * px + this.c * py + this.tx
+fun IMatrix2d.transformY(px: Double, py: Double): Double = this.d * py + this.b * px + this.ty

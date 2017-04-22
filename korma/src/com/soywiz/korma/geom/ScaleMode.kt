@@ -1,7 +1,7 @@
 package com.soywiz.korma.geom
 
-class ScaleMode(private val f: (item: ISize, container: ISize, target: ISize) -> Unit) {
-	operator fun invoke(item: ISize, container: ISize, target: ISize = ISize()): ISize = target.apply {
+class ScaleMode(private val f: (item: SizeInt, container: SizeInt, target: SizeInt) -> Unit) {
+	operator fun invoke(item: SizeInt, container: SizeInt, target: SizeInt = SizeInt()): SizeInt = target.apply {
 		f(item, container, target)
 	}
 

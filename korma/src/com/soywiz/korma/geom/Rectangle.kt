@@ -85,7 +85,7 @@ data class Rectangle(
 
 	fun getAnchoredPosition(anchor: Anchor, out: Point2d = Point2d()): Point2d = out.setTo(left + width * anchor.sx, top + height * anchor.sy)
 
-	fun toInt() = IRectangle(x, y, width, height)
+	fun toInt() = RectangleInt(x, y, width, height)
 }
 
 // @TODO: Check if this avoid boxing!

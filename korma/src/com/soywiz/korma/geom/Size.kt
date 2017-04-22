@@ -5,8 +5,13 @@ import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
 import com.soywiz.korma.numeric.niceStr
 
-data class Size(var width: Double, var height: Double) : MutableInterpolable<Size>, Interpolable<Size>, Sizeable {
-	constructor(width: Int, height: Int) : this(width.toDouble(), height.toDouble())
+interface ISize {
+	val width: Double
+	val height: Double
+}
+
+data class Size(override var width: Double, override var height: Double) : MutableInterpolable<Size>, Interpolable<Size>, Sizeable, ISize {
+	data class Immutable(override val width: Double, override val height: Double) : ISize
 
 	override val size: Size = this
 
@@ -33,6 +38,7 @@ data class Size(var width: Double, var height: Double) : MutableInterpolable<Siz
 }
 
 inline fun Size(width: Number, height: Number) = Size(width.toDouble(), height.toDouble())
+inline fun ISize(width: Number, height: Number) = Size.Immutable(width.toDouble(), height.toDouble())
 
 interface Sizeable {
 	val size: Size
