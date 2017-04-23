@@ -168,6 +168,10 @@ open class VectorPath(
 
 	fun lineTo(x: Int, y: Int) = lineTo(x.toDouble(), y.toDouble())
 
+	fun quadTo(controlX: Int, controlY: Int, anchorX: Int, anchorY: Int) = quadTo(controlX.toDouble(), controlY.toDouble(), anchorX.toDouble(), anchorY.toDouble())
+
+	fun cubicTo(cx1: Int, cy1: Int, cx2: Int, cy2: Int, ax: Int, ay: Int) = cubicTo(cx1.toDouble(), cy1.toDouble(), cx2.toDouble(), cy2.toDouble(), ax.toDouble(), ay.toDouble())
+
 	fun quadTo(controlX: Double, controlY: Double, anchorX: Double, anchorY: Double) {
 		ensureMoveTo(controlX, controlY)
 		commands += Command.QUAD_TO
@@ -289,11 +293,9 @@ open class VectorPath(
 
 	fun circle(x: Double, y: Double, radius: Double) = arc(x, y, radius, 0.0, Math.PI * 2.0)
 
-	fun getBounds(out: Rectangle = Rectangle(), bb: BoundsBuilder = BoundsBuilder()): Rectangle {
+	fun addBounds(bb: BoundsBuilder): Unit {
 		var lx = 0.0
 		var ly = 0.0
-
-		bb.reset()
 
 		visitCmds(
 			moveTo = { x, y ->
@@ -307,12 +309,12 @@ open class VectorPath(
 				ly = y
 			},
 			quadTo = { cx, cy, ax, ay ->
-				bb.add(Bezier.quadBounds(lx, ly, cx, cy, ax, ay, out))
+				bb.add(Bezier.quadBounds(lx, ly, cx, cy, ax, ay, bb.tempRect))
 				lx = ax
 				ly = ay
 			},
 			cubicTo = { cx1, cy1, cx2, cy2, ax, ay ->
-				bb.add(Bezier.cubicBounds(lx, ly, cx1, cy1, cx2, cy2, ax, ay, out))
+				bb.add(Bezier.cubicBounds(lx, ly, cx1, cy1, cx2, cy2, ax, ay, bb.tempRect))
 				lx = ax
 				ly = ay
 			},
@@ -320,7 +322,11 @@ open class VectorPath(
 
 			}
 		)
+	}
 
+	fun getBounds(out: Rectangle = Rectangle(), bb: BoundsBuilder = BoundsBuilder()): Rectangle {
+		bb.reset()
+		addBounds(bb)
 		return bb.getBounds(out)
 	}
 

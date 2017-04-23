@@ -5,10 +5,23 @@ import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
 import com.soywiz.korma.numeric.niceStr
 
+interface IRectangle {
+	val x: Double
+	val y: Double
+	val width: Double
+	val height: Double
+}
+
 data class Rectangle(
-	var x: Double = 0.0, var y: Double = 0.0,
-	var width: Double = 0.0, var height: Double = 0.0
-) : MutableInterpolable<Rectangle>, Interpolable<Rectangle>, Sizeable {
+	override var x: Double = 0.0, override var y: Double = 0.0,
+	override var width: Double = 0.0, override var height: Double = 0.0
+) : MutableInterpolable<Rectangle>, Interpolable<Rectangle>, IRectangle, Sizeable {
+	data class Immutable(override val x: Double, override val y: Double, override val width: Double, override val height: Double) : IRectangle {
+		fun toMutable() = Rectangle(x, y, width, height)
+	}
+
+	fun toImmutable() = Immutable(x, y, width, height)
+
 	constructor(x: Int, y: Int, width: Int, height: Int) : this(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 
 	val area: Double get() = width * height
@@ -90,3 +103,4 @@ data class Rectangle(
 
 // @TODO: Check if this avoid boxing!
 inline fun Rectangle(x: Number, y: Number, width: Number, height: Number) = Rectangle(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+inline fun IRectangle(x: Number, y: Number, width: Number, height: Number) = Rectangle.Immutable(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())

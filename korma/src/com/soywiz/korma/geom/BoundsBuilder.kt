@@ -3,6 +3,8 @@ package com.soywiz.korma.geom
 import com.soywiz.korma.Vector2
 
 class BoundsBuilder {
+	val tempRect = Rectangle()
+
 	private var xmin = Double.MAX_VALUE
 	private var xmax = Double.MIN_VALUE
 	private var ymin = Double.MAX_VALUE
