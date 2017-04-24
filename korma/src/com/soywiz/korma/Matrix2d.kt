@@ -305,6 +305,7 @@ data class Matrix2d(
 
 // This is to be able to mix integers with doubles without boxing at all due to the inline
 inline fun Matrix2d(a: Number, b: Number = 0.0, c: Number = 0.0, d: Number = 1.0, tx: Number = 0.0, ty: Number = 0.0) = Matrix2d(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
+fun Matrix2d(m: Matrix2d): Matrix2d = m.copy()
 
 fun IMatrix2d.transformX(px: Double, py: Double): Double = this.a * px + this.c * py + this.tx
 fun IMatrix2d.transformY(px: Double, py: Double): Double = this.d * py + this.b * px + this.ty
