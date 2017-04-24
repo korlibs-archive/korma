@@ -24,6 +24,8 @@ data class Rectangle(
 
 	constructor(x: Int, y: Int, width: Int, height: Int) : this(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 
+	val isEmpty: Boolean get() = area == 0.0
+	val isNotEmpty: Boolean get() = area != 0.0
 	val area: Double get() = width * height
 	var left: Double; get() = x; set(value) = run { x = value }
 	var top: Double; get() = y; set(value) = run { y = value }
@@ -45,6 +47,9 @@ data class Rectangle(
 
 	fun setBounds(left: Double, top: Double, right: Double, bottom: Double) = setTo(left, top, right - left, bottom - top)
 	fun setBounds(left: Int, top: Int, right: Int, bottom: Int) = setTo(left, top, right - left, bottom - top)
+
+	operator fun times(scale: Double) = Rectangle(x * scale, y * scale, width * scale, height * scale)
+	operator fun div(scale: Double) = Rectangle(x / scale, y / scale, width / scale, height / scale)
 
 	operator fun contains(that: Rectangle) = isContainedIn(that, this)
 	operator fun contains(that: Point2d) = contains(x, y)
@@ -80,6 +85,8 @@ data class Rectangle(
 
 	//override fun toString(): String = "Rectangle([${left.niceStr}, ${top.niceStr}]-[${right.niceStr}, ${bottom.niceStr}])"
 	override fun toString(): String = "Rectangle(x=${x.niceStr}, y=${y.niceStr}, width=${width.niceStr}, height=${height.niceStr})"
+
+	fun toStringBounds(): String = "Rectangle([${left.niceStr},${top.niceStr}]-[${right.niceStr},${bottom.niceStr}])"
 
 	companion object {
 		fun fromBounds(left: Double, top: Double, right: Double, bottom: Double): Rectangle = Rectangle().setBounds(left, top, right, bottom)

@@ -30,8 +30,10 @@ class BoundsBuilder {
 	fun add(ps: Iterable<Vector2>) = this.apply { for (p in ps) add(p) }
 
 	fun add(rect: Rectangle) = this.apply {
-		add(rect.left, rect.top)
-		add(rect.bottom, rect.right)
+		if (rect.isNotEmpty) {
+			add(rect.left, rect.top)
+			add(rect.right, rect.bottom)
+		}
 	}
 
 	fun getBounds(out: Rectangle = Rectangle()): Rectangle = out.setBounds(xmin, ymin, xmax, ymax)
