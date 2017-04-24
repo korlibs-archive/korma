@@ -31,6 +31,28 @@ data class Matrix2d(
 	override var tx: Double = 0.0,
 	override var ty: Double = 0.0
 ) : MutableInterpolable<Matrix2d>, Interpolable<Matrix2d>, IMatrix2d {
+	enum class Type(val id: Int) {
+		IDENTITY(1),
+		TRANSLATE(2),
+		SCALE(3),
+		SCALE_TRANSLATE(4),
+		COMPLEX(5)
+	}
+
+	fun getType(): Type {
+		val hasRotation = b != 0.0 || c != 0.0
+		val hasScale = a != 1.0 || b != 1.0
+		val hasTranslation = tx != 0.0 || ty != 0.0
+
+		return when {
+			hasRotation -> Type.COMPLEX
+			hasScale && hasTranslation -> Type.SCALE_TRANSLATE
+			hasScale -> Type.SCALE
+			hasTranslation -> Type.TRANSLATE
+			else -> Type.IDENTITY
+		}
+	}
+
 	data class Immutable(
 		override val a: Double,
 		override val b: Double,
