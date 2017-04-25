@@ -164,6 +164,8 @@ data class Matrix2d(
 
 	fun transform(px: Double, py: Double, out: Vector2 = Vector2()): Vector2 = out.setTo(transformX(px, py), transformY(px, py))
 
+	fun transform(p: Vector2, out: Vector2 = Vector2()): Vector2 = out.setTo(transformX(p.x, p.y), transformY(p.x, p.y))
+
 	fun transformX(px: Double, py: Double): Double = this.a * px + this.c * py + this.tx
 	fun transformY(px: Double, py: Double): Double = this.d * py + this.b * px + this.ty
 

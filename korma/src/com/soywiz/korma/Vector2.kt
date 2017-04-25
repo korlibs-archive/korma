@@ -31,7 +31,7 @@ data class Vector2(override var x: Double = 0.0, override var y: Double = x) : M
 	constructor(v: IVector2) : this(v.x, v.y)
 	//inline constructor(x: Number, y: Number) : this(x.toDouble(), y.toDouble()) // @TODO: Suggest to avoid boxing?
 
-	fun setTo(x: Int, y: Int): Vector2 = setTo(x.toDouble(), y.toDouble())
+	inline fun setTo(x: Number, y: Number): Vector2 = setTo(x.toDouble(), y.toDouble())
 
 	fun setTo(x: Double, y: Double): Vector2 {
 		this.x = x
@@ -59,6 +59,8 @@ data class Vector2(override var x: Double = 0.0, override var y: Double = x) : M
 
 	fun setToAdd(a: IVector2, b: IVector2): Vector2 = setTo(a.x + b.x, a.y + b.y)
 	fun setToSub(a: IVector2, b: IVector2): Vector2 = setTo(a.x - b.x, a.y - b.y)
+	fun setToMul(a: IVector2, b: IVector2): Vector2 = setTo(a.x * b.x, a.y * b.y)
+	fun setToMul(a: IVector2, s: Double): Vector2 = setTo(a.x * s, a.y * s)
 
 	operator fun plusAssign(that: IVector2) {
 		setTo(this.x + that.x, this.y + that.y)
