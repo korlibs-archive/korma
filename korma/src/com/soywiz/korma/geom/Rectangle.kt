@@ -69,6 +69,9 @@ data class Rectangle(
 		Math.min(this.right, that.right), Math.min(this.bottom, that.bottom)
 	) else null
 
+	fun displaced(dx: Double, dy: Double) = Rectangle(this.x + dx, this.y + dy, width, height)
+	fun displace(dx: Double, dy: Double) = setTo(this.x + dx, this.y + dy, this.width, this.height)
+
 	fun inflate(dx: Double, dy: Double) {
 		x -= dx; width += 2 * dx
 		y -= dy; height += 2 * dy
