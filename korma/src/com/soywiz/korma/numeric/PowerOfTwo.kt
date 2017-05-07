@@ -14,4 +14,5 @@ object PowerOfTwo {
 	}
 }
 
+val Int.isPowerOfTwo: Boolean get() = PowerOfTwo.nextPowerOfTwo(this) == this
 val Int.nextPowerOfTwo: Int get() = PowerOfTwo.nextPowerOfTwo(this)
