@@ -17,6 +17,22 @@ data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iter
 			val anyCell = rows[0][0]
 			return Array2(width, height) { anyCell }.apply { set(rows) }
 		}
+
+		inline operator fun <reified T> invoke(map: String, handler: (char: Char, x: Int, y: Int) -> T): Array2<T> {
+			val lines = map.lines().map { it.trim() }.filter { it.isNotEmpty() }
+			val width = lines.map { it.length }.max() ?: 0
+			val height = lines.size
+
+			return Array2(width, height) { n ->
+				val x = n % width
+				val y = n / width
+				handler(lines.getOrNull(y)?.getOrNull(x) ?: ' ', x, y)
+			}
+		}
+
+		inline operator fun <reified T> invoke(map: String, default: T, transform: Map<Char, T>): Array2<T> {
+			return invoke(map) { c, x, y -> transform[c] ?: default }
+		}
 	}
 
 	fun set(rows: List<List<T>>) {
@@ -30,7 +46,7 @@ data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iter
 	}
 
 	override fun equals(other: Any?): Boolean {
-		return (other is Array2<*>) && this.width == other.width  && this.height == other.height && Arrays.equals(this.data, other.data)
+		return (other is Array2<*>) && this.width == other.width && this.height == other.height && Arrays.equals(this.data, other.data)
 	}
 
 	override fun hashCode(): Int = width + height + data.hashCode()
@@ -68,6 +84,13 @@ data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iter
 		}
 	}
 
+	inline fun <reified TR> map2(gen: (x: Int, y: Int, v: T) -> TR): Array2<TR> = Array2<TR>(width, height) {
+		val x = it % width
+		val y = it / width
+		//println("$it: ($x, $y), ($width, $height)")
+		gen(x, y, this[x, y])
+	}
+
 	fun getPositionsWithValue(value: T) = data.indices.filter { data[it] == value }.map { PointInt(it % width, it / width) }
 
 	fun clone() = Array2(width, height, data.clone())
@@ -82,4 +105,12 @@ data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iter
 	}
 
 	override fun iterator(): Iterator<T> = data.iterator()
+
+	fun toStringList(charMap: (T) -> Char): List<String> {
+		return (0 until height).map { y ->
+			(0 until width).map { x -> charMap(this[x, y]) }.joinToString("")
+		}
+	}
+
+	fun toString(charMap: (T) -> Char): String = toStringList(charMap).joinToString("\n")
 }

@@ -19,3 +19,4 @@ This library includes:
 * poly2tri library to convert polygons to simple triangles
 * TA* + Funnel algorithms integrated with poly2tri to do pathfinding in a SpatialMesh that can be obtained from a Shape2d or VectorShape
 * Shape2d classes with a simplified interface completely integrated with clipper and poly2tri to perform boolean operations (union, intersection, subtraction, xor, collision between two shapes) + growing/shrinking + triangulation + pathfinding in arbitrary shapes + approximating VectorPath to Polygons/Shape2d
+* Simple A* implementation
