@@ -5,8 +5,9 @@
 
 ![](https://raw.githubusercontent.com/soywiz/kor/master/logos/128/korma.png)
 
-This is a mathematical library. Mostly focused on geometry. It is not related to kotlin coroutines at all.
-But it is part of the [soywiz's korlibs](https://github.com/soywiz/korlibs) libraries and thus the name.
+This is a mathematical library written in Kotlin, with no external dependencies. Mostly focused on geometry.
+It is not related to kotlin coroutines at all, but it is part of the
+[soywiz's korlibs](https://github.com/soywiz/korlibs) libraries and thus the name.
 
 This library includes:
 
