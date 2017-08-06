@@ -18,20 +18,33 @@ data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iter
 			return Array2(width, height) { anyCell }.apply { set(rows) }
 		}
 
-		inline operator fun <reified T> invoke(map: String, handler: (char: Char, x: Int, y: Int) -> T): Array2<T> {
-			val lines = map.lines().map { it.trim() }.filter { it.isNotEmpty() }
+		inline operator fun <reified T> invoke(map: String, marginChar: Char = '\u0000', gen: (char: Char, x: Int, y: Int) -> T): Array2<T> {
+			val lines = map.lines()
+					.map {
+						val res = it.trim()
+						if (res.startsWith(marginChar)) {
+							res.substring(0, res.length)
+						} else {
+							res
+						}
+					}
+					.filter { it.isNotEmpty() }
 			val width = lines.map { it.length }.max() ?: 0
 			val height = lines.size
 
 			return Array2(width, height) { n ->
 				val x = n % width
 				val y = n / width
-				handler(lines.getOrNull(y)?.getOrNull(x) ?: ' ', x, y)
+				gen(lines.getOrNull(y)?.getOrNull(x) ?: ' ', x, y)
 			}
 		}
 
 		inline operator fun <reified T> invoke(map: String, default: T, transform: Map<Char, T>): Array2<T> {
 			return invoke(map) { c, x, y -> transform[c] ?: default }
+		}
+
+		inline fun <reified T> fromString(maps: Map<Char, T>, default: T, code: String, marginChar: Char = '\u0000'): Array2<T> {
+			return invoke(code, marginChar = marginChar) { c, x, y -> maps[c] ?: default }
 		}
 	}
 
@@ -106,11 +119,13 @@ data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iter
 
 	override fun iterator(): Iterator<T> = data.iterator()
 
-	fun toStringList(charMap: (T) -> Char): List<String> {
+	fun toStringList(charMap: (T) -> Char, margin: String = ""): List<String> {
 		return (0 until height).map { y ->
-			(0 until width).map { x -> charMap(this[x, y]) }.joinToString("")
+			margin + (0 until width).map { x -> charMap(this[x, y]) }.joinToString("")
 		}
 	}
 
-	fun toString(charMap: (T) -> Char): String = toStringList(charMap).joinToString("\n")
+	fun toString(margin: String = "", charMap: (T) -> Char): String = toStringList(charMap, margin = margin).joinToString("\n")
+
+	fun toString(map: Map<T, Char>, margin: String = ""): String = toString(margin = margin) { map[it] ?: ' ' }
 }
