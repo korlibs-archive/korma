@@ -1,4 +1,6 @@
-build
-.gradle
-.idea
-/korma/out
+/.gradle
+/.idea
+/build
+/target
+/classes
+/out
