@@ -1561,7 +1561,7 @@ class DefaultClipper constructor(InitOptions: Int = 0) //constructor
 	}
 
 	override fun execute(clipType: Clipper.ClipType, polytree: PolyTree, subjFillType: Clipper.PolyFillType, clipFillType: Clipper.PolyFillType): Boolean {
-		synchronized(this) {
+		return synchronized(this) {
 			this.subjFillType = subjFillType
 			this.clipFillType = clipFillType
 			this.clipType = clipType
@@ -1576,7 +1576,7 @@ class DefaultClipper constructor(InitOptions: Int = 0) //constructor
 			} finally {
 				polyOuts.clear()
 			}
-			return succeeded
+			return@synchronized succeeded
 		}
 	}
 
