@@ -1,5 +1,7 @@
 package com.soywiz.korma.ds
 
+import com.soywiz.korma.math.MathEx
+
 class DoubleArrayList(capacity: Int = 7) : Collection<Double> {
 	var data: DoubleArray = DoubleArray(capacity); private set
 	internal val capacity: Int get() = data.size
@@ -16,7 +18,7 @@ class DoubleArrayList(capacity: Int = 7) : Collection<Double> {
 
 	private fun ensure(count: Int) {
 		if (length + count > data.size) {
-			data = data.copyOf(Math.max(length + count, data.size * 3))
+			data = data.copyOf(MathEx.max(length + count, data.size * 3))
 		}
 	}
 

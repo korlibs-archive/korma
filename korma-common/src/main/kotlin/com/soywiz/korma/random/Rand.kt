@@ -1,7 +1,7 @@
 package com.soywiz.korma.random
 
-interface RandomBase {
+interface Rand {
 	val maxValue: Int
-	fun seed(s: Int): RandomBase
+	fun seed(s: Int): Rand
 	fun getNextValue(): Int
 }

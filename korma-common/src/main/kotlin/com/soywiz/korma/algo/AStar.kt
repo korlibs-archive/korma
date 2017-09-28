@@ -1,8 +1,9 @@
 package com.soywiz.korma.algo
 
-import com.soywiz.korma.MathEx
 import com.soywiz.korma.ds.Array2
+import com.soywiz.korma.ds.PriorityQueue
 import com.soywiz.korma.geom.PointInt
+import com.soywiz.korma.math.MathEx
 
 object AStar {
 	fun find(
@@ -16,29 +17,29 @@ object AStar {
 		val aboard = board.map2 { x, y, value -> ANode(PointInt(x, y), isBlocking(value)) }
 		val queue: PriorityQueue<ANode> = PriorityQueue { a, b -> a.weight - b.weight }
 
-		val first = aboard.get(x0, y0);
-		val dest = aboard.get(x1, y1);
-		var closest = first;
+		val first = aboard.get(x0, y0)
+		val dest = aboard.get(x1, y1)
+		var closest = first
 		var closestDist = MathEx.distance(x0, y0, x1, y1)
 		if (!first.value) {
-			queue.add(first);
-			first.weight = 0;
+			queue.add(first)
+			first.weight = 0
 		}
 
 		while (queue.isNotEmpty()) {
-			val last = queue.remove();
-			val dist = MathEx.distance(last.pos, dest.pos);
+			val last = queue.remove()
+			val dist = MathEx.distance(last.pos, dest.pos)
 			if (dist < closestDist) {
-				closestDist = dist;
-				closest = last;
+				closestDist = dist
+				closest = last
 			}
-			val nweight = last.weight + 1;
+			val nweight = last.weight + 1
 			for (n in last.neightborhoods(aboard, diagonals)) {
 				//trace(n);
 				if (nweight < n.weight) {
-					n.prev = last;
-					queue.add(n);
-					n.weight = nweight;
+					n.prev = last
+					queue.add(n)
+					n.weight = nweight
 				}
 			}
 		}
@@ -50,33 +51,33 @@ object AStar {
 				route += current.pos
 				current = current.prev
 			}
-			route.reverse();
+			route.reverse()
 		}
 
 		return route
 	}
 
 	private class ANode(val pos: PointInt, val value: Boolean) {
-		var visited = false;
-		var weight = 999999999;
+		var visited = false
+		var weight = 999999999
 		var prev: ANode? = null
 
 		fun neightborhoods(board: Array2<ANode>, diagonals: Boolean): List<ANode> {
-			val out = arrayListOf<ANode>();
+			val out = arrayListOf<ANode>()
 			fun add(dx: Int, dy: Int) {
 				val x = this.pos.x + dx
 				val y = this.pos.y + dy
 				if (board.inside(x, y) && !board[x, y].value) out += board[x, y]
 			}
-			add(-1, 0);
-			add(+1, 0);
-			add(0, -1);
-			add(0, +1);
+			add(-1, 0)
+			add(+1, 0)
+			add(0, -1)
+			add(0, +1)
 			if (diagonals) {
-				add(-1, -1);
-				add(+1, -1);
-				add(-1, +1);
-				add(+1, +1);
+				add(-1, -1)
+				add(+1, -1)
+				add(-1, +1)
+				add(+1, +1)
 			}
 			return out
 		}

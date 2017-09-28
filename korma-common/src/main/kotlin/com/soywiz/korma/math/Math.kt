@@ -4,16 +4,19 @@ import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.PointInt
 import com.soywiz.korma.interpolation.Interpolable
 
-header object Math {
+header object NativeMath {
+	fun cos(v: Double): Double
+	fun sin(v: Double): Double
+	fun sqrt(v: Double): Double
 }
 
-class MathEx {
+object Math {
 	fun divCeil(x: Int, y: Int): Int = 1 + ((x - 1) / y)
-	fun cos(value: Float): Float = java.lang.Math.cos(value.toDouble()).toFloat()
-	fun sin(value: Float): Float = java.lang.Math.sin(value.toDouble()).toFloat()
-	fun sqrt(value: Float): Float = java.lang.Math.sqrt(value.toDouble()).toFloat()
+	fun cos(value: Float): Float = NativeMath.cos(value.toDouble()).toFloat()
+	fun sin(value: Float): Float = NativeMath.sin(value.toDouble()).toFloat()
+	fun sqrt(value: Float): Float = NativeMath.sqrt(value.toDouble()).toFloat()
 
-	fun len(a: Double, b: Double) = Math.sqrt(a * a + b * b)
+	fun len(a: Double, b: Double) = NativeMath.sqrt(a * a + b * b)
 	fun reinterpretIntFloat(value: Int): Float = java.lang.Float.intBitsToFloat(value)
 
 	fun interpolate(min: Int, max: Int, ratio: Double): Int = min + ((max - min) * ratio).toInt()
@@ -30,6 +33,12 @@ class MathEx {
 			else -> throw RuntimeException("Unsupported interpolate with ${min.javaClass}")
 		}
 	}
+
+	fun min(a: Int, b: Int): Int = if (a < b) a else b
+	fun max(a: Int, b: Int): Int = if (a > b) a else b
+
+	fun min(a: Double, b: Double): Double = if (a < b) a else b
+	fun max(a: Double, b: Double): Double = if (a > b) a else b
 
 	fun min(a: Double, b: Double, c: Double, d: Double): Double = Math.min(Math.min(a, b), Math.min(c, d))
 	fun max(a: Double, b: Double, c: Double, d: Double): Double = Math.max(Math.max(a, b), Math.max(c, d))
@@ -92,6 +101,6 @@ class MathEx {
 
 	fun distanceXY(x1: Double, y1: Double, x2: Double, y2: Double): Double = hypot(x1 - x2, y1 - y2);
 	fun distancePoint(a: Vector2, b: Vector2): Double = distanceXY(a.x, a.y, b.x, b.y);
-}
 
-fun Math.abs(v: Double): Double = if (v < 0.0) -v else v
+	fun abs(v: Double): Double = if (v < 0.0) -v else v
+}

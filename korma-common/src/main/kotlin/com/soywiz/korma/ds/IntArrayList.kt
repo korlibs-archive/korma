@@ -1,5 +1,8 @@
 package com.soywiz.korma.ds
 
+import com.soywiz.korma.buffer.copyTo
+import com.soywiz.korma.math.Math
+
 class IntArrayList(capacity: Int = 7) : Collection<Int> {
 	var data: IntArray = IntArray(capacity); private set
 	val capacity: Int get() = data.size
@@ -35,7 +38,7 @@ class IntArrayList(capacity: Int = 7) : Collection<Int> {
 
 	fun add(values: IntArray, offset: Int = 0, length: Int = values.size) {
 		ensure(values.size)
-		System.arraycopy(values, offset, data, this.length, length)
+		values.copyTo(offset, data, this.length, length)
 		this.length += values.size
 	}
 

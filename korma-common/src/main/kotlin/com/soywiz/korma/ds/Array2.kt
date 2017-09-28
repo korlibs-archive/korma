@@ -2,7 +2,6 @@ package com.soywiz.korma.ds
 
 import com.soywiz.korma.geom.IPointInt
 import com.soywiz.korma.geom.PointInt
-import java.util.*
 
 @Suppress("NOTHING_TO_INLINE")
 data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iterable<T> {
@@ -20,15 +19,15 @@ data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iter
 
 		inline operator fun <reified T> invoke(map: String, marginChar: Char = '\u0000', gen: (char: Char, x: Int, y: Int) -> T): Array2<T> {
 			val lines = map.lines()
-					.map {
-						val res = it.trim()
-						if (res.startsWith(marginChar)) {
-							res.substring(0, res.length)
-						} else {
-							res
-						}
+				.map {
+					val res = it.trim()
+					if (res.startsWith(marginChar)) {
+						res.substring(0, res.length)
+					} else {
+						res
 					}
-					.filter { it.isNotEmpty() }
+				}
+				.filter { it.isNotEmpty() }
 			val width = lines.map { it.length }.max() ?: 0
 			val height = lines.size
 
@@ -59,7 +58,7 @@ data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iter
 	}
 
 	override fun equals(other: Any?): Boolean {
-		return (other is Array2<*>) && this.width == other.width && this.height == other.height && Arrays.equals(this.data, other.data)
+		return (other is Array2<*>) && this.width == other.width && this.height == other.height && this.data.contentEquals(other.data)
 	}
 
 	override fun hashCode(): Int = width + height + data.hashCode()
@@ -106,7 +105,7 @@ data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iter
 
 	fun getPositionsWithValue(value: T) = data.indices.filter { data[it] == value }.map { PointInt(it % width, it / width) }
 
-	fun clone() = Array2(width, height, data.clone())
+	fun clone() = Array2(width, height, data.copyOf())
 
 	fun dump() {
 		for (y in 0 until height) {

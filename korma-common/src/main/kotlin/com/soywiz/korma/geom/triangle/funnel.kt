@@ -1,7 +1,8 @@
 package com.soywiz.korma.geom.triangle
 
+import com.soywiz.korma.ds.PriorityQueue
 import com.soywiz.korma.geom.Point2d
-import kotlin.collections.ArrayList
+import com.soywiz.korma.math.MathEx
 
 data class FunnelPortal(var left: Point2d, var right: Point2d)
 
@@ -19,7 +20,7 @@ class NewFunnel {
 		}
 
 		protected fun vdistsqr(a: Point2d, b: Point2d): Double {
-			return Math.hypot(b.x - a.x, b.y - a.y)
+			return MathEx.hypot(b.x - a.x, b.y - a.y)
 		}
 
 		protected fun vequal(a: Point2d, b: Point2d): Boolean {
@@ -120,14 +121,14 @@ class NewFunnel {
 }
 
 class PathFind(val spatialMesh: SpatialMesh) {
-	protected var openedList = PriorityQueue<SpatialNode>(java.util.Comparator({ l, r -> Integer.compare(l.F, r.F) }))
+	protected var openedList = PriorityQueue<SpatialNode> { l, r -> l.F.compareTo(r.F) }
 
 	init {
 		reset()
 	}
 
 	protected fun reset(): Unit {
-		openedList = PriorityQueue<SpatialNode>(java.util.Comparator({ l, r -> Integer.compare(l.F, r.F) }))
+		openedList = PriorityQueue<SpatialNode> { l: SpatialNode, r: SpatialNode -> l.F.compareTo(r.F) }
 		for (node in this.spatialMesh.nodes) {
 			node.parent = null
 			node.G = 0
@@ -371,62 +372,8 @@ class SpatialNode(
 ) {
 	val F: Int get() = G + H // F = G + H
 
-	fun distanceToSpatialNode(that: SpatialNode): Int = Math.hypot(this.x - that.x, this.y - that.y).toInt()
+	fun distanceToSpatialNode(that: SpatialNode): Int = MathEx.hypot(this.x - that.x, this.y - that.y).toInt()
 
 	override fun toString(): String = "SpatialNode($x, $y)"
 }
 
-/**
- * @TODO Optimize!!
- */
-class PriorityQueue<T>(
-	protected var compare: Comparator<T>,
-	protected var reversed: Boolean = false
-) {
-	protected var dirtyList = ArrayList<T>()
-
-	protected var dirty: Boolean = false
-
-	fun updateObject(obj: T): Unit {
-		dirty = true
-	}
-
-	fun contains(obj: T): Boolean {
-		return this.dirtyList.indexOf(obj) != -1
-	}
-
-	fun push(obj: T): Unit {
-		dirtyList.add(obj)
-		dirty = true
-	}
-
-	fun add(vararg objs: T): Unit {
-		dirtyList.addAll(objs)
-		dirty = true
-	}
-
-	fun add(objs: Iterable<T>): Unit {
-		dirtyList.addAll(objs)
-		dirty = true
-	}
-
-	val sortedList: ArrayList<T> get() {
-		if (dirty) {
-			dirtyList.sortWith(compare)
-			dirty = false
-		}
-		return dirtyList
-	}
-
-	val length: Int get() = dirtyList.size
-
-	val head: T get() = sortedList[if (this.reversed) (sortedList.size - 1) else 0]
-
-	fun removeHead(): T {
-		if (this.reversed) {
-			return sortedList.removeAt(sortedList.size - 1)
-		} else {
-			return sortedList.removeAt(0)
-		}
-	}
-}

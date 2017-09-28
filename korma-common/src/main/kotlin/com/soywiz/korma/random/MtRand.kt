@@ -1,6 +1,8 @@
 package com.soywiz.korma.random
 
-class MtRand : RandomBase {
+import com.soywiz.korma.math.MathEx
+
+class MtRand() : Rand {
 	companion object {
 		const private val N: Int = 624
 		const private val M: Int = 397
@@ -14,10 +16,14 @@ class MtRand : RandomBase {
 
 	private var state = IntArray(N)
 
+	constructor(s: Int) : this() {
+		seed(s)
+	}
+
 	override fun seed(s: Int): MtRand {
 		state[0] = s // for > 32 bit machines
 		for (i in 1 until N) {
-			state[i] = MathUtils.multiplyIntegerUnsigned(1812433253, (state[i - 1] xor (state[i - 1] ushr 30))) + i
+			state[i] = MathEx.multiplyIntegerUnsigned(1812433253, (state[i - 1] xor (state[i - 1] ushr 30))) + i
 		}
 		p = N // force genState() to be called for next random number
 		return this
