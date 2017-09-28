@@ -20,6 +20,8 @@ header object NativeMath {
 
 	fun intBitsToFloat(v: Int): Float
 	fun longBitsToDouble(v: Long): Double
+	fun floatToIntBits(v: Float): Int
+	fun doubleToLongBits(v: Double): Long
 }
 
 object Math {

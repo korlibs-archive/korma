@@ -1,5 +1,6 @@
 apply plugin: 'kotlin-platform-js'
 dependencies {
+    implement project(":korma-common")
     compile libraries.kotlin_stdlib_js
     testCompile libraries.kotlin_test_js
 }

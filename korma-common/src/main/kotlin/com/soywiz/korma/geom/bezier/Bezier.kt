@@ -3,7 +3,6 @@ package com.soywiz.korma.geom.bezier
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.Rectangle
 import com.soywiz.korma.math.Math
-import com.soywiz.korma.math.abs
 
 //(x0,y0) is start point; (x1,y1),(x2,y2) is control points; (x3,y3) is end point.
 interface Bezier {
