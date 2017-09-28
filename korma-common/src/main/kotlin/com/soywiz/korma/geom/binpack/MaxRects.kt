@@ -36,7 +36,7 @@ class MaxRects(
 	}
 
 	protected fun quickFindPositionForNewNodeBestAreaFit(width: Double, height: Double): Rectangle {
-		var score = Integer.MAX_VALUE.toDouble()
+		var score = Int.MAX_VALUE.toDouble()
 		var areaFit: Double
 		val bestNode: Rectangle = Rectangle()
 

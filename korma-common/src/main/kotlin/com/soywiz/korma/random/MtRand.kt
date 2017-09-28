@@ -1,6 +1,6 @@
 package com.soywiz.korma.random
 
-import com.soywiz.korma.math.MathEx
+import com.soywiz.korma.math.Math
 
 class MtRand() : Rand {
 	companion object {
@@ -23,7 +23,7 @@ class MtRand() : Rand {
 	override fun seed(s: Int): MtRand {
 		state[0] = s // for > 32 bit machines
 		for (i in 1 until N) {
-			state[i] = MathEx.multiplyIntegerUnsigned(1812433253, (state[i - 1] xor (state[i - 1] ushr 30))) + i
+			state[i] = Math.multiplyIntegerUnsigned(1812433253, (state[i - 1] xor (state[i - 1] ushr 30))) + i
 		}
 		p = N // force genState() to be called for next random number
 		return this
@@ -40,7 +40,7 @@ class MtRand() : Rand {
 		p = 0 // reset position
 	}
 
-	override fun getNextValue(): Int {
+	override fun nextInt(): Int {
 		if (p == N) genState()
 		var x = state[p++]
 		x = x xor (x ushr 11)

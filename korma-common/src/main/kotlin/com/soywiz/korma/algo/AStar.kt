@@ -3,7 +3,7 @@ package com.soywiz.korma.algo
 import com.soywiz.korma.ds.Array2
 import com.soywiz.korma.ds.PriorityQueue
 import com.soywiz.korma.geom.PointInt
-import com.soywiz.korma.math.MathEx
+import com.soywiz.korma.math.Math
 
 object AStar {
 	fun find(
@@ -20,7 +20,7 @@ object AStar {
 		val first = aboard.get(x0, y0)
 		val dest = aboard.get(x1, y1)
 		var closest = first
-		var closestDist = MathEx.distance(x0, y0, x1, y1)
+		var closestDist = Math.distance(x0, y0, x1, y1)
 		if (!first.value) {
 			queue.add(first)
 			first.weight = 0
@@ -28,7 +28,7 @@ object AStar {
 
 		while (queue.isNotEmpty()) {
 			val last = queue.remove()
-			val dist = MathEx.distance(last.pos, dest.pos)
+			val dist = Math.distance(last.pos, dest.pos)
 			if (dist < closestDist) {
 				closestDist = dist
 				closest = last

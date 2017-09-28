@@ -1,5 +1,6 @@
 package com.soywiz.korma.ds
 
+import com.soywiz.korma.buffer.binarySearch
 import com.soywiz.korma.buffer.copyTo
 import com.soywiz.korma.math.Math
 

@@ -8,6 +8,7 @@ import com.soywiz.korma.geom.clipper.*
 import com.soywiz.korma.geom.triangle.Sweep
 import com.soywiz.korma.geom.triangle.SweepContext
 import com.soywiz.korma.geom.triangle.Triangle
+import com.soywiz.korma.math.Math
 
 fun Path.toShape2d(): Shape2d {
 	if (this.size == 4) {

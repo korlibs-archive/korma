@@ -1,6 +1,8 @@
 package com.soywiz.korma.ds
 
-import com.soywiz.korma.math.MathEx
+import com.soywiz.korma.buffer.binarySearch
+import com.soywiz.korma.buffer.copyTo
+import com.soywiz.korma.math.Math
 
 class DoubleArrayList(capacity: Int = 7) : Collection<Double> {
 	var data: DoubleArray = DoubleArray(capacity); private set
@@ -18,7 +20,7 @@ class DoubleArrayList(capacity: Int = 7) : Collection<Double> {
 
 	private fun ensure(count: Int) {
 		if (length + count > data.size) {
-			data = data.copyOf(MathEx.max(length + count, data.size * 3))
+			data = data.copyOf(Math.max(length + count, data.size * 3))
 		}
 	}
 
@@ -37,7 +39,7 @@ class DoubleArrayList(capacity: Int = 7) : Collection<Double> {
 
 	fun add(values: DoubleArray, offset: Int = 0, length: Int = values.size) {
 		ensure(values.size)
-		System.arraycopy(values, offset, data, this.length, length)
+		values.copyTo(offset, data, this.length, length)
 		this.length += values.size
 	}
 

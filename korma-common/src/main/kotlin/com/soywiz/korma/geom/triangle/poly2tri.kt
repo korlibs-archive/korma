@@ -3,6 +3,7 @@ package com.soywiz.korma.geom.triangle
 import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.Orientation
 import com.soywiz.korma.geom.Point2d
+import com.soywiz.korma.math.Math
 
 class AdvancingFront(
 	var head: Node,
@@ -176,34 +177,36 @@ class Node(
 	 * @param node - middle node
 	 * @return the angle between 3 front nodes
 	 */
-	val holeAngle: Double get() {
-		/* Complex plane
-		 * ab = cosA +i*sinA
-		 * ab = (ax + ay*i)(bx + by*i) = (ax*bx + ay*by) + i(ax*by-ay*bx)
-		 * atan2(y,x) computes the principal value of the argument function
-		 * applied to the complex number x+iy
-		 * Where x = ax*bx + ay*by
-		 *       y = ax*by - ay*bx
-		 */
-		val prev = this.prev ?: throw IllegalStateException("Not enough vertices")
-		val next = this.next ?: throw IllegalStateException("Not enough vertices")
-		val ax: Double = next.point.x - this.point.x
-		val ay: Double = next.point.y - this.point.y
-		val bx: Double = prev.point.x - this.point.x
-		val by: Double = prev.point.y - this.point.y
-		return Math.atan2(
-			ax * by - ay * bx,
-			ax * bx + ay * by
-		)
-	}
+	val holeAngle: Double
+		get() {
+			/* Complex plane
+			 * ab = cosA +i*sinA
+			 * ab = (ax + ay*i)(bx + by*i) = (ax*bx + ay*by) + i(ax*by-ay*bx)
+			 * atan2(y,x) computes the principal value of the argument function
+			 * applied to the complex number x+iy
+			 * Where x = ax*bx + ay*by
+			 *       y = ax*by - ay*bx
+			 */
+			val prev = this.prev ?: throw IllegalStateException("Not enough vertices")
+			val next = this.next ?: throw IllegalStateException("Not enough vertices")
+			val ax: Double = next.point.x - this.point.x
+			val ay: Double = next.point.y - this.point.y
+			val bx: Double = prev.point.x - this.point.x
+			val by: Double = prev.point.y - this.point.y
+			return Math.atan2(
+				ax * by - ay * bx,
+				ax * bx + ay * by
+			)
+		}
 
-	val basinAngle: Double get() {
-		val nextNext = this.next?.next ?: throw IllegalStateException("Not enough vertices")
-		return Math.atan2(
-			this.point.y - nextNext.point.y, // ay
-			this.point.x - nextNext.point.x  // ax
-		)
-	}
+	val basinAngle: Double
+		get() {
+			val nextNext = this.next?.next ?: throw IllegalStateException("Not enough vertices")
+			return Math.atan2(
+				this.point.y - nextNext.point.y, // ay
+				this.point.x - nextNext.point.x  // ax
+			)
+		}
 }
 
 class EdgeContext {
@@ -579,7 +582,7 @@ class Sweep(
 		}
 	}
 
-	fun fillLeftAboveEdgeEvent(edge: Edge, node: Node): Unit {
+	fun fillLeftAboveEdgeEvent(edge: Edge, node: Node) {
 		var node = node
 		while (node.prev!!.point.x > edge.p.x) {
 			// Check if next node is below the edge
@@ -745,7 +748,7 @@ class SweepContext() {
 		this.addPolyline(polyline)
 	}
 
-	protected fun addPoints(points: List<Point2d>): Unit {
+	protected fun addPoints(points: List<Point2d>) {
 		for (point in points) this.points.add(point)
 	}
 

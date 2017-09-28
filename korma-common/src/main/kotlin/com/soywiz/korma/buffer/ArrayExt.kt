@@ -5,6 +5,8 @@ fun IntArray.copyTo(srcPos: Int, dst: IntArray, dstPos: Int, count: Int) {
 }
 
 fun DoubleArray.copyTo(srcPos: Int, dst: DoubleArray, dstPos: Int, count: Int) {
-	this.copyOf()
 	for (n in 0 until count) dst[dstPos + n] = this[srcPos + n]
 }
+
+fun IntArray.binarySearch(v: Int, fromIndex: Int, toIndex: Int): Int = TODO()
+fun DoubleArray.binarySearch(v: Double, fromIndex: Int, toIndex: Int): Int = TODO()

@@ -3,6 +3,7 @@ package com.soywiz.korma
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
+import com.soywiz.korma.math.Math
 import com.soywiz.korma.numeric.niceStr
 
 interface IVector2 {
@@ -95,7 +96,7 @@ data class Vector2(override var x: Double = 0.0, override var y: Double = x) : M
 		fun angle(ax: Double, ay: Double, bx: Double, by: Double): Double = Math.acos(((ax * bx) + (ay * by)) / (Math.hypot(ax, ay) * Math.hypot(bx, by)))
 
 		fun sortPoints(points: ArrayList<Vector2>): Unit {
-			points.sortWith(java.util.Comparator({ l, r -> cmpPoints(l, r) }))
+			points.sortWith(Comparator({ l, r -> cmpPoints(l, r) }))
 		}
 
 		protected fun cmpPoints(l: IVector2, r: IVector2): Int {

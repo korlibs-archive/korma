@@ -3,6 +3,23 @@ package com.soywiz.korma.random
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.Rectangle
 import com.soywiz.korma.interpolation.Interpolable
+import com.soywiz.korma.interpolation.interpolate
+import com.soywiz.korma.interpolation.interpolateAny
+
+fun Rand.nextInt(max: Int): Int {
+	return (nextInt() and 0x7FFFFFFF) % max
+}
+
+fun Rand.nextLong(): Long {
+	val low = nextInt()
+	val high = nextInt()
+	return (high.toLong() shl 32) or (low.toLong() and 0xFFFFFFFFL)
+}
+
+fun Rand.nextDouble(): Double {
+	val v = (nextInt() and 0x7FFFFFFF) // Unsigned!
+	return v.toDouble() / 0x7FFFFFFF.toDouble()
+}
 
 fun <T> List<T>.getCyclic(index: Int) = this[index % this.size]
 

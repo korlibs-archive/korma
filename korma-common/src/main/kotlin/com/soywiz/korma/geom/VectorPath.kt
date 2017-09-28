@@ -5,6 +5,7 @@ import com.soywiz.korma.ds.IntArrayList
 import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.bezier.Bezier
 import com.soywiz.korma.geom.shape.HorizontalLine
+import com.soywiz.korma.math.Math
 
 open class VectorPath(
 	val commands: IntArrayList = IntArrayList(),

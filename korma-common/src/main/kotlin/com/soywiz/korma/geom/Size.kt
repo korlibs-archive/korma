@@ -3,6 +3,7 @@ package com.soywiz.korma.geom
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
+import com.soywiz.korma.math.Math
 import com.soywiz.korma.numeric.niceStr
 
 interface ISize {

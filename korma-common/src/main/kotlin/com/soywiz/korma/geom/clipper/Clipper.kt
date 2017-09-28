@@ -45,6 +45,7 @@ package com.soywiz.korma.geom.clipper
 import com.soywiz.korma.geom.BoundsBuilder
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.Rectangle
+import com.soywiz.korma.math.Math
 
 interface Clipper {
 	enum class ClipType { INTERSECTION, UNION, DIFFERENCE, XOR }
@@ -501,7 +502,8 @@ abstract class ClipperBase protected constructor(val isPreserveCollinear: Boolea
 
 }
 
-class ClipperOffset @JvmOverloads constructor(private val miterLimit: Double = 2.0, private val arcTolerance: Double = ClipperOffset.DEFAULT_ARC_TOLERANCE) {
+//class ClipperOffset @JvmOverloads constructor(private val miterLimit: Double = 2.0, private val arcTolerance: Double = ClipperOffset.DEFAULT_ARC_TOLERANCE) {
+class ClipperOffset constructor(private val miterLimit: Double = 2.0, private val arcTolerance: Double = ClipperOffset.DEFAULT_ARC_TOLERANCE) {
 
 	private var destPolys: Paths? = null
 	private var srcPoly: Path? = null
@@ -952,7 +954,8 @@ class ClipperOffset @JvmOverloads constructor(private val miterLimit: Double = 2
 }
 
 @Suppress("unused")
-class DefaultClipper @JvmOverloads constructor(InitOptions: Int = 0) //constructor
+//class DefaultClipper @JvmOverloads constructor(InitOptions: Int = 0) //constructor
+class DefaultClipper constructor(InitOptions: Int = 0) //constructor
 	: ClipperBase(Clipper.PRESERVE_COLINEAR and InitOptions != 0) {
 	private inner class IntersectNode {
 		var edge1: Edge? = null
@@ -1526,7 +1529,7 @@ class DefaultClipper @JvmOverloads constructor(InitOptions: Int = 0) //construct
 
 	override fun execute(clipType: Clipper.ClipType, solution: Paths, subjFillType: Clipper.PolyFillType, clipFillType: Clipper.PolyFillType): Boolean {
 
-		synchronized(this) {
+		return synchronized(this) {
 
 			if (hasOpenPaths) {
 				throw IllegalStateException("Error: PolyTree struct is need for open path clipping.")
@@ -1544,7 +1547,7 @@ class DefaultClipper @JvmOverloads constructor(InitOptions: Int = 0) //construct
 				if (succeeded) {
 					buildResult(solution)
 				}
-				return succeeded
+				return@synchronized succeeded
 			} finally {
 				polyOuts.clear()
 
@@ -2447,8 +2450,8 @@ class DefaultClipper @JvmOverloads constructor(InitOptions: Int = 0) //construct
 		} catch (e: Exception) {
 			sortedEdges = null
 			intersectList.clear()
-			e.printStackTrace()
-			throw IllegalStateException("ProcessIntersections error", e)
+			println(e)
+			throw IllegalStateException("ProcessIntersections error")
 		}
 
 		sortedEdges = null
@@ -3129,7 +3132,8 @@ class DefaultClipper @JvmOverloads constructor(InitOptions: Int = 0) //construct
 			return true
 		}
 
-		@JvmOverloads fun simplifyPolygon(poly: Path, fillType: Clipper.PolyFillType = Clipper.PolyFillType.EVEN_ODD): Paths {
+		//@JvmOverloads fun simplifyPolygon(poly: Path, fillType: Clipper.PolyFillType = Clipper.PolyFillType.EVEN_ODD): Paths {
+		fun simplifyPolygon(poly: Path, fillType: Clipper.PolyFillType = Clipper.PolyFillType.EVEN_ODD): Paths {
 			val result = Paths()
 			val c = DefaultClipper(Clipper.STRICTLY_SIMPLE)
 
@@ -3138,7 +3142,8 @@ class DefaultClipper @JvmOverloads constructor(InitOptions: Int = 0) //construct
 			return result
 		}
 
-		@JvmOverloads fun simplifyPolygons(polys: Paths, fillType: Clipper.PolyFillType = Clipper.PolyFillType.EVEN_ODD): Paths {
+		//@JvmOverloads fun simplifyPolygons(polys: Paths, fillType: Clipper.PolyFillType = Clipper.PolyFillType.EVEN_ODD): Paths {
+		fun simplifyPolygons(polys: Paths, fillType: Clipper.PolyFillType = Clipper.PolyFillType.EVEN_ODD): Paths {
 			val result = Paths()
 			val c = DefaultClipper(Clipper.STRICTLY_SIMPLE)
 
@@ -3556,7 +3561,8 @@ class Path(initialCapacity: Int = 0) : ArrayList<Point2d>(initialCapacity) {
 		return -a * 0.5
 	}
 
-	@JvmOverloads fun cleanPolygon(distance: Double = 1.415): Path {
+	//@JvmOverloads fun cleanPolygon(distance: Double = 1.415): Path {
+	fun cleanPolygon(distance: Double = 1.415): Path {
 		//distance = proximity in units/pixels below which vertices will be stripped.
 		//Default ~= sqrt(2) so when adjacent vertices or semi-adjacent vertices have
 		//both x & y coords within 1 unit, then the second vertex will be stripped.
@@ -3694,7 +3700,8 @@ class Paths : ArrayList<Path> {
 		for (pn in polynode.getChilds()) addPolyNode(pn, nt)
 	}
 
-	@JvmOverloads fun cleanPolygons(distance: Double = 1.415): Paths {
+	//@JvmOverloads fun cleanPolygons(distance: Double = 1.415): Paths {
+	fun cleanPolygons(distance: Double = 1.415): Paths {
 		val result = Paths(size)
 		for (i in 0 until size) result.add(get(i).cleanPolygon(distance))
 		return result

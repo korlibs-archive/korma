@@ -2,7 +2,7 @@ package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.ds.PriorityQueue
 import com.soywiz.korma.geom.Point2d
-import com.soywiz.korma.math.MathEx
+import com.soywiz.korma.math.Math
 
 data class FunnelPortal(var left: Point2d, var right: Point2d)
 
@@ -20,7 +20,7 @@ class NewFunnel {
 		}
 
 		protected fun vdistsqr(a: Point2d, b: Point2d): Double {
-			return MathEx.hypot(b.x - a.x, b.y - a.y)
+			return Math.hypot(b.x - a.x, b.y - a.y)
 		}
 
 		protected fun vequal(a: Point2d, b: Point2d): Boolean {
@@ -372,7 +372,7 @@ class SpatialNode(
 ) {
 	val F: Int get() = G + H // F = G + H
 
-	fun distanceToSpatialNode(that: SpatialNode): Int = MathEx.hypot(this.x - that.x, this.y - that.y).toInt()
+	fun distanceToSpatialNode(that: SpatialNode): Int = Math.hypot(this.x - that.x, this.y - that.y).toInt()
 
 	override fun toString(): String = "SpatialNode($x, $y)"
 }

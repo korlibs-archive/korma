@@ -1,6 +1,7 @@
 package com.soywiz.korma.geom
 
 import com.soywiz.korma.Vector2
+import com.soywiz.korma.math.Math
 
 class BoundsBuilder {
 	val tempRect = Rectangle()

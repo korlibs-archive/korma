@@ -3,6 +3,7 @@ package com.soywiz.korma.geom
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
+import com.soywiz.korma.math.Math
 import com.soywiz.korma.numeric.niceStr
 
 interface IRectangle {
@@ -113,4 +114,5 @@ data class Rectangle(
 
 // @TODO: Check if this avoid boxing!
 inline fun Rectangle(x: Number, y: Number, width: Number, height: Number) = Rectangle(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+
 inline fun IRectangle(x: Number, y: Number, width: Number, height: Number) = Rectangle.Immutable(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())

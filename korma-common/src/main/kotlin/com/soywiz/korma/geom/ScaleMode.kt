@@ -1,5 +1,7 @@
 package com.soywiz.korma.geom
 
+import com.soywiz.korma.math.Math
+
 class ScaleMode(private val f: (item: SizeInt, container: SizeInt, target: SizeInt) -> Unit) {
 	operator fun invoke(item: SizeInt, container: SizeInt, target: SizeInt = SizeInt()): SizeInt = target.apply {
 		f(item, container, target)

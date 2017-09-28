@@ -4,6 +4,7 @@ import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
+import com.soywiz.korma.math.Math
 
 interface IMatrix2d {
 	val a: Double

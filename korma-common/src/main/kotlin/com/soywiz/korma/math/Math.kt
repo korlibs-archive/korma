@@ -5,19 +5,54 @@ import com.soywiz.korma.geom.PointInt
 import com.soywiz.korma.interpolation.Interpolable
 
 header object NativeMath {
+	fun round(v: Double): Double
+	fun ceil(v: Double): Double
+	fun floor(v: Double): Double
+
+	fun pow(b: Double, e: Double): Double
+
+	fun log(v: Double): Double
+
 	fun cos(v: Double): Double
 	fun sin(v: Double): Double
+	fun tan(v: Double): Double
 	fun sqrt(v: Double): Double
+
+	fun intBitsToFloat(v: Int): Float
+	fun longBitsToDouble(v: Long): Double
 }
 
 object Math {
+	const val E = 2.7182818284590452354
+	const val PI = 3.14159265358979323846
+	private const val DEGREES_TO_RADIANS = 0.017453292519943295
+	private const val RADIANS_TO_DEGREES = 57.29577951308232
+
+	fun round(v: Double): Double = TODO()
+	fun ceil(v: Double): Double = TODO()
+	fun floor(v: Double): Double = TODO()
+
 	fun divCeil(x: Int, y: Int): Int = 1 + ((x - 1) / y)
+
 	fun cos(value: Float): Float = NativeMath.cos(value.toDouble()).toFloat()
 	fun sin(value: Float): Float = NativeMath.sin(value.toDouble()).toFloat()
+	fun tan(value: Float): Float = NativeMath.tan(value.toDouble()).toFloat()
 	fun sqrt(value: Float): Float = NativeMath.sqrt(value.toDouble()).toFloat()
 
+	fun cos(value: Double): Double = NativeMath.cos(value)
+	fun sin(value: Double): Double = NativeMath.sin(value)
+	fun tan(value: Double): Double = NativeMath.tan(value)
+	fun sqrt(value: Double): Double = NativeMath.sqrt(value)
+	fun cbrt(value: Double): Double = NativeMath.sqrt(value)
+
+	fun acos(value: Double): Double = TODO()
+	fun asin(value: Double): Double = TODO()
+	fun atan(value: Double): Double = TODO()
+
+	fun atan2(y: Double, x: Double): Double = TODO()
+
 	fun len(a: Double, b: Double) = NativeMath.sqrt(a * a + b * b)
-	fun reinterpretIntFloat(value: Int): Float = java.lang.Float.intBitsToFloat(value)
+	fun reinterpretIntFloat(value: Int): Float = NativeMath.intBitsToFloat(value)
 
 	fun interpolate(min: Int, max: Int, ratio: Double): Int = min + ((max - min) * ratio).toInt()
 	fun interpolate(min: Long, max: Long, ratio: Double) = min + ((max - min) * ratio).toLong()
@@ -30,7 +65,7 @@ object Math {
 			is Long -> interpolate(min, max as Long, ratio)
 			is Double -> interpolate(min, max as Double, ratio)
 			is Vector2 -> min.setToInterpolated(min, max as Vector2, ratio)
-			else -> throw RuntimeException("Unsupported interpolate with ${min.javaClass}")
+			else -> throw RuntimeException("Unsupported interpolate with $min")
 		}
 	}
 
@@ -90,17 +125,20 @@ object Math {
 	fun hypotNoSqrt(x: Double, y: Double): Double = (x * x + y * y)
 
 	fun roundDecimalPlaces(value: Double, places: Int): Double {
-		val placesFactor: Double = Math.pow(10.0, places.toDouble())
-		return Math.round(value * placesFactor) / placesFactor
+		val placesFactor: Double = NativeMath.pow(10.0, places.toDouble())
+		return NativeMath.round(value * placesFactor) / placesFactor
 	}
 
 	fun isEquivalent(a: Double, b: Double, epsilon: Double = 0.0001): Boolean = (a - epsilon < b) && (a + epsilon > b)
 	fun packUintFast(r: Int, g: Int, b: Int, a: Int): Int = (a shl 24) or (b shl 16) or (g shl 8) or (r shl 0)
 	fun pack4fUint(r: Double, g: Double, b: Double, a: Double): Int = packUintFast(clampf255(r), clampf255(g), clampf255(b), clampf255(a))
-	fun log2(v: Int): Int = (Math.log(v.toDouble()) / Math.log(2.0)).toInt()
+	fun log2(v: Int): Int = (NativeMath.log(v.toDouble()) / NativeMath.log(2.0)).toInt()
 
 	fun distanceXY(x1: Double, y1: Double, x2: Double, y2: Double): Double = hypot(x1 - x2, y1 - y2);
 	fun distancePoint(a: Vector2, b: Vector2): Double = distanceXY(a.x, a.y, b.x, b.y);
 
-	fun abs(v: Double): Double = if (v < 0.0) -v else v
+	fun abs(v: Int): Int = if (v < 0) -v else v
+	fun abs(v: Long): Long = if (v < 0) -v else v
+	fun abs(v: Float): Float = if (v < 0) -v else v
+	fun abs(v: Double): Double = if (v < 0) -v else v
 }
