@@ -1,0 +1,18 @@
+apply plugin: 'kotlin-platform-js'
+dependencies {
+    compile libraries.kotlin_stdlib_js
+    testCompile libraries.kotlin_test_js
+}
+compileKotlin2Js {
+    kotlinOptions.moduleKind = "umd"
+    //kotlinOptions.sourceMap = true //
+    kotlinOptions.sourceMap = false // No sourcemaps!
+}
+
+dependencies {
+    
+}
+
+kotlin {
+    experimental { coroutines 'enable' }
+}
