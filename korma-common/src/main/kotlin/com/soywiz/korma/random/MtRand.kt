@@ -20,6 +20,10 @@ class MtRand() : Rand {
 		seed(s)
 	}
 
+	constructor(s: Long) : this() {
+		seed(s.toInt()) // Discard long part!
+	}
+
 	override fun seed(s: Int): MtRand {
 		state[0] = s // for > 32 bit machines
 		for (i in 1 until N) {

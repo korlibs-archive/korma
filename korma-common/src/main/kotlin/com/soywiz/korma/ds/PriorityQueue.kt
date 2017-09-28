@@ -14,7 +14,7 @@ class PriorityQueue<T>(
 
 	private var dirty: Boolean = false
 
-	private val sortedList: ArrayList<T>
+	val _sortedList: ArrayList<T>
 		get() {
 			if (dirty) {
 				dirtyList.sortWith(compare)
@@ -57,23 +57,23 @@ class PriorityQueue<T>(
 	override fun isEmpty(): Boolean = dirtyList.isEmpty()
 
 	override fun iterator(): MutableIterator<T> {
-		return sortedList.iterator()
+		return _sortedList.iterator()
 	}
 
 	override fun remove(element: T): Boolean {
-		return sortedList.remove(element)
+		return _sortedList.remove(element)
 	}
 
 	override fun retainAll(elements: Collection<T>): Boolean {
-		return sortedList.retainAll(elements)
+		return _sortedList.retainAll(elements)
 	}
 
 	override fun containsAll(elements: Collection<T>): Boolean {
-		return sortedList.containsAll(elements)
+		return _sortedList.containsAll(elements)
 	}
 
 	override fun removeAll(elements: Collection<T>): Boolean {
-		return sortedList.removeAll(elements)
+		return _sortedList.removeAll(elements)
 	}
 
 	fun add(vararg objs: T): Unit {
@@ -86,13 +86,13 @@ class PriorityQueue<T>(
 		dirty = true
 	}
 
-	val head: T get() = sortedList[if (this.reversed) (sortedList.size - 1) else 0]
+	val head: T get() = _sortedList[if (this.reversed) (_sortedList.size - 1) else 0]
 
 	fun removeHead(): T {
 		if (this.reversed) {
-			return sortedList.removeAt(sortedList.size - 1)
+			return _sortedList.removeAt(_sortedList.size - 1)
 		} else {
-			return sortedList.removeAt(0)
+			return _sortedList.removeAt(0)
 		}
 	}
 

@@ -33,9 +33,16 @@ impl object NativeMath {
 	impl fun floor(v: Double): Double = kotlin.js.Math.floor(v).toDouble()
 	impl fun pow(b: Double, e: Double): Double = kotlin.js.Math.pow(b, e)
 	impl fun log(v: Double): Double = kotlin.js.Math.log(v)
+
 	impl fun cos(v: Double): Double = kotlin.js.Math.cos(v)
 	impl fun sin(v: Double): Double = kotlin.js.Math.sin(v)
 	impl fun tan(v: Double): Double = kotlin.js.Math.tan(v)
+
+	impl fun acos(v: Double): Double = kotlin.js.Math.acos(v)
+	impl fun asin(v: Double): Double = kotlin.js.Math.asin(v)
+	impl fun atan(v: Double): Double = kotlin.js.Math.atan(v)
+	impl fun atan2(y: Double, x: Double): Double = kotlin.js.Math.atan2(y, x)
+
 	impl fun sqrt(v: Double): Double = kotlin.js.Math.sqrt(v)
 
 }

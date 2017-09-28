@@ -762,7 +762,7 @@ class SweepContext() {
 	 *
 	 * @param    polyline
 	 */
-	fun addHole(polyline: ArrayList<Point2d>): Unit {
+	fun addHole(polyline: List<Point2d>): Unit {
 		addPolyline(polyline)
 	}
 

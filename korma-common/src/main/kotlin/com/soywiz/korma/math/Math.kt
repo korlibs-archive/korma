@@ -13,6 +13,11 @@ header object NativeMath {
 
 	fun log(v: Double): Double
 
+	fun acos(v: Double): Double
+	fun asin(v: Double): Double
+	fun atan(v: Double): Double
+	fun atan2(y: Double, x: Double): Double
+
 	fun cos(v: Double): Double
 	fun sin(v: Double): Double
 	fun tan(v: Double): Double
@@ -30,9 +35,9 @@ object Math {
 	private const val DEGREES_TO_RADIANS = 0.017453292519943295
 	private const val RADIANS_TO_DEGREES = 57.29577951308232
 
-	fun round(v: Double): Double = TODO()
-	fun ceil(v: Double): Double = TODO()
-	fun floor(v: Double): Double = TODO()
+	fun round(v: Double): Double = NativeMath.round(v)
+	fun ceil(v: Double): Double = NativeMath.ceil(v)
+	fun floor(v: Double): Double = NativeMath.floor(v)
 
 	fun divCeil(x: Int, y: Int): Int = 1 + ((x - 1) / y)
 
@@ -47,11 +52,11 @@ object Math {
 	fun sqrt(value: Double): Double = NativeMath.sqrt(value)
 	fun cbrt(value: Double): Double = NativeMath.sqrt(value)
 
-	fun acos(value: Double): Double = TODO()
-	fun asin(value: Double): Double = TODO()
-	fun atan(value: Double): Double = TODO()
+	fun acos(value: Double): Double = NativeMath.acos(value)
+	fun asin(value: Double): Double = NativeMath.asin(value)
+	fun atan(value: Double): Double = NativeMath.atan(value)
 
-	fun atan2(y: Double, x: Double): Double = TODO()
+	fun atan2(y: Double, x: Double): Double = NativeMath.atan2(y, x)
 
 	fun len(a: Double, b: Double) = NativeMath.sqrt(a * a + b * b)
 	fun reinterpretIntFloat(value: Int): Float = NativeMath.intBitsToFloat(value)
