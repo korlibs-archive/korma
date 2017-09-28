@@ -2,6 +2,7 @@ package com.soywiz.korma.random
 
 import org.junit.Assert
 import org.junit.Test
+import kotlin.test.assertEquals
 
 class RandomExtKtTest {
 	//class TestRandom(val values: List<Int>) : Random() {
@@ -17,20 +18,19 @@ class RandomExtKtTest {
 		val random = MtRand(0L)
 		val weighted = mapOf("a" to 1, "b" to 1)
 		random.nextInt()
-		Assert.assertEquals("b", random[weighted])
-		Assert.assertEquals("b", random[weighted])
-		Assert.assertEquals("a", random[weighted])
-		Assert.assertEquals("a", random[weighted])
+		assertEquals(
+			listOf("b", "a", "a", "a"),
+			listOf(random[weighted], random[weighted], random[weighted], random[weighted])
+		)
 	}
 
 	@Test
 	fun weighted2() {
 		val weighted = mapOf("a" to 1, "b" to 2)
 		val random = MtRand(0L)
-		Assert.assertEquals("b", random[weighted])
-		Assert.assertEquals("a", random[weighted])
-		Assert.assertEquals("a", random[weighted])
-		Assert.assertEquals("b", random[weighted])
-		Assert.assertEquals("b", random[weighted])
+		assertEquals(
+			listOf("b", "a", "b", "b", "b"),
+			listOf(random[weighted], random[weighted], random[weighted], random[weighted], random[weighted])
+		)
 	}
 }
