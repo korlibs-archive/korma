@@ -3,6 +3,7 @@ package com.soywiz.korma.geom.triangle
 import com.soywiz.korma.geom.Orientation
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.math.Math
+import kotlin.math.abs
 
 data class Triangle(
 	var p1: Point2d,
@@ -283,7 +284,7 @@ data class Triangle(
 			val c = p3.x - p1.x
 			val d = p3.y - p1.y
 
-			return Math.abs(a * d - b * c) / 2.0
+			return abs(a * d - b * c) / 2.0
 		}
 
 	override fun toString(): String = "Triangle(${this.points[0]}, ${this.points[1]}, ${this.points[2]})"

@@ -6,6 +6,7 @@ import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.bezier.Bezier
 import com.soywiz.korma.geom.shape.HorizontalLine
 import com.soywiz.korma.math.Math
+import kotlin.math.*
 
 open class VectorPath(
 	val commands: IntArrayList = IntArrayList(),
@@ -205,11 +206,11 @@ open class VectorPath(
 		val b = Vector2(bx, by)
 		val a = Vector2(ax, ay)
 		val c = Vector2(cx, cy)
-		val PI_DIV_2 = Math.PI / 2.0
+		val PI_DIV_2 = PI / 2.0
 		val AB = b - a
 		val AC = c - a
 		val angle = Vector2.angle(AB, AC) * 0.5
-		val x = r * Math.sin(PI_DIV_2 - angle) / Math.sin(angle)
+		val x = r * sin(PI_DIV_2 - angle) / sin(angle)
 		val A = a + AB.unit * x
 		val B = a + AC.unit * x
 		lineTo(A.x, A.y)
@@ -244,12 +245,12 @@ open class VectorPath(
 	fun arc(x: Double, y: Double, r: Double, start: Double, end: Double) {
 		// http://hansmuller-flex.blogspot.com.es/2011/04/approximating-circular-arc-with-cubic.html
 		val EPSILON = 0.00001
-		val PI_TWO = Math.PI * 2
-		val PI_OVER_TWO = Math.PI / 2.0
+		val PI_TWO = PI * 2
+		val PI_OVER_TWO = PI / 2.0
 
 		val startAngle = start % PI_TWO
 		val endAngle = end % PI_TWO
-		var remainingAngle = Math.min(PI_TWO, Math.abs(endAngle - startAngle))
+		var remainingAngle = Math.min(PI_TWO, abs(endAngle - startAngle))
 		if (remainingAngle == 0.0 && start != end) remainingAngle = PI_TWO
 		val sgn = if (startAngle < endAngle) 1 else -1
 		var a1 = startAngle
@@ -263,28 +264,28 @@ open class VectorPath(
 
 			val k = 0.5522847498
 			val a = (a2 - a1) / 2.0
-			val x4 = r * Math.cos(a)
-			val y4 = r * Math.sin(a)
+			val x4 = r * cos(a)
+			val y4 = r * sin(a)
 			val x1 = x4
 			val y1 = -y4
-			val f = k * Math.tan(a)
+			val f = k * tan(a)
 			val x2 = x1 + f * y4
 			val y2 = y1 + f * x4
 			val x3 = x2
 			val y3 = -y2
 			val ar = a + a1
-			val cos_ar = Math.cos(ar);
-			val sin_ar = Math.sin(ar)
-			p1.setTo(x + r * Math.cos(a1), y + r * Math.sin(a1))
+			val cos_ar = cos(ar);
+			val sin_ar = sin(ar)
+			p1.setTo(x + r * cos(a1), y + r * sin(a1))
 			p2.setTo(x + x2 * cos_ar - y2 * sin_ar, y + x2 * sin_ar + y2 * cos_ar)
 			p3.setTo(x + x3 * cos_ar - y3 * sin_ar, y + x3 * sin_ar + y3 * cos_ar)
-			p4.setTo(x + r * Math.cos(a2), y + r * Math.sin(a2))
+			p4.setTo(x + r * cos(a2), y + r * sin(a2))
 
 			if (index == 0) moveTo(p1.x, p1.y)
 			cubicTo(p2.x, p2.y, p3.x, p3.y, p4.x, p4.y)
 
 			index++
-			remainingAngle -= Math.abs(a2 - a1)
+			remainingAngle -= abs(a2 - a1)
 			a1 = a2
 		}
 		if (startAngle == endAngle && index != 0) {
@@ -292,7 +293,7 @@ open class VectorPath(
 		}
 	}
 
-	fun circle(x: Double, y: Double, radius: Double) = arc(x, y, radius, 0.0, Math.PI * 2.0)
+	fun circle(x: Double, y: Double, radius: Double) = arc(x, y, radius, 0.0, PI * 2.0)
 
 	fun addBounds(bb: BoundsBuilder): Unit {
 		var lx = 0.0

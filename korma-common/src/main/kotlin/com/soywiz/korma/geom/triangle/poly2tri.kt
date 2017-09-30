@@ -4,6 +4,8 @@ import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.Orientation
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.math.Math
+import kotlin.math.PI
+import kotlin.math.atan2
 
 class AdvancingFront(
 	var head: Node,
@@ -98,8 +100,8 @@ object Constants {
 	 */
 	const val kAlpha: Double = 0.3
 	const val EPSILON: Double = 1e-12
-	const val PI_2: Double = Math.PI / 2
-	const val PI_3div4: Double = 3 * Math.PI / 4
+	const val PI_2: Double = PI / 2
+	const val PI_3div4: Double = 3 * PI / 4
 }
 
 class Edge(
@@ -193,8 +195,7 @@ class Node(
 			val ay: Double = next.point.y - this.point.y
 			val bx: Double = prev.point.x - this.point.x
 			val by: Double = prev.point.y - this.point.y
-			return Math.atan2(
-				ax * by - ay * bx,
+			return atan2(ax * by - ay * bx,
 				ax * bx + ay * by
 			)
 		}
@@ -202,8 +203,7 @@ class Node(
 	val basinAngle: Double
 		get() {
 			val nextNext = this.next?.next ?: throw IllegalStateException("Not enough vertices")
-			return Math.atan2(
-				this.point.y - nextNext.point.y, // ay
+			return atan2(this.point.y - nextNext.point.y, // ay
 				this.point.x - nextNext.point.x  // ax
 			)
 		}

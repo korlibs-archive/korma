@@ -6,6 +6,7 @@ import com.soywiz.korma.geom.clipper.Path
 import com.soywiz.korma.geom.clipper.Paths
 import com.soywiz.korma.math.Math
 import com.soywiz.korma.numeric.niceStr
+import kotlin.math.PI
 
 abstract class Shape2d {
 	abstract val paths: Paths
@@ -35,7 +36,7 @@ abstract class Shape2d {
 			)
 		}))
 		override val closed: Boolean = true
-		override val area: Double get() = Math.PI * radius * radius
+		override val area: Double get() = PI * radius * radius
 		override fun containsPoint(x: Double, y: Double) = Math.hypot(this.x - x, this.y - y) < radius
 	}
 

@@ -5,6 +5,7 @@ import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
 import com.soywiz.korma.math.Math
 import com.soywiz.korma.numeric.niceStr
+import kotlin.math.acos
 
 interface IVector2 {
 	val x: Double
@@ -91,9 +92,9 @@ data class Vector2(override var x: Double = 0.0, override var y: Double = x) : M
 	companion object {
 		fun middle(a: IVector2, b: IVector2): Vector2 = Vector2((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
 
-		fun angle(a: IVector2, b: IVector2): Double = Math.acos((a * b) / (a.length * b.length))
+		fun angle(a: IVector2, b: IVector2): Double = acos((a * b) / (a.length * b.length))
 
-		fun angle(ax: Double, ay: Double, bx: Double, by: Double): Double = Math.acos(((ax * bx) + (ay * by)) / (Math.hypot(ax, ay) * Math.hypot(bx, by)))
+		fun angle(ax: Double, ay: Double, bx: Double, by: Double): Double = acos(((ax * bx) + (ay * by)) / (Math.hypot(ax, ay) * Math.hypot(bx, by)))
 
 		fun sortPoints(points: ArrayList<Vector2>): Unit {
 			points.sortWith(Comparator({ l, r -> cmpPoints(l, r) }))
@@ -116,7 +117,7 @@ data class Vector2(override var x: Double = 0.0, override var y: Double = x) : M
 			val by = y1 - y3
 			val bl = Math.hypot(bx, by)
 
-			return Math.acos((ax * bx + ay * by) / (al * bl))
+			return acos((ax * bx + ay * by) / (al * bl))
 		}
 	}
 }
