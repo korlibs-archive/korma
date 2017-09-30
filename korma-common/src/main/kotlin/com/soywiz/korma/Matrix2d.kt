@@ -4,7 +4,7 @@ import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate
-import com.soywiz.korma.math.Math
+import kotlin.math.*
 
 interface IMatrix2d {
 	val a: Double
@@ -94,8 +94,8 @@ data class Matrix2d(
 	}
 
 	fun rotate(theta: Double) = this.apply {
-		val cos = Math.cos(theta)
-		val sin = Math.sin(theta)
+		val cos = cos(theta)
+		val sin = sin(theta)
 
 		val a1 = a * cos - b * sin
 		b = a * sin + b * cos
@@ -111,10 +111,10 @@ data class Matrix2d(
 	}
 
 	fun skew(skewX: Double, skewY: Double): Matrix2d {
-		val sinX = Math.sin(skewX)
-		val cosX = Math.cos(skewX)
-		val sinY = Math.sin(skewY)
-		val cosY = Math.cos(skewY)
+		val sinX = sin(skewX)
+		val cosX = cos(skewX)
+		val sinY = sin(skewY)
+		val cosY = cos(skewY)
 
 		return this.setTo(
 			a * cosY - b * sinX,
@@ -208,8 +208,8 @@ data class Matrix2d(
 			if (rotation == 0.0) {
 				this.setTo(scaleX, 0.0, 0.0, scaleY, x, y)
 			} else {
-				val cos = Math.cos(rotation)
-				val sin = Math.sin(rotation)
+				val cos = cos(rotation)
+				val sin = sin(rotation)
 				this.setTo(cos * scaleX, sin * scaleY, -sin * scaleX, cos * scaleY, x, y)
 			}
 		} else {
@@ -225,8 +225,8 @@ data class Matrix2d(
 	fun clone() = Matrix2d(a, b, c, d, tx, ty)
 
 	fun createBox(scaleX: Double, scaleY: Double, rotation: Double = 0.0, tx: Double = 0.0, ty: Double = 0.0): Unit {
-		val u = Math.cos(rotation)
-		val v = Math.sin(rotation)
+		val u = cos(rotation)
+		val v = sin(rotation)
 		this.a = u * scaleX
 		this.b = v * scaleY
 		this.c = -v * scaleX
@@ -246,21 +246,21 @@ data class Matrix2d(
 		var rotation: Double = 0.0
 	) {
 		fun setMatrix(matrix: IMatrix2d): Transform {
-			val PI_4 = Math.PI / 4.0
+			val PI_4 = PI / 4.0
 			this.x = matrix.tx
 			this.y = matrix.ty
 
-			this.skewX = Math.atan(-matrix.c / matrix.d)
-			this.skewY = Math.atan(matrix.b / matrix.a)
+			this.skewX = atan(-matrix.c / matrix.d)
+			this.skewY = atan(matrix.b / matrix.a)
 
 			// Faster isNaN
 			if (this.skewX != this.skewX) this.skewX = 0.0
 			if (this.skewY != this.skewY) this.skewY = 0.0
 
-			this.scaleY = if (this.skewX > -PI_4 && this.skewX < PI_4) matrix.d / Math.cos(this.skewX) else -matrix.c / Math.sin(this.skewX)
-			this.scaleX = if (this.skewY > -PI_4 && this.skewY < PI_4) matrix.a / Math.cos(this.skewY) else matrix.b / Math.sin(this.skewY)
+			this.scaleY = if (this.skewX > -PI_4 && this.skewX < PI_4) matrix.d / cos(this.skewX) else -matrix.c / sin(this.skewX)
+			this.scaleX = if (this.skewY > -PI_4 && this.skewY < PI_4) matrix.a / cos(this.skewY) else matrix.b / sin(this.skewY)
 
-			if (Math.abs(this.skewX - this.skewY) < 0.0001) {
+			if (abs(this.skewX - this.skewY) < 0.0001) {
 				this.rotation = this.skewX
 				this.skewX = 0.0
 				this.skewY = 0.0
@@ -308,6 +308,7 @@ data class Matrix2d(
 
 // This is to be able to mix integers with doubles without boxing at all due to the inline
 inline fun Matrix2d(a: Number, b: Number = 0.0, c: Number = 0.0, d: Number = 1.0, tx: Number = 0.0, ty: Number = 0.0) = Matrix2d(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
+
 fun Matrix2d(m: Matrix2d): Matrix2d = m.copy()
 
 fun IMatrix2d.transformX(px: Double, py: Double): Double = this.a * px + this.c * py + this.tx

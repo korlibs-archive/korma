@@ -46,6 +46,7 @@ import com.soywiz.korma.geom.BoundsBuilder
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.Rectangle
 import com.soywiz.korma.math.Math
+import kotlin.math.*
 
 interface Clipper {
 	enum class ClipType { INTERSECTION, UNION, DIFFERENCE, XOR }
@@ -591,8 +592,8 @@ class ClipperOffset constructor(private val miterLimit: Double = 2.0, private va
 		val q = delta / r
 		destPoly!!.add(
 			Point2d(
-				Math.round(srcPoly!![j].x + (normals[k].x + normals[j].x) * q).toInt(),
-				Math.round(srcPoly!![j].y + (normals[k].y + normals[j].y) * q).toInt()
+				round(srcPoly!![j].x + (normals[k].x + normals[j].x) * q).toInt(),
+				round(srcPoly!![j].y + (normals[k].y + normals[j].y) * q).toInt()
 			)
 		)
 	}
@@ -622,15 +623,15 @@ class ClipperOffset constructor(private val miterLimit: Double = 2.0, private va
 		val y: Double
 		if (arcTolerance <= 0.0) {
 			y = DEFAULT_ARC_TOLERANCE
-		} else if (arcTolerance > Math.abs(delta) * DEFAULT_ARC_TOLERANCE) {
-			y = Math.abs(delta) * DEFAULT_ARC_TOLERANCE
+		} else if (arcTolerance > abs(delta) * DEFAULT_ARC_TOLERANCE) {
+			y = abs(delta) * DEFAULT_ARC_TOLERANCE
 		} else {
 			y = arcTolerance
 		}
 		//see offset_triginometry2.svg in the documentation folder ...
-		val steps = Math.PI / Math.acos(1 - y / Math.abs(delta))
-		sin = Math.sin(TWO_PI / steps)
-		cos = Math.cos(TWO_PI / steps)
+		val steps = PI / acos(1 - y / abs(delta))
+		sin = kotlin.math.sin(TWO_PI / steps)
+		cos = kotlin.math.cos(TWO_PI / steps)
 		stepsPerRad = steps / TWO_PI
 		if (delta < 0.0) {
 			sin = -sin
@@ -654,7 +655,7 @@ class ClipperOffset constructor(private val miterLimit: Double = 2.0, private va
 					var Y = 0.0
 					var j = 1
 					while (j <= steps) {
-						destPoly!!.add(Point2d(Math.round(srcPoly!![0].x + X * delta).toInt(), Math.round(srcPoly!![0].y + Y * delta).toInt()))
+						destPoly!!.add(Point2d(round(srcPoly!![0].x + X * delta).toInt(), round(srcPoly!![0].y + Y * delta).toInt()))
 						val X2 = X
 						X = X * cos - sin * Y
 						Y = X2 * sin + Y * cos
@@ -664,7 +665,7 @@ class ClipperOffset constructor(private val miterLimit: Double = 2.0, private va
 					var X = -1.0
 					var Y = -1.0
 					for (j in 0..3) {
-						destPoly!!.add(Point2d(Math.round(srcPoly!![0].x + X * delta).toInt(), Math.round(srcPoly!![0].y + Y * delta).toInt()))
+						destPoly!!.add(Point2d(round(srcPoly!![0].x + X * delta).toInt(), round(srcPoly!![0].y + Y * delta).toInt()))
 						if (X < 0) {
 							X = 1.0
 						} else if (Y < 0) {
@@ -723,13 +724,13 @@ class ClipperOffset constructor(private val miterLimit: Double = 2.0, private va
 				if (node.endType == Clipper.EndType.OPEN_BUTT) {
 					val j = len - 1
 					pt1 = Point2d(
-						Math.round(srcPoly!![j].x + normals[j].x * delta).toInt(),
-						Math.round(srcPoly!![j].y + normals[j].y * delta).toInt()
+						round(srcPoly!![j].x + normals[j].x * delta).toInt(),
+						round(srcPoly!![j].y + normals[j].y * delta).toInt()
 					)
 					destPoly!!.add(pt1)
 					pt1 = Point2d(
-						Math.round(srcPoly!![j].x - normals[j].x * delta).toInt(),
-						Math.round(srcPoly!![j].y - normals[j].y * delta).toInt()
+						round(srcPoly!![j].x - normals[j].x * delta).toInt(),
+						round(srcPoly!![j].y - normals[j].y * delta).toInt()
 					)
 					destPoly!!.add(pt1)
 				} else {
@@ -755,9 +756,9 @@ class ClipperOffset constructor(private val miterLimit: Double = 2.0, private va
 				for (j in k[0] - 1 downTo 1) offsetPoint(j, k, node.joinType!!)
 
 				if (node.endType == Clipper.EndType.OPEN_BUTT) {
-					pt1 = Point2d(Math.round(srcPoly!![0].x - normals[0].x * delta).toInt(), Math.round(srcPoly!![0].y - normals[0].y * delta).toInt())
+					pt1 = Point2d(round(srcPoly!![0].x - normals[0].x * delta).toInt(), round(srcPoly!![0].y - normals[0].y * delta).toInt())
 					destPoly!!.add(pt1)
-					pt1 = Point2d(Math.round(srcPoly!![0].x + normals[0].x * delta).toInt(), Math.round(srcPoly!![0].y + normals[0].y * delta).toInt())
+					pt1 = Point2d(round(srcPoly!![0].x + normals[0].x * delta).toInt(), round(srcPoly!![0].y + normals[0].y * delta).toInt())
 					destPoly!!.add(pt1)
 				} else {
 					k[0] = 1
@@ -774,19 +775,19 @@ class ClipperOffset constructor(private val miterLimit: Double = 2.0, private va
 	}
 
 	private fun doRound(j: Int, k: Int) {
-		val a = Math.atan2(inA, normals[k].x * normals[j].x + normals[k].y * normals[j].y)
-		val steps = Math.max(Math.round(stepsPerRad * Math.abs(a)).toInt(), 1)
+		val a = atan2(inA, normals[k].x * normals[j].x + normals[k].y * normals[j].y)
+		val steps = Math.max(round(stepsPerRad * abs(a)).toInt(), 1)
 
 		var X = normals[k].x
 		var Y = normals[k].y
 		var X2: Double
 		for (i in 0 until steps) {
-			destPoly!!.add(Point2d(Math.round(srcPoly!![j].x + X * delta).toInt(), Math.round(srcPoly!![j].y + Y * delta).toInt()))
+			destPoly!!.add(Point2d(round(srcPoly!![j].x + X * delta).toInt(), round(srcPoly!![j].y + Y * delta).toInt()))
 			X2 = X
 			X = X * cos - sin * Y
 			Y = X2 * sin + Y * cos
 		}
-		destPoly!!.add(Point2d(Math.round(srcPoly!![j].x + normals[j].x * delta).toInt(), Math.round(srcPoly!![j].y + normals[j].y * delta).toInt()))
+		destPoly!!.add(Point2d(round(srcPoly!![j].x + normals[j].x * delta).toInt(), round(srcPoly!![j].y + normals[j].y * delta).toInt()))
 	}
 
 	private fun doSquare(j: Int, k: Int) {
@@ -796,9 +797,9 @@ class ClipperOffset constructor(private val miterLimit: Double = 2.0, private va
 		val njy = normals[j].y
 		val sjx = srcPoly!![j].x
 		val sjy = srcPoly!![j].y
-		val dx = Math.tan(Math.atan2(inA, nkx * njx + nky * njy) / 4)
-		destPoly!!.add(Point2d(Math.round(sjx + delta * (nkx - nky * dx)).toInt(), Math.round(sjy + delta * (nky + nkx * dx)).toInt()))
-		destPoly!!.add(Point2d(Math.round(sjx + delta * (njx + njy * dx)).toInt(), Math.round(sjy + delta * (njy - njx * dx)).toInt()))
+		val dx = tan(atan2(inA, nkx * njx + nky * njy) / 4)
+		destPoly!!.add(Point2d(round(sjx + delta * (nkx - nky * dx)).toInt(), round(sjy + delta * (nky + nkx * dx)).toInt()))
+		destPoly!!.add(Point2d(round(sjx + delta * (njx + njy * dx)).toInt(), round(sjy + delta * (njy - njx * dx)).toInt()))
 	}
 
 	//------------------------------------------------------------------------------
@@ -901,14 +902,14 @@ class ClipperOffset constructor(private val miterLimit: Double = 2.0, private va
 		val sjy = srcPoly!![j].y
 		inA = nkx * njy - njx * nky
 
-		if (Math.abs(inA * delta) < 1.0) {
+		if (abs(inA * delta) < 1.0) {
 			//dot product ...
 
 			val cosA = nkx * njx + njy * nky
 			if (cosA > 0)
 			// angle ==> 0 degrees
 			{
-				destPoly!!.add(Point2d(Math.round(sjx + nkx * delta).toInt(), Math.round(sjy + nky * delta).toInt()))
+				destPoly!!.add(Point2d(round(sjx + nkx * delta).toInt(), round(sjy + nky * delta).toInt()))
 				return
 			}
 			//else angle ==> 180 degrees
@@ -919,9 +920,9 @@ class ClipperOffset constructor(private val miterLimit: Double = 2.0, private va
 		}
 
 		if (inA * delta < 0) {
-			destPoly!!.add(Point2d(Math.round(sjx + nkx * delta).toInt(), Math.round(sjy + nky * delta).toInt()))
+			destPoly!!.add(Point2d(round(sjx + nkx * delta).toInt(), round(sjy + nky * delta).toInt()))
 			destPoly!!.add(srcPoly!![j])
-			destPoly!!.add(Point2d(Math.round(sjx + njx * delta).toInt(), Math.round(sjy + njy * delta).toInt()))
+			destPoly!!.add(Point2d(round(sjx + njx * delta).toInt(), round(sjy + njy * delta).toInt()))
 		} else {
 			when (jointype) {
 				Clipper.JoinType.MITER -> {
@@ -944,7 +945,7 @@ class ClipperOffset constructor(private val miterLimit: Double = 2.0, private va
 			return `val` > -TOLERANCE && `val` < TOLERANCE
 		}
 
-		private val TWO_PI = Math.PI * 2
+		private val TWO_PI = PI * 2
 
 		private val DEFAULT_ARC_TOLERANCE = 0.25
 
@@ -1899,12 +1900,12 @@ class DefaultClipper constructor(InitOptions: Int = 0) //constructor
 					}
 				}
 			} else if (e1.polyTyp != e2.polyTyp) {
-				if (e1.windDelta == 0 && Math.abs(e2.windCnt) == 1 && (clipType != Clipper.ClipType.UNION || e2.windCnt2 == 0)) {
+				if (e1.windDelta == 0 && abs(e2.windCnt) == 1 && (clipType != Clipper.ClipType.UNION || e2.windCnt2 == 0)) {
 					addOutPt(e1, pt)
 					if (e1Contributing) {
 						e1.outIdx = Edge.UNASSIGNED
 					}
-				} else if (e2.windDelta == 0 && Math.abs(e1.windCnt) == 1 && (clipType != Clipper.ClipType.UNION || e1.windCnt2 == 0)) {
+				} else if (e2.windDelta == 0 && abs(e1.windCnt) == 1 && (clipType != Clipper.ClipType.UNION || e1.windCnt2 == 0)) {
 					addOutPt(e2, pt)
 					if (e2Contributing) {
 						e2.outIdx = Edge.UNASSIGNED
@@ -1970,12 +1971,12 @@ class DefaultClipper constructor(InitOptions: Int = 0) //constructor
 		when (e1FillType) {
 			Clipper.PolyFillType.POSITIVE -> e1Wc = e1.windCnt
 			Clipper.PolyFillType.NEGATIVE -> e1Wc = -e1.windCnt
-			else -> e1Wc = Math.abs(e1.windCnt)
+			else -> e1Wc = abs(e1.windCnt)
 		}
 		when (e2FillType) {
 			Clipper.PolyFillType.POSITIVE -> e2Wc = e2.windCnt
 			Clipper.PolyFillType.NEGATIVE -> e2Wc = -e2.windCnt
-			else -> e2Wc = Math.abs(e2.windCnt)
+			else -> e2Wc = abs(e2.windCnt)
 		}
 
 		if (e1Contributing && e2Contributing) {
@@ -2007,12 +2008,12 @@ class DefaultClipper constructor(InitOptions: Int = 0) //constructor
 			when (e1FillType2) {
 				Clipper.PolyFillType.POSITIVE -> e1Wc2 = e1.windCnt2
 				Clipper.PolyFillType.NEGATIVE -> e1Wc2 = -e1.windCnt2
-				else -> e1Wc2 = Math.abs(e1.windCnt2)
+				else -> e1Wc2 = abs(e1.windCnt2)
 			}
 			when (e2FillType2) {
 				Clipper.PolyFillType.POSITIVE -> e2Wc2 = e2.windCnt2
 				Clipper.PolyFillType.NEGATIVE -> e2Wc2 = -e2.windCnt2
-				else -> e2Wc2 = Math.abs(e2.windCnt2)
+				else -> e2Wc2 = abs(e2.windCnt2)
 			}
 
 			if (e1.polyTyp != e2.polyTyp) {
@@ -2056,7 +2057,7 @@ class DefaultClipper constructor(InitOptions: Int = 0) //constructor
 				ip.y = edge2.bot.y
 			} else {
 				b2 = edge2.bot.y - edge2.bot.x / edge2.deltaX
-				ip.y = Math.round(ip.x / edge2.deltaX + b2).toDouble()
+				ip.y = round(ip.x / edge2.deltaX + b2).toDouble()
 			}
 		} else if (edge2.delta.x == 0.0) {
 			ip.x = edge2.bot.x
@@ -2064,17 +2065,17 @@ class DefaultClipper constructor(InitOptions: Int = 0) //constructor
 				ip.y = edge1.bot.y
 			} else {
 				b1 = edge1.bot.y - edge1.bot.x / edge1.deltaX
-				ip.y = Math.round(ip.x / edge1.deltaX + b1).toDouble()
+				ip.y = round(ip.x / edge1.deltaX + b1).toDouble()
 			}
 		} else {
 			b1 = edge1.bot.x - edge1.bot.y * edge1.deltaX
 			b2 = edge2.bot.x - edge2.bot.y * edge2.deltaX
 			val q = (b2 - b1) / (edge1.deltaX - edge2.deltaX)
-			ip.y = Math.round(q).toDouble()
-			if (Math.abs(edge1.deltaX) < Math.abs(edge2.deltaX)) {
-				ip.x = Math.round(edge1.deltaX * q + b1).toDouble()
+			ip.y = round(q).toDouble()
+			if (abs(edge1.deltaX) < abs(edge2.deltaX)) {
+				ip.x = round(edge1.deltaX * q + b1).toDouble()
 			} else {
-				ip.x = Math.round(edge2.deltaX * q + b2).toDouble()
+				ip.x = round(edge2.deltaX * q + b2).toDouble()
 			}
 		}
 
@@ -2084,7 +2085,7 @@ class DefaultClipper constructor(InitOptions: Int = 0) //constructor
 			} else {
 				ip.y = edge2.top.y
 			}
-			if (Math.abs(edge1.deltaX) < Math.abs(edge2.deltaX)) {
+			if (abs(edge1.deltaX) < abs(edge2.deltaX)) {
 				ip.x = Edge.topX(edge1, ip.y)
 			} else {
 				ip.x = Edge.topX(edge2, ip.y)
@@ -2094,7 +2095,7 @@ class DefaultClipper constructor(InitOptions: Int = 0) //constructor
 		if (ip.y > edge1.current.y) {
 			ip.y = edge1.current.y
 			//better to use the more vertical edge to derive X ...
-			if (Math.abs(edge1.deltaX) > Math.abs(edge2.deltaX)) {
+			if (abs(edge1.deltaX) > abs(edge2.deltaX)) {
 				ip.x = Edge.topX(edge2, ip.y)
 			} else {
 				ip.x = Edge.topX(edge1, ip.y)
@@ -2712,7 +2713,7 @@ class DefaultClipper constructor(InitOptions: Int = 0) //constructor
 			if (e.windCnt * e.windDelta < 0) {
 				//prev edge is 'decreasing' WindCount (WC) toward zero
 				//so we're outside the previous polygon ...
-				if (Math.abs(e.windCnt) > 1) {
+				if (abs(e.windCnt) > 1) {
 					//outside prev poly but still inside another.
 					//when reversing direction of prev poly use the same WC
 					if (e.windDelta * edge.windDelta < 0) {
@@ -3236,7 +3237,7 @@ class Edge {
 
 		when (pft) {
 			Clipper.PolyFillType.EVEN_ODD -> if (windDelta == 0 && windCnt != 1) return false //return false if a subj line has been flagged as inside a subj polygon
-			Clipper.PolyFillType.NON_ZERO -> if (Math.abs(windCnt) != 1) return false
+			Clipper.PolyFillType.NON_ZERO -> if (abs(windCnt) != 1) return false
 			Clipper.PolyFillType.POSITIVE -> if (windCnt != 1) return false
 			else -> if (windCnt != -1) return false //PolyFillType.pftNegative
 		}
@@ -3351,7 +3352,7 @@ class Edge {
 
 		fun topX(edge: Edge, currentY: Double): Double {
 			if (currentY == edge.top.y) return edge.top.x
-			return (edge.bot.x + Math.round(edge.deltaX * (currentY - edge.bot.y))).toInt().toDouble()
+			return (edge.bot.x + round(edge.deltaX * (currentY - edge.bot.y))).toInt().toDouble()
 		}
 
 		const val SKIP = -2
@@ -3492,16 +3493,16 @@ class Path(initialCapacity: Int = 0) : ArrayList<Point2d>(initialCapacity) {
 			private fun isFirstBottomPt(btmPt1: OutPt, btmPt2: OutPt): Boolean {
 				var p: OutPt = btmPt1.prev!!
 				while (p.pt == btmPt1.pt && p != btmPt1) p = p.prev!!
-				val dx1p = Math.abs(Points.getDeltaX(btmPt1.pt, p.pt))
+				val dx1p = abs(Points.getDeltaX(btmPt1.pt, p.pt))
 				p = btmPt1.next!!
 				while (p.pt == btmPt1.pt && p != btmPt1) p = p.next!!
-				val dx1n = Math.abs(Points.getDeltaX(btmPt1.pt, p.pt))
+				val dx1n = abs(Points.getDeltaX(btmPt1.pt, p.pt))
 				p = btmPt2.prev!!
 				while (p.pt == btmPt2.pt && p != btmPt2) p = p.prev!!
-				val dx2p = Math.abs(Points.getDeltaX(btmPt2.pt, p.pt))
+				val dx2p = abs(Points.getDeltaX(btmPt2.pt, p.pt))
 				p = btmPt2.next!!
 				while (p.pt == btmPt2.pt && p == btmPt2) p = p.next!!
-				val dx2n = Math.abs(Points.getDeltaX(btmPt2.pt, p.pt))
+				val dx2n = abs(Points.getDeltaX(btmPt2.pt, p.pt))
 				return dx1p >= dx2p && dx1p >= dx2n || dx1n >= dx2p && dx1n >= dx2n
 			}
 		}
@@ -3779,7 +3780,7 @@ object Points {
 		val dx = (pt2.x - pt1.x)
 		val dy = (pt2.y - pt1.y)
 		if (dx == 0.0 && dy == 0.0) return Point2d()
-		val f = 1 * 1.0 / Math.sqrt(dx * dx + dy * dy)
+		val f = 1 * 1.0 / sqrt(dx * dx + dy * dy)
 		return Point2d(dy * f, -dx * f)
 	}
 
@@ -3797,7 +3798,7 @@ object Points {
 		//this function is more accurate when the point that's GEOMETRICALLY
 		//between the other 2 points is the one that's tested for distance.
 		//nb: with 'spikes', either pt1 or pt3 is geometrically between the other pts
-		return if (Math.abs(pt1.x - pt2.x) > Math.abs(pt1.y - pt2.y)) {
+		return if (abs(pt1.x - pt2.x) > abs(pt1.y - pt2.y)) {
 			when {
 				(pt1.x > pt2.x == pt1.x < pt3.x) -> distanceFromLineSqrd(pt1, pt2, pt3) < distSqrd
 				(pt2.x > pt1.x == pt2.x < pt3.x) -> distanceFromLineSqrd(pt2, pt1, pt3) < distSqrd

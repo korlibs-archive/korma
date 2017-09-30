@@ -3,5 +3,6 @@ rootProject.name = 'korma-root'
 include(
         'korma-common',
         'korma',
+        'korma-android',
         'korma-js',
 )

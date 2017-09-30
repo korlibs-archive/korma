@@ -3,6 +3,8 @@ package com.soywiz.korma.geom.bezier
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.Rectangle
 import com.soywiz.korma.math.Math
+import kotlin.math.abs
+import kotlin.math.sqrt
 
 //(x0,y0) is start point; (x1,y1),(x2,y2) is control points; (x3,y3) is end point.
 interface Bezier {
@@ -81,15 +83,15 @@ interface Bezier {
 					a = -3 * y0 + 9 * y1 - 9 * y2 + 3 * y3
 					c = 3 * y1 - 3 * y0
 				}
-				if (Math.abs(a) < 1e-12) {
-					if (Math.abs(b) >= 1e-12) {
+				if (abs(a) < 1e-12) {
+					if (abs(b) >= 1e-12) {
 						val t = -c / b
 						if (0 < t && t < 1) tvalues[j++] = t
 					}
 				} else {
 					b2ac = b * b - 4 * c * a
 					if (b2ac < 0) continue
-					sqrtb2ac = Math.sqrt(b2ac)
+					sqrtb2ac = sqrt(b2ac)
 					val t1 = (-b + sqrtb2ac) / (2 * a)
 					if (0 < t1 && t1 < 1) tvalues[j++] = t1
 					val t2 = (-b - sqrtb2ac) / (2 * a)
