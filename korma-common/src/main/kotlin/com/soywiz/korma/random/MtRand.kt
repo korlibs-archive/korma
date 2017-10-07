@@ -2,7 +2,7 @@ package com.soywiz.korma.random
 
 import com.soywiz.korma.math.Math
 
-class MtRand() : Rand {
+class MtRand private constructor(dummy: Boolean) : Rand {
 	companion object {
 		const private val N: Int = 624
 		const private val M: Int = 397
@@ -16,11 +16,13 @@ class MtRand() : Rand {
 
 	private var state = IntArray(N)
 
-	constructor(s: Int) : this() {
+	constructor() : this(BaseRand.random().toBits())
+
+	constructor(s: Int) : this(false) {
 		seed(s)
 	}
 
-	constructor(s: Long) : this() {
+	constructor(s: Long) : this(false) {
 		seed(s.toInt()) // Discard long part!
 	}
 
