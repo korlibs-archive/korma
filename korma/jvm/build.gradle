@@ -1,0 +1,6 @@
+apply plugin: 'kotlin-platform-jvm'
+
+dependencies {
+    implement project(":korma-common")
+    testImplementation project(":korma-common")
+}
