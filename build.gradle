@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlinVersion = '1.2.0-beta-31'
+    ext.kotlinVersion = '1.2.0-beta-88'
     ext.compilerVersion = ext.kotlinVersion
     ext.librariesVersion = ext.kotlinVersion
     //ext.eapChannel = 'https://dl.bintray.com/kotlin/kotlin-eap-1.1'
@@ -17,24 +17,6 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$compilerVersion"
     }
-
-    ext {
-        libraries = [
-                kotlin_stdlib_common: "org.jetbrains.kotlin:kotlin-stdlib-common:$librariesVersion",
-                kotlin_stdlib_jvm   : "org.jetbrains.kotlin:kotlin-stdlib:$librariesVersion",
-                kotlin_stdlib_js    : "org.jetbrains.kotlin:kotlin-stdlib-js:$librariesVersion",
-
-                kotlin_test_common  : "org.jetbrains.kotlin:kotlin-test-common:$librariesVersion",
-                kotlin_test_jvm     : "org.jetbrains.kotlin:kotlin-test:$librariesVersion",
-                kotlin_test_js      : "org.jetbrains.kotlin:kotlin-test-js:$librariesVersion",
-
-                kotlin_reflect      : "org.jetbrains.kotlin:kotlin-reflect:$librariesVersion",
-        ]
-    }
-}
-
-configurations {
-    provided
 }
 
 allprojects {
@@ -65,8 +47,9 @@ allprojects {
     it.afterEvaluate {
         if (it.plugins.hasPlugin("kotlin-platform-common")) {
             dependencies {
-                compile libraries.kotlin_stdlib_common
-                testCompile libraries.kotlin_test_common
+                compile "org.jetbrains.kotlin:kotlin-stdlib-common:$librariesVersion"
+                testCompile "org.jetbrains.kotlin:kotlin-test-common:$librariesVersion"
+                testCompile "org.jetbrains.kotlin:kotlin-test-annotations-common:$librariesVersion"
             }
 
             kotlin {
@@ -75,8 +58,9 @@ allprojects {
         }
         if (it.plugins.hasPlugin("kotlin-platform-jvm") || it.plugins.hasPlugin("kotlin")) {
             dependencies {
-                compile libraries.kotlin_stdlib_jvm
-                testCompile libraries.kotlin_test_jvm
+                compile "org.jetbrains.kotlin:kotlin-stdlib:$librariesVersion"
+                testCompile "org.jetbrains.kotlin:kotlin-test:$librariesVersion"
+                testCompile "org.jetbrains.kotlin:kotlin-test-junit:$librariesVersion"
                 testCompile "junit:junit:4.12"
             }
 
@@ -92,8 +76,9 @@ allprojects {
         }
         if (it.plugins.hasPlugin("kotlin-platform-js") || it.plugins.hasPlugin("kotlin2js")) {
             dependencies {
-                compile libraries.kotlin_stdlib_js
-                testCompile libraries.kotlin_test_js
+                compile "org.jetbrains.kotlin:kotlin-stdlib-js:$librariesVersion"
+                testCompile "org.jetbrains.kotlin:kotlin-test-js:$librariesVersion"
+                testCompile "org.jetbrains.kotlin:kotlin-test-js:$librariesVersion"
             }
 
             kotlin {
@@ -101,6 +86,11 @@ allprojects {
             }
 
             compileKotlin2Js {
+                kotlinOptions.moduleKind = "umd"
+                kotlinOptions.sourceMap = true
+            }
+
+            compileTestKotlin2Js {
                 kotlinOptions.moduleKind = "umd"
                 kotlinOptions.sourceMap = true
             }

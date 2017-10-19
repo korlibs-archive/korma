@@ -1,5 +1,5 @@
 apply plugin: 'kotlin-platform-js'
 
 dependencies {
-    implement project(":korma-common")
+    expectedBy project(":korma-common")
 }
