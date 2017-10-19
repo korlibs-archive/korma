@@ -120,7 +120,10 @@ data class Array2<T>(val width: Int, val height: Int, val data: Array<T>) : Iter
 
 	fun toStringList(charMap: (T) -> Char, margin: String = ""): List<String> {
 		return (0 until height).map { y ->
-			margin + (0 until width).map { x -> charMap(this[x, y]) }.joinToString("")
+			margin + (0 until width)
+				.map { x -> charMap(this[x, y]) }
+				.toCharArray() // Required for Kotlin.JS (or it will concatenate integers)
+				.joinToString("")
 		}
 	}
 
