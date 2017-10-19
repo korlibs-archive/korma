@@ -104,19 +104,10 @@ allprojects {
                 into "${buildDir}/node_modules"
             }
 
-            //node {
-            //	download = true
-            //}
-
             task installMocha(type: NpmTask) {
                 workingDir = "${buildDir}"
                 args = ['install', 'mocha']
             }
-
-            //task runMocha(type: NodeTask, dependsOn: [compileTestKotlin2Js, populateNodeModules, installMocha]) {
-            //	script = new File("cmd")
-            //	args = ["/c", "$buildDir/node_modules/.bin/mocha.cmd", compileTestKotlin2Js.outputFile]
-            //}
 
             task runMocha(type: Exec, dependsOn: [compileTestKotlin2Js, populateNodeModules, installMocha]) {
                 workingDir "$buildDir/node_modules"
@@ -124,8 +115,7 @@ allprojects {
                 if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                     commandLine "cmd", "/c", "$buildDir/node_modules/.bin/mocha.cmd", compileTestKotlin2Js.outputFile
                 } else {
-                    println(compileTestKotlin2Js.outputFile)
-                    commandLine "$buildDir/node_modules/.bin/mocha", compileTestKotlin2Js.outputFile
+                    commandLine "sh", "$buildDir/node_modules/.bin/mocha", compileTestKotlin2Js.outputFile
                 }
             }
 
