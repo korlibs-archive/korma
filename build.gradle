@@ -104,18 +104,27 @@ allprojects {
                 into "${buildDir}/node_modules"
             }
 
-            task installMocha(type: NpmTask) {
-                workingDir = "${buildDir}"
-                args = ['install', 'mocha']
-            }
+            task runMocha(type: Task, dependsOn: [compileTestKotlin2Js, populateNodeModules]) {
+                doLast {
+                    File fileOut = new File(compileTestKotlin2Js.outputFile)
 
-            task runMocha(type: Exec, dependsOn: [compileTestKotlin2Js, populateNodeModules, installMocha]) {
-                workingDir "$buildDir/node_modules"
+                    if (fileOut.exists()) {
+                        String[] cmd
+                        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                            cmd = ["cmd", "/c", "mocha.cmd" as String, fileOut]
+                        } else {
+                            cmd = ["/bin/bash", '-c', "mocha '${fileOut}'"]
+                        }
 
-                if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                    commandLine "cmd", "/c", "$buildDir/node_modules/.bin/mocha.cmd", compileTestKotlin2Js.outputFile
-                } else {
-                    commandLine "sh", "$buildDir/node_modules/.bin/mocha", compileTestKotlin2Js.outputFile
+                        ProcessBuilder pb = new ProcessBuilder(cmd as String[])
+                        pb.environment().putAll(System.getenv())
+                        pb.directory(new File("$buildDir/node_modules"))
+                        def p = pb.start()
+                        p.in.eachLine { println(it) }
+                        if (p.waitFor() != 0) {
+                            throw new GradleException('error occurred running ' + cmd)
+                        }
+                    }
                 }
             }
 
