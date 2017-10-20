@@ -1,21 +1,22 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 buildscript {
     ext.kotlinVersion = '1.2.0-beta-88'
     ext.compilerVersion = ext.kotlinVersion
     ext.librariesVersion = ext.kotlinVersion
     //ext.eapChannel = 'https://dl.bintray.com/kotlin/kotlin-eap-1.1'
     ext.eapChannel = 'http://dl.bintray.com/kotlin/kotlin-eap-1.2'
-    ext.serializationRepo = 'https://kotlin.bintray.com/kotlinx'
-    ext.serializationPluginVersion = '0.1'
 
     repositories {
         jcenter()
-        maven { url serializationRepo }
         maven { url eapChannel }
+        maven { url "https://plugins.gradle.org/m2/" }
         mavenLocal()
     }
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$compilerVersion"
+        classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
     }
 }
 
@@ -38,6 +39,7 @@ allprojects {
     apply plugin: 'maven'
     apply plugin: 'signing'
     apply plugin: 'maven-publish'
+    apply plugin: 'com.moowork.node'
 
     repositories {
         mavenLocal()
@@ -74,10 +76,12 @@ allprojects {
             sourceCompatibility = 1.7
             targetCompatibility = 1.7
         }
+
+        // https://discuss.kotlinlang.org/t/unit-testing-in-kotlin-js/3943
+        // https://github.com/JetBrains/kotlin-examples/blob/5e883a6d67afc8b8aeb8991af6a7b6183be2213f/gradle/js-tests/mocha/build.gradle
         if (it.plugins.hasPlugin("kotlin-platform-js") || it.plugins.hasPlugin("kotlin2js")) {
             dependencies {
                 compile "org.jetbrains.kotlin:kotlin-stdlib-js:$librariesVersion"
-                testCompile "org.jetbrains.kotlin:kotlin-test-js:$librariesVersion"
                 testCompile "org.jetbrains.kotlin:kotlin-test-js:$librariesVersion"
             }
 
@@ -85,15 +89,46 @@ allprojects {
                 experimental { coroutines 'enable' }
             }
 
-            compileKotlin2Js {
+            [compileKotlin2Js, compileTestKotlin2Js]*.configure {
                 kotlinOptions.moduleKind = "umd"
                 kotlinOptions.sourceMap = true
             }
 
-            compileTestKotlin2Js {
-                kotlinOptions.moduleKind = "umd"
-                kotlinOptions.sourceMap = true
+            task populateNodeModules(type: Copy, dependsOn: compileKotlin2Js) {
+                from compileKotlin2Js.destinationDir
+
+                configurations.testCompile.each {
+                    from zipTree(it.absolutePath).matching { include '*.js' }
+                }
+
+                into "${buildDir}/node_modules"
             }
+
+            task runMocha(type: Task, dependsOn: [compileTestKotlin2Js, populateNodeModules]) {
+                doLast {
+                    File fileOut = new File(compileTestKotlin2Js.outputFile)
+
+                    if (fileOut.exists()) {
+                        String[] cmd
+                        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+                            cmd = ["cmd", "/c", "mocha.cmd" as String, fileOut]
+                        } else {
+                            cmd = ["/bin/bash", '-c', "mocha '${fileOut}'"]
+                        }
+
+                        ProcessBuilder pb = new ProcessBuilder(cmd as String[])
+                        pb.environment().putAll(System.getenv())
+                        pb.directory(new File("$buildDir/node_modules"))
+                        def p = pb.start()
+                        p.in.eachLine { println(it) }
+                        if (p.waitFor() != 0) {
+                            throw new GradleException('error occurred running ' + cmd)
+                        }
+                    }
+                }
+            }
+
+            test.dependsOn runMocha
         }
     }
 

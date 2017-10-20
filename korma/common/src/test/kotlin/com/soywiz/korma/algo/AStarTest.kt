@@ -102,6 +102,6 @@ class AStarTest {
 			//pointsMap[PointInt(x, y)]?.toString()?.firstOrNull() ?: (if (c) '#' else '.')
 		}
 		val output = res.toString { it }
-		assertEquals(output, expected.trimIndent())
+		assertEquals(expected.trimIndent(), output)
 	}
 }
