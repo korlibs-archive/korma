@@ -4,8 +4,8 @@ buildscript {
     ext.kotlinVersion = '1.2.0-beta-88'
     ext.compilerVersion = ext.kotlinVersion
     ext.librariesVersion = ext.kotlinVersion
-    //ext.eapChannel = 'https://dl.bintray.com/kotlin/kotlin-eap-1.1'
     ext.eapChannel = 'http://dl.bintray.com/kotlin/kotlin-eap-1.2'
+
 
     repositories {
         jcenter()
@@ -33,7 +33,7 @@ allprojects {
     }
 
     group 'com.soywiz'
-    version "$korVersion"
+    version "0.14.1"
 
     apply plugin: 'java'
     apply plugin: 'maven'
