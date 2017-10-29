@@ -1,6 +1,0 @@
-apply plugin: 'kotlin-platform-jvm'
-
-dependencies {
-    expectedBy project(":korma-common")
-    testCompile 'junit:junit:4.12'
-}

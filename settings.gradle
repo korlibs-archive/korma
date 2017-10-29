@@ -3,11 +3,9 @@ rootProject.name = 'korma-root'
 include(
         'korma-common',
         'korma',
-        'korma-android',
         'korma-js',
 )
 
 project(':korma-common').projectDir = file('korma/common')
 project(':korma').projectDir = file('korma/jvm')
-project(':korma-android').projectDir = file('korma/android')
 project(':korma-js').projectDir = file('korma/js')
