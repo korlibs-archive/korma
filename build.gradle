@@ -34,6 +34,12 @@ allprojects {
     group 'com.soywiz'
     version "0.14.2-SNAPSHOT"
 
+    if (project == rootProject) {
+        new File(rootProject.rootDir, "korma/common/src/main/kotlin/com/soywiz/korma/KormaVersion.kt").write(
+                "package com.soywiz.korma\n\nval KORMA_VERSION = \"$version\""
+        )
+    }
+
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'signing'
