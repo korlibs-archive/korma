@@ -125,8 +125,8 @@ open class VectorPath(
 		data.clear()
 	}
 
-	private var lastX = 0.0
-	private var lastY = 0.0
+	var lastX = 0.0; private set
+	var lastY = 0.0; private set
 
 	fun moveTo(p: Vector2) = moveTo(p.x, p.y)
 	fun lineTo(p: Vector2) = lineTo(p.x, p.y)
@@ -146,6 +146,12 @@ open class VectorPath(
 
 	fun moveToV(y: Double) = moveTo(lastX, y)
 	fun rMoveToV(y: Double) = moveTo(lastX, lastY + y)
+
+	fun lineToH(x: Double) = lineTo(x, lastY)
+	fun rLineToH(x: Double) = lineTo(lastX + x, lastY)
+
+	fun lineToV(y: Double) = lineTo(lastX, y)
+	fun rLineToV(y: Double) = lineTo(lastX, lastY + y)
 
 	fun rMoveTo(x: Double, y: Double) = moveTo(this.lastX + x, this.lastY + y)
 	fun rLineTo(x: Double, y: Double) = lineTo(this.lastX + x, this.lastY + y)
