@@ -338,6 +338,18 @@ open class VectorPath(
 		return bb.getBounds(out)
 	}
 
+	fun getPoints(): List<Point2d> {
+		val points = arrayListOf<Point2d>()
+		this.visitCmds(
+			moveTo = { x, y -> points += Point2d(x, y) },
+			lineTo = { x, y -> points += Point2d(x, y) },
+			quadTo = { x1, y1, x2, y2 -> points += Point2d(x2, y2) },
+			cubicTo = { x1, y1, x2, y2, x3, y3 -> points += Point2d(x3, y3) },
+			close = { }
+		)
+		return points
+	}
+
 	// http://erich.realtimerendering.com/ptinpoly/
 	// http://stackoverflow.com/questions/217578/how-can-i-determine-whether-a-2d-point-is-within-a-polygon/2922778#2922778
 	// https://www.particleincell.com/2013/cubic-line-intersection/
