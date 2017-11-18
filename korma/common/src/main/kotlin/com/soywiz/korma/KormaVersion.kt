@@ -1,3 +1,3 @@
 package com.soywiz.korma
 
-val KORMA_VERSION = "0.17.2-SNAPSHOT"
+val KORMA_VERSION = "0.17.2"
