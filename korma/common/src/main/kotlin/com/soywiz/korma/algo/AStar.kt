@@ -1,6 +1,6 @@
 package com.soywiz.korma.algo
 
-import com.soywiz.korma.ds.Array2
+import com.soywiz.kds.Array2
 import com.soywiz.korma.ds.PriorityQueue
 import com.soywiz.korma.geom.PointInt
 import com.soywiz.korma.math.Math

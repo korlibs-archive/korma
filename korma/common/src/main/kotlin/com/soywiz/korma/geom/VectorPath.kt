@@ -1,7 +1,7 @@
 package com.soywiz.korma.geom
 
-import com.soywiz.korma.ds.DoubleArrayList
-import com.soywiz.korma.ds.IntArrayList
+import com.soywiz.kds.specialized.DoubleArrayList
+import com.soywiz.kds.specialized.IntArrayList
 import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.bezier.Bezier
 import com.soywiz.korma.geom.shape.HorizontalLine

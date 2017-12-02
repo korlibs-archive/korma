@@ -2,4 +2,6 @@ apply plugin: 'kotlin-platform-js'
 
 dependencies {
     expectedBy project(":korma-common")
+
+    compile "com.soywiz:kds-js:$kdsVersion"
 }

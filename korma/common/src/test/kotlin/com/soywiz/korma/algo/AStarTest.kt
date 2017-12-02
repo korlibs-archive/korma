@@ -1,6 +1,6 @@
 package com.soywiz.korma.algo
 
-import com.soywiz.korma.ds.Array2
+import com.soywiz.kds.Array2
 import com.soywiz.korma.geom.PointInt
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -9,57 +9,57 @@ class AStarTest {
 	@Test
 	fun testFindReachable() {
 		assertFind(
-				input = """
+			input = """
 					S#....
 					.#.##.
 					.#.#E.
 					...#..
 				""",
-				expected = """
+			expected = """
 					0#89ab
 					1#7##c
 					2#6#ed
 					345#..
 				""",
-				findClosest = false
+			findClosest = false
 		)
 	}
 
 	@Test
 	fun testFindUnreachable() {
 		assertFind(
-				input = """
+			input = """
 					S#....
 					.#.##.
 					.#.#E.
 					.#.#..
 				""",
-				expected = """
+			expected = """
 					.#....
 					.#.##.
 					.#.#..
 					.#.#..
 				""",
-				findClosest = false
+			findClosest = false
 		)
 	}
 
 	@Test
 	fun testFindClosestUnreachable() {
 		assertFind(
-				input = """
+			input = """
 					S#....
 					.#.##.
 					.#.#E.
 					.#.#..
 				""",
-				expected = """
+			expected = """
 					0#....
 					1#.##.
 					2#.#..
 					.#.#..
 				""",
-				findClosest = true
+			findClosest = true
 		)
 	}
 

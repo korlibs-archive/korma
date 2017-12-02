@@ -3,4 +3,6 @@ apply plugin: 'kotlin-platform-jvm'
 dependencies {
     expectedBy project(":korma-common")
     testImplementation project(":korma-common")
+
+    compile "com.soywiz:kds:$kdsVersion"
 }
