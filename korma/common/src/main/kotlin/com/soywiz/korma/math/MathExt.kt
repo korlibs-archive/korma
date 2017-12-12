@@ -42,13 +42,7 @@ fun Long.reverseBytes(): Long {
 	return (v0 shl 32) or (v1 shl 0)
 }
 
-fun rint(v: Double): Double {
-	if (v >= floor(v) + 0.5) { // @TODO: This is right?
-		return ceil(v)
-	} else {
-		return round(v)
-	}
-}
+fun rint(v: Double): Double = Math.rintDouble(v)
 
 fun toRadians(v: Double): Double = v / 180.0 * 3.141592653589793
 fun toDegrees(v: Double): Double = v * 180.0 / 3.141592653589793

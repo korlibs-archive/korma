@@ -148,7 +148,6 @@ object Math {
 	fun rint(value: Float): Int {
 		if (value.isNanOrInfinite()) return handleCastInfinite(value)
 		return rintDouble(value.toDouble()).toInt()
-
 	}
 
 	fun cast(value: Float): Int {
