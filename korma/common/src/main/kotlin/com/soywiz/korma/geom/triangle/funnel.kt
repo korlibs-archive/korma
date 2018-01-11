@@ -1,6 +1,6 @@
 package com.soywiz.korma.geom.triangle
 
-import com.soywiz.korma.ds.PriorityQueue
+import com.soywiz.kds.PriorityQueue
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.math.Math
 
