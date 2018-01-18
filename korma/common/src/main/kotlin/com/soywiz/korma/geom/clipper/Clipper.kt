@@ -3367,7 +3367,9 @@ class Edge {
 
  * @author Tobias Mahlmann
 </IntPoint> */
-class Path(initialCapacity: Int = 0) : ArrayList<Point2d>(initialCapacity) {
+class Path private constructor(private val al: ArrayList<Point2d>) : MutableList<Point2d> by al, RandomAccess {
+	constructor(initialCapacity: Int = 0) : this(ArrayList<Point2d>(initialCapacity))
+
 	constructor(vararg points: Point2d) : this(points.size) {
 		addAll(points)
 	}
@@ -3379,6 +3381,8 @@ class Path(initialCapacity: Int = 0) : ArrayList<Point2d>(initialCapacity) {
 	constructor(points: Iterable<Point2d>) : this() {
 		addAll(points)
 	}
+
+	override fun toString(): String = al.toString()
 
 	class Join(
 		var outPt1: OutPt? = null,
@@ -3675,17 +3679,19 @@ class Path(initialCapacity: Int = 0) : ArrayList<Point2d>(initialCapacity) {
 
  * @author Tobias Mahlmann
 </Path> */
-class Paths : ArrayList<Path> {
-	constructor() : super() {}
+class Paths private constructor(private val al: ArrayList<Path>) : MutableList<Path> by al {
+	constructor() : this(arrayListOf()) {}
 
-	constructor(initialCapacity: Int) : super(initialCapacity) {}
-	constructor(vararg items: Path) : super() {
+	constructor(initialCapacity: Int) : this(ArrayList(initialCapacity)) {}
+	constructor(vararg items: Path) : this(arrayListOf()) {
 		addAll(items)
 	}
 
-	constructor(items: Iterable<Path>) : super() {
+	constructor(items: Iterable<Path>) : this(arrayListOf()) {
 		addAll(items)
 	}
+
+	override fun toString(): String = al.toString()
 
 	val totalVertices: Int get() = this.sumBy { it.size }
 
