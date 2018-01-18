@@ -1,3 +1,3 @@
 package com.soywiz.korma
 
-internal const val KORMA_VERSION = "0.20.0-SNAPSHOT"
+internal const val KORMA_VERSION = "0.20.1-SNAPSHOT"

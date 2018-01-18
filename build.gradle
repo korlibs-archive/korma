@@ -1,5 +1,5 @@
 buildscript {
-    ext.projectVersion = '0.20.0-SNAPSHOT'
+    ext.projectVersion = '0.20.1-SNAPSHOT'
     ext.projectName = 'korma'
     ext.projectGroup = 'com.soywiz'
     ext.projectDesc = 'Korma: Math Utilities for Kotlin Common'
