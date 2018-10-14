@@ -1,7 +1,8 @@
 package com.soywiz.korma
 
-import com.soywiz.kds.*
-import com.soywiz.korma.geom.*
+import com.soywiz.kds.Array2
+import com.soywiz.korma.geom.Point2d
+import com.soywiz.korma.geom.PointInt
 
 inline operator fun <T> Array2<T>.get(p: Point2d): T = get(p.x.toInt(), p.y.toInt())
 inline operator fun <T> Array2<T>.set(p: Point2d, value: T) = set(p.x.toInt(), p.y.toInt(), value)

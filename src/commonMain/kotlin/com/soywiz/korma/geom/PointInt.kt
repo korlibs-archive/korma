@@ -1,9 +1,11 @@
 package com.soywiz.korma.geom
 
-import com.soywiz.korma.*
+import com.soywiz.korma.MVector2Int
+import com.soywiz.korma.Vector2Int
 
 @Deprecated("", replaceWith = ReplaceWith("PointInt"))
 typealias IPointInt = PointInt
+
 typealias PointInt = Vector2Int
 typealias MPointInt = MVector2Int
 

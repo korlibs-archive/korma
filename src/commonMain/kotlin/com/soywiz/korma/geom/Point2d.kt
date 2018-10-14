@@ -1,6 +1,8 @@
 package com.soywiz.korma.geom
 
-import com.soywiz.korma.*
+import com.soywiz.korma.MVector2
+import com.soywiz.korma.Vector2
+import com.soywiz.korma.distanceTo
 
 typealias Point2d = Vector2
 typealias MPoint2d = MVector2
@@ -18,11 +20,11 @@ typealias IPoint2d = Point2d
 //inline fun IPoint(x: Number, y: Number) = Vector2(x.toDouble(), y.toDouble())
 
 fun Iterable<Point2d>.getPolylineLength(): Double {
-	var out = 0.0
-	var prev: Point2d? = null
-	for (cur in this) {
-		if (prev != null) out += prev.distanceTo(cur)
-		prev = cur
-	}
-	return out
+    var out = 0.0
+    var prev: Point2d? = null
+    for (cur in this) {
+        if (prev != null) out += prev.distanceTo(cur)
+        prev = cur
+    }
+    return out
 }

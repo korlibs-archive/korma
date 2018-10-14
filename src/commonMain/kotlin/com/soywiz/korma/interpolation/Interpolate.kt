@@ -6,10 +6,10 @@ fun interpolate(v0: Double, v1: Double, step: Double): Double = v0 * (1 - step) 
 
 @Suppress("UNCHECKED_CAST", "USELESS_CAST")
 fun <T> interpolateAny(min: T, max: T, ratio: Double): T = when (min) {
-	is Int -> ratio.interpolate(min as Int, max as Int) as T
-	is Long -> ratio.interpolate(min as Long, max as Long) as T
-	is Float -> ratio.interpolate(min as Float, max as Float) as T
-	is Double -> ratio.interpolate(min as Double, max as Double) as T
-	is Interpolable<*> -> (min as Interpolable<Any>).interpolateWith(max as Interpolable<Any>, ratio) as T
-	else -> throw IllegalArgumentException("Value is not interpolable")
+    is Int -> ratio.interpolate(min as Int, max as Int) as T
+    is Long -> ratio.interpolate(min as Long, max as Long) as T
+    is Float -> ratio.interpolate(min as Float, max as Float) as T
+    is Double -> ratio.interpolate(min as Double, max as Double) as T
+    is Interpolable<*> -> (min as Interpolable<Any>).interpolateWith(max as Interpolable<Any>, ratio) as T
+    else -> throw IllegalArgumentException("Value is not interpolable")
 }
