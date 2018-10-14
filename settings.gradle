@@ -1,11 +1,20 @@
-rootProject.name = 'korma-root'
+pluginManagement {
+	resolutionStrategy {
+		eachPlugin {
+			if (requested.id.id == "kotlin-multiplatform") {
+				useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:${requested.version}")
+			}
+		}
+	}
 
-include(
-        'korma-common',
-        'korma',
-        'korma-js',
-)
+	repositories {
+		mavenLocal()
+		maven { url 'http://dl.bintray.com/kotlin/kotlin-eap' }
+		mavenCentral()
+		maven { url 'https://plugins.gradle.org/m2/' }
+	}
+}
 
-project(':korma-common').projectDir = file('korma/common')
-project(':korma').projectDir = file('korma/jvm')
-project(':korma-js').projectDir = file('korma/js')
+rootProject.name = 'korma'
+
+enableFeaturePreview('GRADLE_METADATA')
