@@ -1,12 +1,10 @@
 package com.soywiz.korma
 
-import com.soywiz.korma.geom.Angle
-import com.soywiz.korma.geom.MPoint2d
-import com.soywiz.korma.interpolation.Interpolable
-import com.soywiz.korma.interpolation.MutableInterpolable
-import com.soywiz.korma.interpolation.interpolate
-import com.soywiz.korma.math.Math
-import kotlin.math.acos
+import com.soywiz.korma.geom.*
+import com.soywiz.korma.internal.*
+import com.soywiz.korma.interpolation.*
+import com.soywiz.korma.math.*
+import kotlin.math.*
 
 interface Vector2 {
     val x: Double
@@ -64,7 +62,7 @@ interface Vector2 {
             if (other is Vector2) this.x == other.x && this.y == other.y else false
 
         override fun hashCode(): Int = x.hashCode() + (y.hashCode() shl 7)
-        override fun toString(): String = KormaStr { "(${x.niceStr}, ${y.niceStr})" }
+        override fun toString(): String = "(${x.niceStr}, ${y.niceStr})"
     }
 }
 

@@ -1,10 +1,8 @@
 package com.soywiz.korma.geom
 
-import com.soywiz.korma.KormaStr
-import com.soywiz.korma.interpolation.Interpolable
-import com.soywiz.korma.interpolation.MutableInterpolable
-import com.soywiz.korma.interpolation.interpolate
-import com.soywiz.korma.math.Math
+import com.soywiz.korma.internal.*
+import com.soywiz.korma.interpolation.*
+import com.soywiz.korma.math.*
 
 interface ISize {
     val width: Double
@@ -36,7 +34,7 @@ data class Size(override var width: Double, override var height: Double) : Mutab
         ratio.interpolate(l.height, r.height)
     )
 
-    override fun toString(): String = KormaStr { "Size(width=${width.niceStr}, height=${height.niceStr})" }
+    override fun toString(): String = "Size(width=${width.niceStr}, height=${height.niceStr})"
 }
 
 inline fun Size(width: Number, height: Number) = Size(width.toDouble(), height.toDouble())

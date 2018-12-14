@@ -1,11 +1,9 @@
 package com.soywiz.korma.geom.triangle
 
-import com.soywiz.kds.PriorityQueue
-import com.soywiz.korma.assertEqualsDouble
-import com.soywiz.korma.geom.MPoint2d
-import com.soywiz.korma.geom.Orientation
-import com.soywiz.korma.geom.Point2d
-import kotlin.math.sqrt
+import com.soywiz.kds.*
+import com.soywiz.korma.*
+import com.soywiz.korma.geom.*
+import kotlin.math.*
 import kotlin.test.*
 
 class EdgeTest {

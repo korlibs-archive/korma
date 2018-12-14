@@ -1,6 +1,6 @@
 package com.soywiz.korma.geom
 
-import com.soywiz.kds.KdsExt
+import com.soywiz.korma.internal.umod
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.atan2
@@ -38,8 +38,8 @@ inline class Angle(val radians: Double) {
         fun toDegrees(v: Double): Double = v * 180.0 / 3.141592653589793
 
         fun shortRadDistanceTo(fromRad: Double, toRad: Double): Double {
-            val r0 = KdsExt { fromRad umod MAX_RADIANS }
-            val r1 = KdsExt { toRad umod MAX_RADIANS }
+            val r0 = fromRad umod MAX_RADIANS
+            val r1 = toRad umod MAX_RADIANS
             //if (abs(r0 - r1) > HALF_RADIANS) {
 //
             //} else {
@@ -78,9 +78,9 @@ inline operator fun Angle.minus(other: Angle): Angle = shortDistanceTo(other)
 inline operator fun Angle.unaryMinus(): Angle = Angle(-radians)
 inline operator fun Angle.unaryPlus(): Angle = Angle(+radians)
 
-val Angle.normalizedRadians get() = KdsExt { radians umod Angle.MAX_RADIANS }
-val Angle.normalizedDegrees get() = KdsExt { degrees umod Angle.MAX_DEGREES }
-val Angle.normalized get() = KdsExt { Angle(radians umod Angle.MAX_RADIANS) }
+val Angle.normalizedRadians get() = radians umod Angle.MAX_RADIANS
+val Angle.normalizedDegrees get() = degrees umod Angle.MAX_DEGREES
+val Angle.normalized get() = Angle(radians umod Angle.MAX_RADIANS)
 
 inline val Number.degrees get() = Angle.fromDegrees(this)
 inline val Number.radians get() = Angle.fromRadians(this)

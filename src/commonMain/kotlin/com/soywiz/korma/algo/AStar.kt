@@ -1,9 +1,8 @@
 package com.soywiz.korma.algo
 
-import com.soywiz.kds.Array2
-import com.soywiz.kds.PriorityQueue
-import com.soywiz.korma.geom.PointInt
-import com.soywiz.korma.math.Math
+import com.soywiz.kds.*
+import com.soywiz.korma.geom.*
+import com.soywiz.korma.math.*
 
 object AStar {
     fun find(

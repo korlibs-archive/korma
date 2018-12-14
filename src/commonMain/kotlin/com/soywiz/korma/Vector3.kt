@@ -1,5 +1,7 @@
 package com.soywiz.korma
 
+import com.soywiz.korma.internal.*
+
 interface Vector3 {
     val x: Double
     val y: Double
@@ -15,7 +17,7 @@ interface Vector3 {
             if (other is Vector3) this.x == other.x && this.y == other.y else false
 
         override fun hashCode(): Int = x.hashCode() + (y.hashCode() shl 3) + (z.hashCode() shl 7)
-        override fun toString(): String = KormaStr { "(${x.niceStr}, ${y.niceStr}, ${z.niceStr})" }
+        override fun toString(): String = "(${x.niceStr}, ${y.niceStr}, ${z.niceStr})"
     }
 }
 

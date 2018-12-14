@@ -1,14 +1,8 @@
 package com.soywiz.korma.geom.triangle
 
-import com.soywiz.kds.PriorityQueue
-import com.soywiz.korma.geom.Point2d
-import com.soywiz.korma.math.Math
-import kotlin.collections.ArrayList
-import kotlin.collections.Iterable
-import kotlin.collections.List
-import kotlin.collections.arrayListOf
-import kotlin.collections.hashMapOf
-import kotlin.collections.reverse
+import com.soywiz.kds.*
+import com.soywiz.korma.geom.*
+import com.soywiz.korma.math.*
 import kotlin.collections.set
 
 data class FunnelPortal(var left: Point2d, var right: Point2d)
@@ -18,7 +12,7 @@ class NewFunnel {
     var path = arrayListOf<Point2d>()
 
     companion object {
-        protected fun triarea2(a: Point2d, b: Point2d, c: Point2d): Double {
+        private fun triarea2(a: Point2d, b: Point2d, c: Point2d): Double {
             val ax = b.x - a.x
             val ay = b.y - a.y
             val bx = c.x - a.x
@@ -26,13 +20,9 @@ class NewFunnel {
             return bx * ay - ax * by
         }
 
-        protected fun vdistsqr(a: Point2d, b: Point2d): Double {
-            return Math.hypot(b.x - a.x, b.y - a.y)
-        }
+        private fun vdistsqr(a: Point2d, b: Point2d): Double = Math.hypot(b.x - a.x, b.y - a.y)
 
-        protected fun vequal(a: Point2d, b: Point2d): Boolean {
-            return vdistsqr(a, b) < (0.001 * 0.001)
-        }
+        private fun vequal(a: Point2d, b: Point2d): Boolean = vdistsqr(a, b) < (0.001 * 0.001)
     }
 
 
@@ -128,13 +118,13 @@ class NewFunnel {
 }
 
 class PathFind(val spatialMesh: SpatialMesh) {
-    protected var openedList = PriorityQueue<SpatialNode> { l, r -> l.F.compareTo(r.F) }
+    private var openedList = PriorityQueue<SpatialNode> { l, r -> l.F.compareTo(r.F) }
 
     init {
         reset()
     }
 
-    protected fun reset(): Unit {
+    private fun reset(): Unit {
         openedList = PriorityQueue<SpatialNode> { l: SpatialNode, r: SpatialNode -> l.F.compareTo(r.F) }
         for (node in this.spatialMesh.nodes) {
             node.parent = null
@@ -195,15 +185,15 @@ class PathFind(val spatialMesh: SpatialMesh) {
         return returnList
     }
 
-    protected fun addToOpenedList(node: SpatialNode): Unit = run { openedList.push(node) }
-    protected fun openedListHasItems(): Boolean = openedList.length > 0
-    protected fun getAndRemoveFirstFromOpenedList(): SpatialNode = openedList.removeHead()
-    protected fun addNodeToClosedList(node: SpatialNode): Unit = run { node.closed = true }
-    protected fun inClosedList(node: SpatialNode): Boolean = node.closed
-    protected fun getNodeNeighbors(node: SpatialNode): Array<SpatialNode?> = node.neighbors
-    protected fun inOpenedList(node: SpatialNode): Boolean = openedList.contains(node)
+    private fun addToOpenedList(node: SpatialNode): Unit = run { openedList.push(node) }
+    private fun openedListHasItems(): Boolean = openedList.length > 0
+    private fun getAndRemoveFirstFromOpenedList(): SpatialNode = openedList.removeHead()
+    private fun addNodeToClosedList(node: SpatialNode): Unit = run { node.closed = true }
+    private fun inClosedList(node: SpatialNode): Boolean = node.closed
+    private fun getNodeNeighbors(node: SpatialNode): Array<SpatialNode?> = node.neighbors
+    private fun inOpenedList(node: SpatialNode): Boolean = openedList.contains(node)
 
-    protected fun updatedNodeOnOpenedList(node: SpatialNode): Unit {
+    private fun updatedNodeOnOpenedList(node: SpatialNode): Unit {
         openedList.updateObject(node)
     }
 
@@ -314,7 +304,7 @@ object PathFindChannel {
 class PathFindException(message: String = "", val index: Int = 0) : Error(message)
 
 class SpatialMesh() {
-    protected var mapTriangleToSpatialNode = hashMapOf<Triangle, SpatialNode>()
+    private var mapTriangleToSpatialNode = hashMapOf<Triangle, SpatialNode>()
     var nodes = arrayListOf<SpatialNode>()
 
     constructor(triangles: Iterable<Triangle>) : this() {
