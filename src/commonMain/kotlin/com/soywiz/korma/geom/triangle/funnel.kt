@@ -125,7 +125,7 @@ class PathFind(val spatialMesh: SpatialMesh) {
     }
 
     private fun reset(): Unit {
-        openedList = PriorityQueue<SpatialNode> { l: SpatialNode, r: SpatialNode -> l.F.compareTo(r.F) }
+        openedList = PriorityQueue<SpatialNode> { l, r -> l.F.compareTo(r.F) }
         for (node in this.spatialMesh.nodes) {
             node.parent = null
             node.G = 0
@@ -185,8 +185,8 @@ class PathFind(val spatialMesh: SpatialMesh) {
         return returnList
     }
 
-    private fun addToOpenedList(node: SpatialNode): Unit = run { openedList.push(node) }
-    private fun openedListHasItems(): Boolean = openedList.length > 0
+    private fun addToOpenedList(node: SpatialNode): Unit = run { openedList.add(node) }
+    private fun openedListHasItems(): Boolean = openedList.size > 0
     private fun getAndRemoveFirstFromOpenedList(): SpatialNode = openedList.removeHead()
     private fun addNodeToClosedList(node: SpatialNode): Unit = run { node.closed = true }
     private fun inClosedList(node: SpatialNode): Boolean = node.closed

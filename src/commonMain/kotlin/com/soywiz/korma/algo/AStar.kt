@@ -12,7 +12,7 @@ object AStar {
         return find(board, x0, y0, x1, y1, { it }, findClosest, diagonals)
     }
 
-    fun <T> find(
+    fun <T : Any> find(
         board: Array2<T>,
         x0: Int,
         y0: Int,
@@ -35,7 +35,7 @@ object AStar {
         }
 
         while (queue.isNotEmpty()) {
-            val last = queue.remove()
+            val last = queue.removeHead()
             val dist = Math.distance(last.pos, dest.pos)
             if (dist < closestDist) {
                 closestDist = dist

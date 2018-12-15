@@ -261,57 +261,6 @@ class PointTest {
     }
 }
 
-class PriorityQueueTest {
-
-    // Items inserted on setUp.
-    private val o1 = QueueItem("o1", 1)
-    private val o2 = QueueItem("o2", -5)
-    private val o3 = QueueItem("o3", 7)
-    private val o4 = QueueItem("o4", 4)
-    private val o5 = QueueItem("o5", 9)
-    private val o6 = QueueItem("o6", 0)
-
-    private val pq = PriorityQueue<QueueItem> { l, r -> l.priority.compareTo(r.priority) }.apply {
-        add(o1, o2, o3, o4, o5, o6)
-    }
-
-    // Items not inserted on setUp.
-    private val n1 = QueueItem("n1", 3)
-
-    @Test
-    fun testInitialOrder() {
-        assertEquals("o2", pq.head.toString())
-        assertEquals("[o2, o6, o1, o4, o3, o5]", pq._sortedList.toString())
-    }
-
-    @Test
-    fun testUpdateOrder() {
-        o3.priority = -6
-        pq.updateObject(o3)
-        assertEquals("o3", pq.head.toString())
-        assertEquals("[o3, o2, o6, o1, o4, o5]", pq._sortedList.toString())
-    }
-
-    @Test
-    fun testPostUpdateInsert() {
-        o3.priority = -6
-        pq.updateObject(o3)
-        pq.push(n1)
-        assertEquals("[o3, o2, o6, o1, n1, o4, o5]", pq._sortedList.toString())
-    }
-
-    @Test
-    fun testContains() {
-        assertTrue(pq.contains(o4))
-        assertFalse(pq.contains(n1))
-    }
-
-    internal class QueueItem(var name: String, var priority: Int) {
-        override fun toString() = name
-    }
-
-}
-
 @Suppress("unused")
 class SpatialMeshTest {
     //var points:ArrayList<Point2d>
