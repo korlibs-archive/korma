@@ -34,7 +34,7 @@ object AStar {
             set(value) = run { this@Finder.prev[index] = value.index }
             get() = FinderNode(this@Finder.prev[index])
 
-        private inline fun FinderNode.neightborhoods(diagonals: Boolean, emit: (FinderNode) -> Unit) {
+        private inline fun FinderNode.neighborhoods(diagonals: Boolean, emit: (FinderNode) -> Unit) {
             for (dy in -1 .. +1) {
                 for (dx in -1 .. +1) {
                     if (dx == 0 && dy == 0) continue
@@ -71,7 +71,7 @@ object AStar {
                     closest = last
                 }
                 val nweight = last.weight + 1
-                last.neightborhoods(diagonals) { n ->
+                last.neighborhoods(diagonals) { n ->
                     if (nweight < n.weight) {
                         n.prev = last
                         queue.add(n.index)
