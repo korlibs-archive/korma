@@ -1,62 +1,46 @@
 package com.soywiz.korma.random
 
-import com.soywiz.korma.Vector2
-import com.soywiz.korma.geom.Point2d
-import com.soywiz.korma.geom.Rectangle
-import com.soywiz.korma.interpolation.Interpolable
-import com.soywiz.korma.interpolation.interpolate
-import com.soywiz.korma.interpolation.interpolateAny
+import com.soywiz.korma.*
+import com.soywiz.korma.geom.*
+import com.soywiz.korma.interpolation.*
 import com.soywiz.korma.math.*
 import kotlin.random.*
 
-fun Random.intStream(): Sequence<Int> = sequence { while (true) yield(nextInt()) }
-fun Random.intStream(from: Int, until: Int): Sequence<Int> = sequence { while (true) yield(nextInt(from, until)) }
-fun Random.intStream(range: IntRange): Sequence<Int> = intStream(range.start, range.endInclusive + 1)
+fun Random.ints(): Sequence<Int> = sequence { while (true) yield(nextInt()) }
+fun Random.ints(from: Int, until: Int): Sequence<Int> = sequence { while (true) yield(nextInt(from, until)) }
+fun Random.ints(range: IntRange): Sequence<Int> = ints(range.start, range.endInclusive + 1)
 
-fun Random.doubleStream(): Sequence<Double> = sequence { while (true) yield(nextDouble()) }
+fun Random.doubles(): Sequence<Double> = sequence { while (true) yield(nextDouble()) }
 
-fun <T> List<T>.getCyclic(index: Int) = this[index % this.size]
-
-fun <T> List<T>.random(random: Random = MtRandom()): T {
+fun <T> List<T>.random(random: Random = Random): T {
     if (this.isEmpty()) throw IllegalArgumentException("Empty list")
     return this[random.nextInt(this.size)]
 }
 
-//fun Random.nextDoubleFixed(): Double {
-//    val value = nextBits(31)
-//    val rvalue = if (value == Int.MAX_VALUE) value - 1 else value
-//    return value.toDouble() / Int.MAX_VALUE.toDouble()
-//}
+fun <T> List<T>.randomWithWeights(weights: List<Double>, random: Random = Random): T = random.weighted(this.zip(weights).toMap())
 
 operator fun Random.get(min: Double, max: Double): Double = min + nextDouble() * (max - min)
 operator fun Random.get(min: Int, max: Int): Int = min + nextInt(max - min)
 operator fun Random.get(range: IntRange): Int = range.start + this.nextInt(range.endInclusive - range.start + 1)
 operator fun Random.get(range: LongRange): Long = range.start + this.nextLong() % (range.endInclusive - range.start + 1)
-
+operator fun <T : Interpolable<T>> Random.get(l: T, r: T): T = (this.nextInt(0x10001).toDouble() / 0x10000.toDouble()).interpolate(l, r)
 operator fun <T> Random.get(list: List<T>): T = list[this[list.indices]]
-
-operator fun Random.get(rectangle: Rectangle): Point2d =
-    Vector2(this[rectangle.left, rectangle.right], this[rectangle.top, rectangle.bottom])
-
-operator fun <T : Interpolable<T>> Random.get(l: T, r: T): T =
-    (this.nextInt(0x10001).toDouble() / 0x10000.toDouble()).interpolate(l, r)
-
-operator fun <T : Comparable<T>> Random.get(range: ClosedRange<T>): T =
-    interpolateAny(range.start, range.endInclusive, (this.nextInt(0x10001).toDouble() / 0x10000.toDouble()))
-
+operator fun Random.get(rectangle: Rectangle): Point2d = Vector2(this[rectangle.left, rectangle.right], this[rectangle.top, rectangle.bottom])
+fun <T : MutableInterpolable<T>> T.setToRandom(min: T, max: T, random: Random = Random) = run { this.setToInterpolated(min, max, random.nextDouble()) }
+operator fun <T : Comparable<T>> Random.get(range: ClosedRange<T>): T = interpolateAny(range.start, range.endInclusive, (this.nextInt(0x10001).toDouble() / 0x10000.toDouble()))
 
 fun <T> Random.weighted(weights: Map<T, Double>): T = shuffledWeighted(weights).first()
-fun <T> Random.weighted(weights: Weights<T>): T = shuffledWeighted(weights).first()
+fun <T> Random.weighted(weights: RandomWeights<T>): T = shuffledWeighted(weights).first()
 
-fun <T> Random.shuffledWeighted(weights: Map<T, Double>): List<T> = shuffledWeighted(Weights(weights))
-fun <T> Random.shuffledWeighted(values: List<T>, weights: List<Double>): List<T> = shuffledWeighted(Weights(values, weights))
-fun <T> Random.shuffledWeighted(weights: Weights<T>): List<T> {
+fun <T> Random.shuffledWeighted(weights: Map<T, Double>): List<T> = shuffledWeighted(RandomWeights(weights))
+fun <T> Random.shuffledWeighted(values: List<T>, weights: List<Double>): List<T> = shuffledWeighted(RandomWeights(values, weights))
+fun <T> Random.shuffledWeighted(weights: RandomWeights<T>): List<T> {
     val randoms = (0 until weights.items.size).map { -pow(nextDouble(), (1.0 / weights.normalizedWeights[it])) }
     val sortedIndices = (0 until weights.items.size).sortedWith(Comparator { a, b -> randoms[a].compareTo(randoms[b]) })
     return sortedIndices.map { weights.items[it] }
 }
 
-data class Weights<T>(val weightsMap: Map<T, Double>) {
+data class RandomWeights<T>(val weightsMap: Map<T, Double>) {
     constructor(vararg pairs: Pair<T, Double>) : this(mapOf(*pairs))
     constructor(values: List<T>, weights: List<Double>) : this(values.zip(weights).toMap())
 
