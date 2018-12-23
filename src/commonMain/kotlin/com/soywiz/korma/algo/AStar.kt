@@ -9,20 +9,21 @@ object AStar {
         board: Array2<Boolean>, x0: Int, y0: Int, x1: Int, y1: Int, findClosest: Boolean = false,
         diagonals: Boolean = false
     ): List<PointInt> {
-        return find(board, x0, y0, x1, y1, { it }, findClosest, diagonals)
+        return find(board.width, board.height, x0, y0, x1, y1, findClosest, diagonals) { x, y -> board[x, y] }
     }
 
-    fun <T : Any> find(
-        board: Array2<T>,
+    fun find(
+        width: Int,
+        height: Int,
         x0: Int,
         y0: Int,
         x1: Int,
         y1: Int,
-        isBlocking: (v: T) -> Boolean,
         findClosest: Boolean = false,
-        diagonals: Boolean = false
+        diagonals: Boolean = false,
+        isBlocking: (x: Int, y: Int) -> Boolean
     ): List<PointInt> {
-        val aboard = board.map2 { x, y, value -> ANode(PointInt(x, y), isBlocking(value)) }
+        val aboard = Array2.withGen(width, height) { x, y -> ANode(PointInt(x, y), isBlocking(x, y)) }
         val queue: PriorityQueue<ANode> = PriorityQueue { a, b -> a.weight - b.weight }
 
         val first = aboard[x0, y0]
