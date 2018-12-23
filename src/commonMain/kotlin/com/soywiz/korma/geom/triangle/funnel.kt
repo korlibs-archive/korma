@@ -124,8 +124,8 @@ class PathFind(val spatialMesh: SpatialMesh) {
         reset()
     }
 
-    private fun reset(): Unit {
-        openedList = PriorityQueue<SpatialNode> { l, r -> l.F.compareTo(r.F) }
+    private fun reset() {
+        openedList = PriorityQueue { l, r -> l.F.compareTo(r.F) }
         for (node in this.spatialMesh.nodes) {
             node.parent = null
             node.G = 0
@@ -374,4 +374,3 @@ class SpatialNode(
 
     override fun toString(): String = "SpatialNode($x, $y)"
 }
-

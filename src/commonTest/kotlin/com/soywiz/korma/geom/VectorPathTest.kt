@@ -50,4 +50,20 @@ class VectorPathTest {
         assertEquals(Rectangle(0, 0, 100, 100), g.getBounds())
         //g.filled(Context2d.Color(Colors.RED)).raster().showImageAndWaitExt()
     }
+
+    @Test
+    fun testRotatedSquare() {
+        val vp = VectorPath().apply {
+            // /\
+            // \/
+            moveTo(0, -50)
+            lineTo(-50, 0)
+            lineTo(0, +50)
+            lineTo(+50, 0)
+            lineTo(0, -50)
+            close()
+        }
+        assertEquals(true, vp.containsPoint(0, 0))
+        assertEquals(false, vp.containsPoint(-51, 0))
+    }
 }

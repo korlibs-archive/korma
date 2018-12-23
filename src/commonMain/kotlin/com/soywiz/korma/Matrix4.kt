@@ -139,15 +139,6 @@ class Matrix4(
         return this
     }
 
-    fun copyFrom(that: Matrix2d): Matrix4 {
-        return setTo(
-            that.a.toFloat(), that.b.toFloat(), 0f, 0f,
-            that.c.toFloat(), that.d.toFloat(), 0f, 0f,
-            0f, 0f, 1f, 0f,
-            that.tx.toFloat(), that.ty.toFloat(), 0f, 1f
-        )
-    }
-
     fun setToOrtho(left: Float, top: Float, right: Float, bottom: Float, near: Float, far: Float): Matrix4 {
         val lr = 1 / (left - right)
         val bt = 1 / (bottom - top)

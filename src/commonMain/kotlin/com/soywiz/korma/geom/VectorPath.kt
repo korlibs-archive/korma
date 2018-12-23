@@ -124,6 +124,18 @@ open class VectorPath(
         data.clear()
     }
 
+    fun setFrom(other: VectorPath) {
+        clear()
+        appendFrom(other)
+    }
+
+    fun appendFrom(other: VectorPath) {
+        this.commands.add(other.commands)
+        this.data.add(other.data)
+        this.lastX = other.lastX
+        this.lastY = other.lastY
+    }
+
     var lastX = 0.0; private set
     var lastY = 0.0; private set
 
@@ -420,8 +432,7 @@ open class VectorPath(
         return (intersections % 2) != 0
     }
 
-    fun containsPoint(x: Int, y: Int): Boolean = containsPoint(x.toDouble(), y.toDouble())
-
+    inline fun containsPoint(x: Number, y: Number): Boolean = containsPoint(x.toDouble(), y.toDouble())
 
     object Command {
         //val CUBIC_CURVE_TO = 6
@@ -446,4 +457,3 @@ open class VectorPath(
         this.lastY = path.lastY
     }
 }
-

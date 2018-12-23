@@ -3,14 +3,10 @@ package com.soywiz.korma.geom.binpack
 import com.soywiz.korma.geom.Rectangle
 
 class MaxRects(
-    override var maxWidth: Double,
-    override var maxHeight: Double
-) : BinPack {
-    var freeRectangles = arrayListOf<Rectangle>()
-
-    init {
-        freeRectangles.add(Rectangle(0.0, 0.0, maxWidth, maxHeight))
-    }
+    override val maxWidth: Double,
+    override val maxHeight: Double
+) : BinPacker.Algo {
+    var freeRectangles = arrayListOf(Rectangle(0.0, 0.0, maxWidth, maxHeight))
 
     override fun add(width: Double, height: Double): Rectangle? = quickInsert(width, height)
 
@@ -35,10 +31,10 @@ class MaxRects(
         return newNode
     }
 
-    protected fun quickFindPositionForNewNodeBestAreaFit(width: Double, height: Double): Rectangle {
+    private fun quickFindPositionForNewNodeBestAreaFit(width: Double, height: Double): Rectangle {
         var score = Int.MAX_VALUE.toDouble()
         var areaFit: Double
-        val bestNode: Rectangle = Rectangle()
+        val bestNode = Rectangle()
 
         for (r in freeRectangles) {
             // Try to place the rectangle in upright (non-flipped) orientation.
@@ -57,7 +53,7 @@ class MaxRects(
         return bestNode
     }
 
-    protected fun splitFreeNode(freeNode: Rectangle, usedNode: Rectangle): Boolean {
+    private fun splitFreeNode(freeNode: Rectangle, usedNode: Rectangle): Boolean {
         var newNode: Rectangle
         // Test with SAT if the rectangles even intersect.
         if (usedNode.left >= freeNode.right || usedNode.right <= freeNode.x || usedNode.top >= freeNode.bottom || usedNode.bottom <= freeNode.top) {
@@ -96,7 +92,7 @@ class MaxRects(
         return true
     }
 
-    protected fun pruneFreeList() {
+    private fun pruneFreeList() {
         // Go through each pair and remove any rectangle that is redundant.
         var len = freeRectangles.size
         var i = 0

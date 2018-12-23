@@ -1,57 +1,14 @@
 package com.soywiz.korma.geom.shape
 
-import com.soywiz.korma.geom.Point2d
-import com.soywiz.korma.geom.Rectangle
-import com.soywiz.korma.geom.VectorPath
-import com.soywiz.korma.geom.bezier.Bezier
+import com.soywiz.korma.*
+import com.soywiz.korma.geom.*
+import com.soywiz.korma.geom.bezier.*
 import com.soywiz.korma.geom.clipper.*
-import com.soywiz.korma.geom.triangle.Sweep
-import com.soywiz.korma.geom.triangle.SweepContext
-import com.soywiz.korma.geom.triangle.Triangle
-import com.soywiz.korma.math.Math
-
-fun Path.toShape2d(): Shape2d {
-    if (this.size == 4) {
-        for (n in 0 until 4) {
-            val tl = this[(n + 0) % 4]
-            val tr = this[(n + 1) % 4]
-            val br = this[(n + 2) % 4]
-            val bl = this[(n + 3) % 4]
-
-            if ((tl.x == bl.x) && (tr.x == br.x) && (tl.y == tr.y) && (bl.y == br.y)) {
-                val xmin = Math.min(tl.x, tr.x)
-                val xmax = Math.max(tl.x, tr.x)
-                val ymin = Math.min(tl.y, bl.y)
-                val ymax = Math.max(tl.y, bl.y)
-                //println("($xmin,$ymin)-($xmax-$ymax) : $tl,$tr,$br,$bl")
-                return Shape2d.Rectangle(xmin, ymin, xmax - xmin, ymax - ymin)
-            }
-        }
-    }
-    // @TODO: Try to detect rectangle
-    return Shape2d.Polygon(this)
-}
-
-fun Paths.toShape2d(): Shape2d {
-    return when (size) {
-        0 -> Shape2d.Empty
-        1 -> first().toShape2d()
-        else -> Shape2d.Complex(this.map(Path::toShape2d))
-    }
-}
+import com.soywiz.korma.geom.triangle.*
 
 val Shape2d.bounds: Rectangle get() = paths.bounds
 
 fun Rectangle.toShape() = Shape2d.Rectangle(x, y, width, height)
-
-fun Shape2d.clipperOp(other: Shape2d, op: Clipper.ClipType): Shape2d {
-    val clipper = DefaultClipper()
-    val solution = Paths()
-    clipper.addPaths(this.paths, Clipper.PolyType.CLIP, other.closed)
-    clipper.addPaths(other.paths, Clipper.PolyType.SUBJECT, other.closed)
-    clipper.execute(op, solution)
-    return solution.toShape2d()
-}
 
 infix fun Shape2d.collidesWith(other: Shape2d): Boolean =
     this.clipperOp(other, Clipper.ClipType.INTERSECTION) != Shape2d.Empty
@@ -74,10 +31,6 @@ fun Shape2d.extend(size: Double): Shape2d {
     )
     clipper.execute(solution, size)
     return solution.toShape2d()
-}
-
-fun VectorPath.toPaths(): Paths {
-    return Paths(toPaths2().map { Path(it) })
 }
 
 fun VectorPath.toPaths2(): List<List<Point2d>> {
@@ -137,10 +90,10 @@ fun VectorPath.toPaths2(): List<List<Point2d>> {
     return paths
 }
 
-fun VectorPath.toShape2d() = this.toPaths().toShape2d()
+fun VectorPath.toShape2d(): Shape2d = this.toPaths().toShape2d()
 
-fun Shape2d.getAllPoints() = this.paths.flatMap { it }
-fun Shape2d.toPolygon() = if (this is Shape2d.Polygon) this else Shape2d.Polygon(this.getAllPoints())
+fun Shape2d.getAllPoints(): List<Vector2> = this.paths.flatMap { it }
+fun Shape2d.toPolygon(): Shape2d.Polygon = if (this is Shape2d.Polygon) this else Shape2d.Polygon(this.getAllPoints())
 
 fun List<Point2d>.triangulate(): List<Triangle> {
     val sc = SweepContext(this)

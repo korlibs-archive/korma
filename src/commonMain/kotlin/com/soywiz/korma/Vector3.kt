@@ -2,34 +2,22 @@ package com.soywiz.korma
 
 import com.soywiz.korma.internal.*
 
-interface Vector3 {
+interface IVector3 {
     val x: Double
     val y: Double
     val z: Double
-
-    companion object {
-        inline operator fun invoke(x: Number, y: Number, z: Number): Vector3 =
-            IVector3(x.toDouble(), y.toDouble(), z.toDouble())
-    }
-
-    abstract class Base : Vector3 {
-        override fun equals(other: Any?): Boolean =
-            if (other is Vector3) this.x == other.x && this.y == other.y else false
-
-        override fun hashCode(): Int = x.hashCode() + (y.hashCode() shl 3) + (z.hashCode() shl 7)
-        override fun toString(): String = "(${x.niceStr}, ${y.niceStr}, ${z.niceStr})"
-    }
 }
 
-@PublishedApi
-internal class IVector3(
-    override val x: Double,
-    override val y: Double,
-    override val z: Double
-) : Vector3.Base()
+data class Vector3(override var x: Double, override var y: Double, override var z: Double) : IVector3 {
+    override fun toString(): String = "(${x.niceStr}, ${y.niceStr}, ${z.niceStr})"
+}
 
-class MVector3(
-    override var x: Double,
-    override var y: Double,
-    override var z: Double
-) : Vector3.Base()
+inline fun IVector3(x: Number, y: Number, z: Number): Vector3 = Vector3(x.toDouble(), y.toDouble(), z.toDouble())
+
+inline class IntVector3(val v: Vector3) {
+    val x: Int get() = v.x.toInt()
+    val y: Int get() = v.y.toInt()
+    val z: Int get() = v.z.toInt()
+}
+
+fun Vector3.asIntVector3() = IntVector3(this)

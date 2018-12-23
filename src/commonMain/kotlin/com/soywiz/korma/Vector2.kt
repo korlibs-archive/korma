@@ -71,8 +71,8 @@ interface Vector2 {
 internal class IVector2(override val x: Double, override val y: Double) : Vector2.Base(), Interpolable<Vector2> {
     override fun interpolateWith(other: Vector2, ratio: Double): Vector2 {
         return Vector2(
-            interpolate(this.x, other.x, ratio),
-            interpolate(this.y, other.y, ratio)
+            ratio.interpolate(this.x, other.x),
+            ratio.interpolate(this.y, other.y)
         )
     }
 }
@@ -145,7 +145,9 @@ class MVector2(override var x: Double = 0.0, override var y: Double = x) :
         this.setTo(ratio.interpolate(l.x, r.x), ratio.interpolate(l.y, r.y))
 }
 
-inline fun Vec(x: Number, y: Number): Vector2 = IVector2(x.toDouble(), y.toDouble())
+@Deprecated("", ReplaceWith("vec(x, y)"))
+inline fun Vec(x: Number, y: Number): Vector2 = vec(x, y)
+inline fun vec(x: Number, y: Number): Vector2 = MVector2(x.toDouble(), y.toDouble())
 
 val MVector2.unit: Vector2 get() = this / length
 /*
