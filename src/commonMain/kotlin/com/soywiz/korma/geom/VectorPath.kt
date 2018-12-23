@@ -286,7 +286,7 @@ open class VectorPath(
 
         val startAngle = start % PI_TWO
         val endAngle = end % PI_TWO
-        var remainingAngle = Math.min(PI_TWO, abs(endAngle - startAngle))
+        var remainingAngle = kotlin.math.min(PI_TWO, abs(endAngle - startAngle))
         if (remainingAngle == 0.0 && start != end) remainingAngle = PI_TWO
         val sgn = if (startAngle < endAngle) 1 else -1
         var a1 = startAngle
@@ -296,7 +296,7 @@ open class VectorPath(
         val p4 = MVector2()
         var index = 0
         while (remainingAngle > EPSILON) {
-            val a2 = a1 + sgn * Math.min(remainingAngle, PI_OVER_TWO)
+            val a2 = a1 + sgn * kotlin.math.min(remainingAngle, PI_OVER_TWO)
 
             val k = 0.5522847498
             val a = (a2 - a1) / 2.0

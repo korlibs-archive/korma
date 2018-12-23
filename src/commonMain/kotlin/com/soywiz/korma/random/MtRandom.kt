@@ -1,6 +1,6 @@
 package com.soywiz.korma.random
 
-import com.soywiz.korma.math.Math
+import com.soywiz.korma.math.*
 import kotlin.random.Random
 
 /**
@@ -48,7 +48,7 @@ class MtRandom private constructor(dummy: Boolean) : Random() {
     fun seed(s: Int): MtRandom {
         state[0] = s // for > 32 bit machines
         for (i in 1 until N) {
-            state[i] = Math.multiplyIntegerUnsigned(1812433253, (state[i - 1] xor (state[i - 1] ushr 30))) + i
+            state[i] = multiplyIntegerUnsigned(1812433253, (state[i - 1] xor (state[i - 1] ushr 30))) + i
         }
         p = N // force genState() to be called for next random number
         return this

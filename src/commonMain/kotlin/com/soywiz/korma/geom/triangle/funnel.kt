@@ -4,6 +4,7 @@ import com.soywiz.kds.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.math.*
 import kotlin.collections.set
+import kotlin.math.*
 
 data class FunnelPortal(var left: Point2d, var right: Point2d)
 
@@ -20,7 +21,7 @@ class NewFunnel {
             return bx * ay - ax * by
         }
 
-        private fun vdistsqr(a: Point2d, b: Point2d): Double = Math.hypot(b.x - a.x, b.y - a.y)
+        private fun vdistsqr(a: Point2d, b: Point2d): Double = hypot(b.x - a.x, b.y - a.y)
 
         private fun vequal(a: Point2d, b: Point2d): Boolean = vdistsqr(a, b) < (0.001 * 0.001)
     }
@@ -370,7 +371,7 @@ class SpatialNode(
 ) {
     val F: Int get() = G + H // F = G + H
 
-    fun distanceToSpatialNode(that: SpatialNode): Int = Math.hypot(this.x - that.x, this.y - that.y).toInt()
+    fun distanceToSpatialNode(that: SpatialNode): Int = hypot(this.x - that.x, this.y - that.y).toInt()
 
     override fun toString(): String = "SpatialNode($x, $y)"
 }

@@ -30,7 +30,7 @@ interface Vector2 {
         fun angle(a: Vector2, b: Vector2): Double = acos((a.dot(b)) / (a.length * b.length))
 
         fun angle(ax: Double, ay: Double, bx: Double, by: Double): Double =
-            acos(((ax * bx) + (ay * by)) / (Math.hypot(ax, ay) * Math.hypot(bx, by)))
+            acos(((ax * bx) + (ay * by)) / (hypot(ax, ay) * hypot(bx, by)))
 
         fun sortPoints(points: ArrayList<Vector2>): Unit {
             points.sortWith(Comparator { l, r -> cmpPoints(l, r) })
@@ -47,11 +47,11 @@ interface Vector2 {
         fun angle(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double): Double {
             val ax = x1 - x2
             val ay = y1 - y2
-            val al = Math.hypot(ax, ay)
+            val al = hypot(ax, ay)
 
             val bx = x1 - x3
             val by = y1 - y3
-            val bl = Math.hypot(bx, by)
+            val bl = hypot(bx, by)
 
             return acos((ax * bx + ay * by) / (al * bl))
         }
@@ -130,12 +130,12 @@ class MVector2(override var x: Double = 0.0, override var y: Double = x) :
         this.setTo(this.x / len, this.y / len)
     }
 
-    val length: Double get() = Math.hypot(x, y)
+    val length: Double get() = hypot(x, y)
     /*
 
     */
 
-    fun distanceTo(x: Double, y: Double) = Math.hypot(x - this.x, y - this.y)
+    fun distanceTo(x: Double, y: Double) = hypot(x - this.x, y - this.y)
     fun distanceTo(that: Vector2) = distanceTo(that.x, that.y)
 
     override fun interpolateWith(other: MVector2, ratio: Double): MVector2 =
@@ -170,7 +170,7 @@ operator fun Vector2.div(scale: Double): Vector2 = Vector2(this.x / scale, this.
 
 infix fun Vector2.dot(that: Vector2) = this.x * that.x + this.y * that.y
 //infix fun Vector2.mul(that: Vector2) = Vector2(this.x * that.x, this.y * that.y)
-fun Vector2.distanceTo(x: Double, y: Double) = Math.hypot(x - this.x, y - this.y)
+fun Vector2.distanceTo(x: Double, y: Double) = hypot(x - this.x, y - this.y)
 
 fun Vector2.distanceTo(that: Vector2) = distanceTo(that.x, that.y)
 
@@ -185,8 +185,8 @@ operator fun Vector2.get(index: Int) = when (index) {
 }
 
 val Vector2.unit: Vector2 get() = this / this.length
-val Vector2.length: Double get() = Math.hypot(x, y)
-val Vector2.magnitude: Double get() = Math.hypot(x, y)
+val Vector2.length: Double get() = hypot(x, y)
+val Vector2.magnitude: Double get() = hypot(x, y)
 val Vector2.normalized: Vector2
     get() {
         val imag = 1.0 / magnitude

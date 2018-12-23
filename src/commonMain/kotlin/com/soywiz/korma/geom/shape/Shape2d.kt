@@ -36,7 +36,7 @@ abstract class Shape2d {
             }))
         override val closed: Boolean = true
         override val area: Double get() = PI * radius * radius
-        override fun containsPoint(x: Double, y: Double) = Math.hypot(this.x - x, this.y - y) < radius
+        override fun containsPoint(x: Double, y: Double) = hypot(this.x - x, this.y - y) < radius
     }
 
     data class Rectangle(val x: Double, val y: Double, val width: Double, val height: Double) : Shape2d() {

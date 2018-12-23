@@ -22,8 +22,8 @@ data class Size(override var width: Double, override var height: Double) : Mutab
 
     val area: Double get() = width * height
     val perimeter: Double get() = width * 2 + height * 2
-    val min: Double get() = Math.min(width, height)
-    val max: Double get() = Math.max(width, height)
+    val min: Double get() = kotlin.math.min(width, height)
+    val max: Double get() = kotlin.math.max(width, height)
 
     fun clone() = Size(width, height)
 

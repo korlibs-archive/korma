@@ -25,10 +25,10 @@ object AStar {
         val aboard = board.map2 { x, y, value -> ANode(PointInt(x, y), isBlocking(value)) }
         val queue: PriorityQueue<ANode> = PriorityQueue { a, b -> a.weight - b.weight }
 
-        val first = aboard.get(x0, y0)
-        val dest = aboard.get(x1, y1)
+        val first = aboard[x0, y0]
+        val dest = aboard[x1, y1]
         var closest = first
-        var closestDist = Math.distance(x0, y0, x1, y1)
+        var closestDist = distance(x0, y0, x1, y1)
         if (!first.value) {
             queue.add(first)
             first.weight = 0
@@ -36,7 +36,7 @@ object AStar {
 
         while (queue.isNotEmpty()) {
             val last = queue.removeHead()
-            val dist = Math.distance(last.pos, dest.pos)
+            val dist = distance(last.pos, dest.pos)
             if (dist < closestDist) {
                 closestDist = dist
                 closest = last

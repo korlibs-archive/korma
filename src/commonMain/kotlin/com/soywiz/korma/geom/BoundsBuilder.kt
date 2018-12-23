@@ -1,7 +1,6 @@
 package com.soywiz.korma.geom
 
 import com.soywiz.korma.Vector2
-import com.soywiz.korma.math.Math
 
 class BoundsBuilder {
     val tempRect = Rectangle()
@@ -19,10 +18,10 @@ class BoundsBuilder {
     }
 
     fun add(x: Double, y: Double) = this.apply {
-        xmin = Math.min(xmin, x)
-        xmax = Math.max(xmax, x)
-        ymin = Math.min(ymin, y)
-        ymax = Math.max(ymax, y)
+        xmin = kotlin.math.min(xmin, x)
+        xmax = kotlin.math.max(xmax, x)
+        ymin = kotlin.math.min(ymin, y)
+        ymax = kotlin.math.max(ymax, y)
         //println("add($x, $y) -> ($xmin,$ymin)-($xmax,$ymax)")
     }
 
