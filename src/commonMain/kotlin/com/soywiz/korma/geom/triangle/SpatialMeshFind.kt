@@ -2,6 +2,7 @@ package com.soywiz.korma.geom.triangle
 
 import com.soywiz.kds.*
 import com.soywiz.korma.geom.*
+import com.soywiz.korma.geom.triangle.internal.*
 import kotlin.math.*
 
 private typealias SpatialNode = SpatialMesh.Node

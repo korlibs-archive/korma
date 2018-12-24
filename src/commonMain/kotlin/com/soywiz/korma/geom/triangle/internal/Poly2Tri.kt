@@ -40,19 +40,16 @@ entities.
  */
 @file:Suppress("MemberVisibilityCanBePrivate")
 
-package com.soywiz.korma.geom.triangle
+package com.soywiz.korma.geom.triangle.internal
 
 import com.soywiz.korma.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.ds.*
 import com.soywiz.korma.geom.internal.*
-import kotlin.collections.set
+import com.soywiz.korma.geom.triangle.*
 import kotlin.math.*
 
-class AdvancingFront(
-    var head: Node,
-    @Suppress("unused") var tail: Node
-) {
+internal class AdvancingFront(var head: Node, @Suppress("unused") var tail: Node) {
     var searchNode: Node = head
 
     /*fun findSearchNode(x) {
@@ -121,7 +118,7 @@ class AdvancingFront(
 
 }
 
-class Basin {
+internal class Basin {
     var leftNode: Node? = null
     var bottomNode: Node? = null
     var rightNode: Node? = null
@@ -138,56 +135,12 @@ class Basin {
     }
 }
 
-data class Edge internal constructor(
-    val dummy: Boolean,
-    val p: Point2d,
-    val q: Point2d
-) {
-    @Suppress("unused")
-    fun hasPoint(point: Point2d): Boolean = (p == point) || (q == point)
-
-    companion object {
-        fun getUniquePointsFromEdges(edges: ArrayList<Edge>): List<Point2d> =
-            edges.flatMap { listOf(it.p, it.q) }.distinct()
-
-        @Suppress("unused")
-        fun traceList(edges: ArrayList<Edge>) {
-            val pointsList = getUniquePointsFromEdges(edges)
-            val pointsMap = hashMapOf<Point2d, Int>()
-
-            var pointsLength = 0
-            for (point in pointsList) pointsMap[point] = ++pointsLength
-
-            fun getPointName(point: Point2d): String = "p" + pointsMap[point]
-
-            println("Points:")
-            for (point in pointsList) println("  " + getPointName(point) + " = " + point)
-            println("Edges:")
-            for (edge in edges) println("  Edge(" + getPointName(edge.p) + ", " + getPointName(edge.q) + ")")
-        }
-    }
-
-
-    override fun toString(): String = "Edge(${this.p}, ${this.q})"
-}
-
-fun Edge(p1: Point2d, p2: Point2d): Edge {
-    val comp = Point2d.compare(p1, p2)
-    if (comp == 0) throw Error("Repeat points")
-    val p = if (comp < 0) p1 else p2
-    val q = if (comp < 0) p2 else p1
-    return Edge(true, p, q)
-}
-
-class EdgeEvent {
+internal class EdgeEvent {
     var constrainedEdge: Edge? = null
     var right: Boolean = false
 }
 
-class Node(
-    var point: Point2d,
-    var triangle: PolyTriangle? = null
-) {
+internal class Node(var point: Point2d, var triangle: PolyTriangle? = null) {
     var prev: Node? = null
     var next: Node? = null
     var value: Double = this.point.x
@@ -228,15 +181,13 @@ class Node(
         }
 }
 
-class EdgeContext {
+internal class EdgeContext {
     val pointsToEdgeLists = hashMapOf<Point2d, ArrayList<Edge>>()
     fun getPointEdgeList(point: Point2d) = pointsToEdgeLists.getOrPut(point) { arrayListOf() }
     fun createEdge(p1: Point2d, p2: Point2d): Edge = Edge(p1, p2).also { getPointEdgeList(it.q).add(it) }
 }
 
-class Sweep(
-    private var context: SweepContext
-) {
+internal class Sweep(private var context: SweepContext) {
     val edgeContext get() = context.edgeContext
     /**
      * Triangulate simple polygon with holes.
@@ -758,7 +709,7 @@ class Sweep(
     }
 }
 
-class SweepContext() {
+internal class SweepContext() {
     var triangles: ArrayList<PolyTriangle> = ArrayList()
     var points: PointArrayList = PointArrayList()
     var edgeList: ArrayList<Edge> = ArrayList()
@@ -903,7 +854,7 @@ class SweepContext() {
 //private const CCW_OFFSET:Int = +1;
 //private const CW_OFFSET:Int = -1;
 
-data class PolyTriangle internal constructor(
+internal data class PolyTriangle internal constructor(
     val dummy: Boolean,
     override var p0: Point2d,
     override var p1: Point2d,
@@ -914,24 +865,24 @@ data class PolyTriangle internal constructor(
     val constrained_edge = BooleanArray(3) // Flags to determine if an edge is a Constrained edge
     val delaunay_edge = BooleanArray(3) // Flags to determine if an edge is a Delauney edge
     
-    fun neighborCW(p: Point2d): PolyTriangle? = this.neighbors[getPointIndexOffset(p, com.soywiz.korma.geom.triangle.PolyTriangle.CW_OFFSET)]
-    fun neighborCCW(p: Point2d): PolyTriangle? = this.neighbors[getPointIndexOffset(p, com.soywiz.korma.geom.triangle.PolyTriangle.CCW_OFFSET)]
+    fun neighborCW(p: Point2d): PolyTriangle? = this.neighbors[getPointIndexOffset(p, CW_OFFSET)]
+    fun neighborCCW(p: Point2d): PolyTriangle? = this.neighbors[getPointIndexOffset(p, CCW_OFFSET)]
 
-    fun getConstrainedEdgeCW(p: Point2d): Boolean = this.constrained_edge[getPointIndexOffset(p, com.soywiz.korma.geom.triangle.PolyTriangle.CW_OFFSET)]
+    fun getConstrainedEdgeCW(p: Point2d): Boolean = this.constrained_edge[getPointIndexOffset(p, CW_OFFSET)]
     fun setConstrainedEdgeCW(p: Point2d, ce: Boolean): Boolean =
-        ce.also { this.constrained_edge[getPointIndexOffset(p, com.soywiz.korma.geom.triangle.PolyTriangle.CW_OFFSET)] = ce }
+        ce.also { this.constrained_edge[getPointIndexOffset(p, CW_OFFSET)] = ce }
 
-    fun getConstrainedEdgeCCW(p: Point2d): Boolean = this.constrained_edge[getPointIndexOffset(p, com.soywiz.korma.geom.triangle.PolyTriangle.CCW_OFFSET)]
+    fun getConstrainedEdgeCCW(p: Point2d): Boolean = this.constrained_edge[getPointIndexOffset(p, CCW_OFFSET)]
     fun setConstrainedEdgeCCW(p: Point2d, ce: Boolean): Boolean =
-        ce.also { this.constrained_edge[getPointIndexOffset(p, com.soywiz.korma.geom.triangle.PolyTriangle.CCW_OFFSET)] = ce }
+        ce.also { this.constrained_edge[getPointIndexOffset(p, CCW_OFFSET)] = ce }
 
-    fun getDelaunayEdgeCW(p: Point2d): Boolean = this.delaunay_edge[getPointIndexOffset(p, com.soywiz.korma.geom.triangle.PolyTriangle.CW_OFFSET)]
+    fun getDelaunayEdgeCW(p: Point2d): Boolean = this.delaunay_edge[getPointIndexOffset(p, CW_OFFSET)]
     fun setDelaunayEdgeCW(p: Point2d, e: Boolean): Boolean =
-        e.also { this.delaunay_edge[getPointIndexOffset(p, com.soywiz.korma.geom.triangle.PolyTriangle.CW_OFFSET)] = e }
+        e.also { this.delaunay_edge[getPointIndexOffset(p, CW_OFFSET)] = e }
 
-    fun getDelaunayEdgeCCW(p: Point2d): Boolean = this.delaunay_edge[getPointIndexOffset(p, com.soywiz.korma.geom.triangle.PolyTriangle.CCW_OFFSET)]
+    fun getDelaunayEdgeCCW(p: Point2d): Boolean = this.delaunay_edge[getPointIndexOffset(p, CCW_OFFSET)]
     fun setDelaunayEdgeCCW(p: Point2d, e: Boolean): Boolean =
-        e.also { this.delaunay_edge[getPointIndexOffset(p, com.soywiz.korma.geom.triangle.PolyTriangle.CCW_OFFSET)] = e }
+        e.also { this.delaunay_edge[getPointIndexOffset(p, CCW_OFFSET)] = e }
 
     fun clearNeigbors() {
         this.neighbors[0] = null
@@ -1133,7 +1084,7 @@ data class PolyTriangle internal constructor(
     }
 }
 
-fun PolyTriangle(p0: Point2d, p1: Point2d, p2: Point2d, fixOrientation: Boolean = false, checkOrientation: Boolean = true): PolyTriangle {
+internal fun PolyTriangle(p0: Point2d, p1: Point2d, p2: Point2d, fixOrientation: Boolean = false, checkOrientation: Boolean = true): PolyTriangle {
     @Suppress("NAME_SHADOWING")
     var p1 = p1
     @Suppress("NAME_SHADOWING")

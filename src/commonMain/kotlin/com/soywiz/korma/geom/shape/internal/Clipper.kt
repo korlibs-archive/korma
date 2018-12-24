@@ -40,7 +40,7 @@
 
 @file:Suppress("CanBeVal")
 
-package com.soywiz.korma.geom.clipper
+package com.soywiz.korma.geom.shape.internal
 
 import com.soywiz.korma.*
 import com.soywiz.korma.geom.*
@@ -504,7 +504,7 @@ internal abstract class ClipperBase protected constructor(val isPreserveCollinea
 
 }
 
-internal class ClipperOffset(private val miterLimit: Double = 2.0, private val arcTolerance: Double = ClipperOffset.DEFAULT_ARC_TOLERANCE) {
+internal class ClipperOffset(private val miterLimit: Double = 2.0, private val arcTolerance: Double = DEFAULT_ARC_TOLERANCE) {
 
     private var destPolys: Paths? = null
     private var srcPoly: Path? = null
@@ -838,7 +838,11 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
         val clpr = DefaultClipper(Clipper.REVERSE_SOLUTION)
         clpr.addPaths(destPolys!!, Clipper.PolyType.SUBJECT, true)
         if (delta > 0) {
-            clpr.execute(Clipper.ClipType.UNION, solution, Clipper.PolyFillType.POSITIVE, Clipper.PolyFillType.POSITIVE)
+            clpr.execute(
+                Clipper.ClipType.UNION, solution,
+                Clipper.PolyFillType.POSITIVE,
+                Clipper.PolyFillType.POSITIVE
+            )
         } else {
             val r = destPolys!!.bounds
             val outer = Path(4)
@@ -850,7 +854,11 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
 
             clpr.addPath(outer, Clipper.PolyType.SUBJECT, true)
 
-            clpr.execute(Clipper.ClipType.UNION, solution, Clipper.PolyFillType.NEGATIVE, Clipper.PolyFillType.NEGATIVE)
+            clpr.execute(
+                Clipper.ClipType.UNION, solution,
+                Clipper.PolyFillType.NEGATIVE,
+                Clipper.PolyFillType.NEGATIVE
+            )
             if (solution.size > 0) {
                 solution.removeAt(0)
             }
@@ -869,7 +877,11 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
         val clpr = DefaultClipper(Clipper.REVERSE_SOLUTION)
         clpr.addPaths(destPolys!!, Clipper.PolyType.SUBJECT, true)
         if (delta > 0) {
-            clpr.execute(Clipper.ClipType.UNION, solution, Clipper.PolyFillType.POSITIVE, Clipper.PolyFillType.POSITIVE)
+            clpr.execute(
+                Clipper.ClipType.UNION, solution,
+                Clipper.PolyFillType.POSITIVE,
+                Clipper.PolyFillType.POSITIVE
+            )
         } else {
             val r = destPolys!!.bounds
             val outer = Path(4)
@@ -881,7 +893,11 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
 
             clpr.addPath(outer, Clipper.PolyType.SUBJECT, true)
 
-            clpr.execute(Clipper.ClipType.UNION, solution, Clipper.PolyFillType.NEGATIVE, Clipper.PolyFillType.NEGATIVE)
+            clpr.execute(
+                Clipper.ClipType.UNION, solution,
+                Clipper.PolyFillType.NEGATIVE,
+                Clipper.PolyFillType.NEGATIVE
+            )
             //remove the outer PolyNode rectangle ...
             if (solution.childCount == 1 && solution.getChildren()[0].childCount > 0) {
                 val outerNode = solution.getChildren()[0]
@@ -1101,7 +1117,10 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
             prevE = if (e.prevInAEL === e1) e1.prevInAEL else e.prevInAEL
         }
 
-        if (prevE != null && prevE.outIdx >= 0 && Edge.topX(prevE, pt.y) == Edge.topX(e, pt.y) && Edge.slopesEqual(
+        if (prevE != null && prevE.outIdx >= 0 && Edge.topX(prevE, pt.y) == Edge.topX(
+                e,
+                pt.y
+            ) && Edge.slopesEqual(
                 e,
                 prevE
             ) && e.windDelta != 0 && prevE.windDelta != 0
@@ -3153,7 +3172,11 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
             val paths = minkowski(poly1, poly2, false, true)
             val c = DefaultClipper()
             c.addPaths(paths, Clipper.PolyType.SUBJECT, true)
-            c.execute(Clipper.ClipType.UNION, paths, Clipper.PolyFillType.NON_ZERO, Clipper.PolyFillType.NON_ZERO)
+            c.execute(
+                Clipper.ClipType.UNION, paths,
+                Clipper.PolyFillType.NON_ZERO,
+                Clipper.PolyFillType.NON_ZERO
+            )
             return paths
         }
 
@@ -3161,7 +3184,11 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
             val paths = minkowski(pattern, path, true, pathIsClosed)
             val c = DefaultClipper()
             c.addPaths(paths, Clipper.PolyType.SUBJECT, true)
-            c.execute(Clipper.ClipType.UNION, paths, Clipper.PolyFillType.NON_ZERO, Clipper.PolyFillType.NON_ZERO)
+            c.execute(
+                Clipper.ClipType.UNION, paths,
+                Clipper.PolyFillType.NON_ZERO,
+                Clipper.PolyFillType.NON_ZERO
+            )
             return paths
         }
 
@@ -3176,7 +3203,11 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                     c.addPath(path, Clipper.PolyType.CLIP, true)
                 }
             }
-            c.execute(Clipper.ClipType.UNION, solution, Clipper.PolyFillType.NON_ZERO, Clipper.PolyFillType.NON_ZERO)
+            c.execute(
+                Clipper.ClipType.UNION, solution,
+                Clipper.PolyFillType.NON_ZERO,
+                Clipper.PolyFillType.NON_ZERO
+            )
             return solution
         }
 
@@ -3381,7 +3412,10 @@ internal class Edge {
 
     companion object {
         fun doesE2InsertBeforeE1(e1: Edge, e2: Edge): Boolean = if (e2.current.x == e1.current.x) {
-            if (e2.top.y > e1.top.y) (e2.top.x < topX(e1, e2.top.y)) else (e1.top.x > topX(e2, e1.top.y))
+            if (e2.top.y > e1.top.y) (e2.top.x < topX(e1, e2.top.y)) else (e1.top.x > topX(
+                e2,
+                e1.top.y
+            ))
         } else {
             (e2.current.x < e1.current.x)
         }

@@ -2,13 +2,14 @@ package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.*
 import com.soywiz.korma.geom.*
+import com.soywiz.korma.geom.triangle.internal.*
 import kotlin.math.*
 import kotlin.test.*
 
 class EdgeTest {
     private var p1: Point2d = Point2d(0, 0)
     private var p2: Point2d = Point2d(-1, 0)
-    val edgeContext = EdgeContext()
+    private val edgeContext = EdgeContext()
     private var e1: Edge = edgeContext.createEdge(p1, p2)
 
     @Test
@@ -31,7 +32,7 @@ class EdgeTest {
     }
 }
 
-class NewFunnelTest {
+class FunnelTest {
     @Test
     fun testStringPull() {
         val channel = SpatialMeshFind.Channel.Funnel()

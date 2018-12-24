@@ -2,9 +2,10 @@ package com.soywiz.korma.geom.shape
 
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.bezier.*
-import com.soywiz.korma.geom.clipper.*
 import com.soywiz.korma.geom.ds.*
+import com.soywiz.korma.geom.shape.internal.*
 import com.soywiz.korma.geom.triangle.*
+import com.soywiz.korma.geom.triangle.internal.*
 import com.soywiz.korma.geom.vector.*
 
 fun BoundsBuilder.add(shape: Shape2d) {

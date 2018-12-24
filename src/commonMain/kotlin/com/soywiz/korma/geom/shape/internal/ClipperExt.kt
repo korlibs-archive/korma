@@ -1,4 +1,4 @@
-package com.soywiz.korma.geom.clipper
+package com.soywiz.korma.geom.shape.internal
 
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.ds.*
