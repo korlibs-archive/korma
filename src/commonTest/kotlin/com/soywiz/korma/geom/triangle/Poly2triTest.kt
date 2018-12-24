@@ -360,10 +360,10 @@ class TriangleTest {
     private val pInside = Point2d(0.3, 0.3)
     private val pOutside = Point2d(+1, +1)
     private val ec = EdgeContext()
-    private val t1 = Triangle(p1, p2, p3, true) // CCW
-    private val t2 = Triangle(p3, p4, p2, true) // CW
-    private val t3 = Triangle(p4, p5, p3, true) // CCW
-    private val t4 = Triangle(p2, p4, p6, true) // CW
+    private val t1 = PolyTriangle(p1, p2, p3, true) // CCW
+    private val t2 = PolyTriangle(p3, p4, p2, true) // CW
+    private val t3 = PolyTriangle(p4, p5, p3, true) // CCW
+    private val t4 = PolyTriangle(p2, p4, p6, true) // CW
 
     @Test
     fun testArea() {

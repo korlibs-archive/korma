@@ -90,6 +90,19 @@ class SpatialMeshFind(val spatialMesh: SpatialMesh) {
     }*/
 
     object Channel {
+        class EdgeContext {
+            fun getCommonEdge(t1: Triangle, t2: Triangle): Edge {
+                val commonIndexes = ArrayList<Point2d>()
+                for (n in 0 until 3) {
+                    val point = t1.point(n)
+                    if (t2.containsPoint(point)) commonIndexes.add(point)
+                }
+                if (commonIndexes.size != 2) throw Error("Triangles are not contiguous")
+                return Edge(commonIndexes[0], commonIndexes[1])
+            }
+
+        }
+
         fun channelToPortals(startPoint: Point2d, endPoint: Point2d, channel: List<SpatialNode>): Funnel {
             val portals = Funnel()
 
