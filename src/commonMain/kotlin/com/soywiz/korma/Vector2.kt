@@ -34,14 +34,22 @@ interface Vector2 {
             acos(((ax * bx) + (ay * by)) / (hypot(ax, ay) * hypot(bx, by)))
 
         fun sortPoints(points: PointArrayList): Unit {
-            genericSort(points, 0, points.size - 1, compare = { p, l, r ->
+            genericSort(points, 0, points.size - 1, PointSorter)
+        }
+
+        object PointSorter : SortOps<PointArrayList>() {
+            override fun compare(p: PointArrayList, l: Int, r: Int): Int {
                 val lx = p.getX(l)
                 val ly = p.getY(l)
                 val rx = p.getX(r)
                 val ry = p.getY(r)
                 val ret = ly.compareTo(ry)
-                if (ret == 0) lx.compareTo(rx) else ret
-            }, swap = { p, l, r -> p.swap(l, r) })
+                return if (ret == 0) lx.compareTo(rx) else ret
+            }
+
+            override fun swap(subject: PointArrayList, indexL: Int, indexR: Int) {
+                subject.swap(indexL, indexR)
+            }
         }
 
         fun angle(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double): Double {

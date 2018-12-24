@@ -1,5 +1,6 @@
 package com.soywiz.korma.geom.clipper
 
+import com.soywiz.korma.geom.*
 import kotlin.test.*
 
 class ClipperTest {
