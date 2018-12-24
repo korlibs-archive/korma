@@ -109,10 +109,12 @@ class SpatialMeshFind(val spatialMesh: SpatialMesh) {
 
                 //trace(startVertex);
 
+                val ctxEdge = EdgeContext()
+
                 for (n in 0 until channel.size - 1) {
                     val triangleCurrent = channel[n + 0].triangle!!
                     val triangleNext = channel[n + 1].triangle!!
-                    val commonEdge = Triangle.getCommonEdge(triangleCurrent, triangleNext)
+                    val commonEdge = ctxEdge.getCommonEdge(triangleCurrent, triangleNext)
                     val vertexCW1 = triangleCurrent.pointCW(vertexCW0)
                     val vertexCCW1 = triangleCurrent.pointCCW(vertexCCW0)
                     if (!commonEdge.hasPoint(vertexCW0)) vertexCW0 = vertexCW1
@@ -129,60 +131,7 @@ class SpatialMeshFind(val spatialMesh: SpatialMesh) {
             return portals
         }
 
-        fun channelToPortals2(startPoint: Point2d, endPoint: Point2d, channel: ArrayList<SpatialNode>): Funnel {
-            /*
-			var nodeStart:SpatialNode   = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point2d(50, 50)));
-			//var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point2d(73, 133)));
-			//var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point2d(191, 152)));
-			//var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point2d(316, 100)));
-			var nodeEnd:SpatialNode     = spatialMesh.getNodeFromTriangle(vp.getTriangleAtPoint(Point2d(300, 300)));
-			channel[0].triangle.pointInsideTriangle();
-			channel[0].triangle.points[0]
-			*/
-
-            val portals = Funnel()
-            val firstTriangle = channel[0].triangle!!
-            val secondTriangle = channel[1].triangle!!
-            val lastTriangle = channel[channel.size - 1].triangle!!
-
-            assert(firstTriangle.pointInsideTriangle(startPoint))
-            assert(lastTriangle.pointInsideTriangle(endPoint))
-
-            val startVertexIndex = Triangle.getNotCommonVertexIndex(firstTriangle, secondTriangle)
-            //firstTriangle.containsPoint(firstTriangle.points[0]);
-
-            // Add portals.
-
-            var currentVertexCW: Point2d = firstTriangle.point(startVertexIndex)
-            var currentVertexCCW: Point2d = firstTriangle.point(startVertexIndex)
-            //var currentTriangle:Triangle = firstTriangle;
-
-            portals.push(startPoint)
-
-            for (n in 1 until channel.size) {
-                val edge = Triangle.getCommonEdge(channel[n - 1].triangle!!, channel[n].triangle!!)
-                portals.push(edge.p, edge.q)
-                //trace(edge);
-            }
-
-            /*
-			for (var n:uint = 0; n < channel.length; n++) {
-				trace(currentVertexCW + " | " + currentVertexCCW);
-				currentVertexCW = channel[n].triangle.pointCW(currentVertexCW);
-				currentVertexCCW = channel[n].triangle.pointCCW(currentVertexCCW);
-				portals.push(FunnelPortal(currentVertexCW, currentVertexCCW));
-				//firstTriangle.pointCW();
-			}
-			*/
-
-            portals.push(endPoint)
-
-            portals.stringPull()
-
-            return portals
-        }
-
-        private fun assert(test: Boolean): Unit {
+        private fun assert(test: Boolean) {
             if (!test) throw(Error("Assert error"))
         }
 

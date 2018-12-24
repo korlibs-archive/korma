@@ -333,7 +333,7 @@ class Sweep(
     }
 
     fun newFrontTriangle(point: Point2d, node: Node): Node {
-        val triangle = Triangle(point, node.point, node.next!!.point, edgeContext)
+        val triangle = Triangle(point, node.point, node.next!!.point)
 
         triangle.markNeighborTriangle(node.triangle!!)
         this.context.addToSet(triangle)
@@ -354,7 +354,7 @@ class Sweep(
      * @param node - middle node, that is the bottom of the hole
      */
     fun fill(node: Node) {
-        val triangle = Triangle(node.prev!!.point, node.point, node.next!!.point, edgeContext)
+        val triangle = Triangle(node.prev!!.point, node.point, node.next!!.point)
 
         // TODO: should copy the constrained_edge value from neighbor triangles
         //       for now constrained_edge values are copied during the legalize
@@ -843,7 +843,7 @@ class SweepContext() {
 
     fun createAdvancingFront() {
         // Initial triangle
-        val triangle = Triangle(this.points.getPoint(0), this.tail, this.head, edgeContext)
+        val triangle = Triangle(this.points.getPoint(0), this.tail, this.head)
 
         addToSet(triangle)
 

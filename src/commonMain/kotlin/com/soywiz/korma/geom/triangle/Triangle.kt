@@ -85,11 +85,21 @@ fun ITriangle.pointInsideTriangle(pp: Point2d): Boolean = if (_product(p0, p1, p
     (_product(p0, p1, pp) <= 0) && (_product(p1, p2, pp)) <= 0 && (_product(p2, p0, pp) <= 0)
 }
 
+fun EdgeContext.getCommonEdge(t1: Triangle, t2: Triangle): Edge {
+    val commonIndexes = ArrayList<Point2d>()
+    for (n in 0 until 3) {
+        val point = t1.point(n)
+        if (t2.containsPoint(point)) commonIndexes.add(point)
+    }
+    if (commonIndexes.size != 2) throw Error("Triangles are not contiguous")
+    return createEdge(commonIndexes[0], commonIndexes[1])
+}
+
+
 fun Triangle(
     p0: Point2d,
     p1: Point2d,
     p2: Point2d,
-    ctx: EdgeContext = EdgeContext(),
     fixOrientation: Boolean = false,
     checkOrientation: Boolean = true
 ): Triangle {
@@ -106,15 +116,14 @@ fun Triangle(
         }
     }
     if (checkOrientation && Orientation.orient2d(p2, p1, p0) != Orientation.CW) throw(Error("Triangle must defined with Orientation.CW"))
-    return Triangle(true, p0, p1, p2, ctx)
+    return Triangle(true, p0, p1, p2)
 }
 
 data class Triangle internal constructor(
     val dummy: Boolean,
     override var p0: Point2d,
     override var p1: Point2d,
-    override var p2: Point2d,
-    val ctx: EdgeContext = EdgeContext()
+    override var p2: Point2d
 ) : ITriangle {
     var neighbors = arrayOfNulls<Triangle>(3) // Neighbor list
     var interior: Boolean = false // Has this triangle been marked as an interior triangle?
@@ -377,16 +386,6 @@ data class Triangle internal constructor(
         }
 
         fun getNotCommonVertex(t1: Triangle, t2: Triangle): Point2d = t1.point(getNotCommonVertexIndex(t1, t2))
-
-        fun getCommonEdge(t1: Triangle, t2: Triangle): Edge {
-            val commonIndexes = ArrayList<Point2d>()
-            for (n in 0 until 3) {
-                val point = t1.point(n)
-                if (t2.containsPoint(point)) commonIndexes.add(point)
-            }
-            if (commonIndexes.size != 2) throw Error("Triangles are not contiguous")
-            return t1.ctx.createEdge(commonIndexes[0], commonIndexes[1])
-        }
 
 
         /**

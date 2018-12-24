@@ -403,10 +403,11 @@ class TriangleTest {
     private val p6 = Point2d(+2, +1)
     private val pInside = Point2d(0.3, 0.3)
     private val pOutside = Point2d(+1, +1)
-    private val t1 = Triangle(p1, p2, p3, EdgeContext(), true) // CCW
-    private val t2 = Triangle(p3, p4, p2, EdgeContext(), true) // CW
-    private val t3 = Triangle(p4, p5, p3, EdgeContext(), true) // CCW
-    private val t4 = Triangle(p2, p4, p6, EdgeContext(), true) // CW
+    private val ec = EdgeContext()
+    private val t1 = Triangle(p1, p2, p3, true) // CCW
+    private val t2 = Triangle(p3, p4, p2, true) // CW
+    private val t3 = Triangle(p4, p5, p3, true) // CCW
+    private val t4 = Triangle(p2, p4, p6, true) // CW
 
     @Test
     fun testArea() {
@@ -431,12 +432,12 @@ class TriangleTest {
 
     @Test
     fun testContainsEdge() {
-        assertTrue(t1.containsEdge(t1.ctx.createEdge(p1, p2)))
-        assertTrue(t1.containsEdge(t1.ctx.createEdge(p2, p3)))
-        assertTrue(t1.containsEdge(t1.ctx.createEdge(p3, p1)))
-        assertFalse(t1.containsEdge(t1.ctx.createEdge(pInside, pOutside)))
-        assertFalse(t1.containsEdge(t1.ctx.createEdge(p1, pOutside)))
-        assertFalse(t1.containsEdge(t1.ctx.createEdge(pInside, p3)))
+        assertTrue(t1.containsEdge(ec.createEdge(p1, p2)))
+        assertTrue(t1.containsEdge(ec.createEdge(p2, p3)))
+        assertTrue(t1.containsEdge(ec.createEdge(p3, p1)))
+        assertFalse(t1.containsEdge(ec.createEdge(pInside, pOutside)))
+        assertFalse(t1.containsEdge(ec.createEdge(p1, pOutside)))
+        assertFalse(t1.containsEdge(ec.createEdge(pInside, p3)))
     }
 
     @Test
