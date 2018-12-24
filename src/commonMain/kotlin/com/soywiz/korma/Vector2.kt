@@ -44,15 +44,6 @@ interface Vector2 {
             }, swap = { p, l, r -> p.swap(l, r) })
         }
 
-        fun sortPoints(points: ArrayList<Vector2>): Unit {
-            points.sortWith(Comparator { l, r -> cmpPoints(l, r) })
-        }
-
-        private fun cmpPoints(l: Vector2, r: Vector2): Int {
-            val ret = l.y.compareTo(r.y)
-            return if (ret == 0) l.x.compareTo(r.x) else ret
-        }
-
         fun angle(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double): Double {
             val ax = x1 - x2
             val ay = y1 - y2

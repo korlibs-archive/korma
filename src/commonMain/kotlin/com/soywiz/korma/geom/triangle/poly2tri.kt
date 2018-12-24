@@ -43,6 +43,7 @@ package com.soywiz.korma.geom.triangle
 import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.Orientation
 import com.soywiz.korma.geom.Point2d
+import com.soywiz.korma.geom.ds.*
 import kotlin.collections.ArrayList
 import kotlin.collections.LinkedHashSet
 import kotlin.collections.List
@@ -286,7 +287,7 @@ class Sweep(
 
     fun sweepPoints(): Unit {
         for (i in 1 until this.context.points.size) {
-            val point: Point2d = this.context.points[i]
+            val point: Point2d = this.context.points.getPoint(i)
             val node: Node = this.pointEvent(point)
             val edgeList = edgeContext.getPointEdgeList(point)
             for (j in 0 until edgeList.size) {
@@ -802,7 +803,7 @@ class Sweep(
 
 class SweepContext() {
     var triangles: ArrayList<Triangle> = ArrayList<Triangle>()
-    var points: ArrayList<Point2d> = ArrayList<Point2d>()
+    var points: PointArrayList = PointArrayList()
     var edge_list: ArrayList<Edge> = ArrayList<Edge>()
     val edgeContext = EdgeContext()
 
@@ -852,17 +853,19 @@ class SweepContext() {
     }
 
     fun initTriangulation() {
-        var xmin: Double = this.points[0].x
-        var xmax: Double = this.points[0].x
-        var ymin: Double = this.points[0].y
-        var ymax: Double = this.points[0].y
+        var xmin: Double = this.points.getX(0)
+        var xmax: Double = this.points.getX(0)
+        var ymin: Double = this.points.getY(0)
+        var ymax: Double = this.points.getY(0)
 
         // Calculate bounds
-        for (p in this.points) {
-            if (p.x > xmax) xmax = p.x
-            if (p.x < xmin) xmin = p.x
-            if (p.y > ymax) ymax = p.y
-            if (p.y < ymin) ymin = p.y
+        for (n in 0 until this.points.size) {
+            val px = this.points.getX(n)
+            val py = this.points.getY(n)
+            if (px > xmax) xmax = px
+            if (px < xmin) xmin = px
+            if (py > ymax) ymax = py
+            if (py < ymin) ymin = py
         }
 
         val dx: Double = Constants.kAlpha * (xmax - xmin)
@@ -879,7 +882,7 @@ class SweepContext() {
 
     fun createAdvancingFront(): Unit {
         // Initial triangle
-        val triangle: Triangle = Triangle(this.points[0], this.tail, this.head, edgeContext)
+        val triangle: Triangle = Triangle(this.points.getPoint(0), this.tail, this.head, edgeContext)
 
         addToSet(triangle)
 
