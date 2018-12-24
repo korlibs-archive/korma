@@ -350,7 +350,7 @@ fun ISpatialTriangle.isEdgeSide(ep: Point2d, eq: Point2d): Boolean {
     return true
 }
 
-val ISpatialTriangle.area: Double get() = Triangle.area(p0, p1, p2)
+val ITriangle.area: Double get() = Triangle.area(p0, p1, p2)
 
 data class Triangle internal constructor(
     val dummy: Boolean,

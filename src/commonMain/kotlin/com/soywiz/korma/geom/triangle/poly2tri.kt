@@ -138,7 +138,8 @@ class Basin {
     }
 }
 
-class Edge internal constructor(
+data class Edge internal constructor(
+    val dummy: Boolean,
     val p: Point2d,
     val q: Point2d
 ) {
@@ -168,6 +169,14 @@ class Edge internal constructor(
 
 
     override fun toString(): String = "Edge(${this.p}, ${this.q})"
+}
+
+fun Edge(p1: Point2d, p2: Point2d): Edge {
+    val comp = Point2d.compare(p1, p2)
+    if (comp == 0) throw Error("Repeat points")
+    val p = if (comp < 0) p1 else p2
+    val q = if (comp < 0) p2 else p1
+    return Edge(true, p, q)
 }
 
 class EdgeEvent {
@@ -222,16 +231,7 @@ class Node(
 class EdgeContext {
     val pointsToEdgeLists = hashMapOf<Point2d, ArrayList<Edge>>()
     fun getPointEdgeList(point: Point2d) = pointsToEdgeLists.getOrPut(point) { arrayListOf() }
-    fun createEdge(p1: Point2d, p2: Point2d): Edge {
-        val comp = Point2d.compare(p1, p2)
-        return when (comp) {
-            +1 -> Edge(p2, p1)
-            -1 -> Edge(p1, p2)
-            else -> throw Error("Repeat points")
-        }.also {
-            getPointEdgeList(it.q).add(it)
-        }
-    }
+    fun createEdge(p1: Point2d, p2: Point2d): Edge = Edge(p1, p2).also { getPointEdgeList(it.q).add(it) }
 }
 
 class Sweep(

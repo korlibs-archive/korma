@@ -4,14 +4,25 @@ import com.soywiz.korma.geom.*
 import kotlin.math.*
 
 class SpatialMesh {
-    private var mapTriangleToSpatialNode = hashMapOf<ISpatialTriangle, Node>()
+    private var mapTriangleToSpatialNode = hashMapOf<ITriangle, Node>()
     var nodes = arrayListOf<Node>()
 
     @Suppress("ConvertSecondaryConstructorToPrimary")
-    constructor(triangles: Iterable<ISpatialTriangle>) {
+    constructor(triangles: Iterable<ITriangle>) {
         for (triangle in triangles) {
             val node = getNodeFromTriangle(triangle)
             if (node != null) nodes.add(node)
+        }
+
+        // Compute neighborhoods
+        for (node in nodes) {
+            for (edge in node.edges) {
+                for (rnode in edge.nodes) {
+                    if (rnode !== node) {
+                        node.neighbors += rnode
+                    }
+                }
+            }
         }
     }
 
@@ -27,7 +38,7 @@ class SpatialMesh {
         return null
     }
 
-    fun getNodeFromTriangle(triangle: ISpatialTriangle?): Node? {
+    fun getNodeFromTriangle(triangle: ITriangle?): Node? {
         if (triangle === null) return null
 
         if (!mapTriangleToSpatialNode.containsKey(triangle)) {
@@ -43,26 +54,39 @@ class SpatialMesh {
                 H = 0
             )
             mapTriangleToSpatialNode[triangle] = sn
-            sn.neighbors = arrayOf(
-                if (triangle.constrained_edge[0]) null else getNodeFromTriangle(triangle.neighbors[0]),
-                if (triangle.constrained_edge[1]) null else getNodeFromTriangle(triangle.neighbors[1]),
-                if (triangle.constrained_edge[2]) null else getNodeFromTriangle(triangle.neighbors[2])
-            )
         }
         return mapTriangleToSpatialNode[triangle]
     }
 
-    class Node(
-        var x: Double = 0.0,
-        var y: Double = 0.0,
-        var z: Double = 0.0,
-        var triangle: ITriangle? = null,
+    fun getNodeEdge(p0: Point2d, p1: Point2d): NodeEdge {
+        val edge = Edge(p0, p1)
+        return nodeEdges.getOrPut(edge) { NodeEdge(edge) }
+    }
+
+    private val nodeEdges = LinkedHashMap<Edge, NodeEdge>()
+    class NodeEdge(val edge: Edge) {
+        val nodes = arrayListOf<Node>()
+    }
+
+    inner class Node(
+        val x: Double,
+        val y: Double,
+        val z: Double,
+        val triangle: ITriangle,
         var G: Int = 0, // Cost
         var H: Int = 0, // Heuristic
-        var neighbors: Array<Node?> = arrayOfNulls(3),
         var parent: Node? = null,
         var closed: Boolean = false
     ) {
+        val neighbors: ArrayList<Node> = ArrayList()
+
+        // Edges
+        val e0 = getNodeEdge(triangle.p0, triangle.p1).also { it.nodes += this }
+        val e1 = getNodeEdge(triangle.p1, triangle.p2).also { it.nodes += this }
+        val e2 = getNodeEdge(triangle.p2, triangle.p0).also { it.nodes += this }
+
+        val edges = listOf(e0, e1, e2)
+
         val F: Int get() = G + H // F = G + H
 
         fun distanceToSpatialNode(that: Node): Int = hypot(this.x - that.x, this.y - that.y).toInt()
@@ -71,10 +95,8 @@ class SpatialMesh {
     }
 
     companion object {
-        fun fromTriangles(triangles: Iterable<ISpatialTriangle>): SpatialMesh = SpatialMesh(triangles)
+        fun fromTriangles(triangles: Iterable<ITriangle>): SpatialMesh = SpatialMesh(triangles)
     }
 
     override fun toString() = "SpatialMesh(" + nodes.toString() + ")"
 }
-
-typealias SpatialNode = SpatialMesh.Node

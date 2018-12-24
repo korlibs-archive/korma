@@ -4,6 +4,8 @@ import com.soywiz.kds.*
 import com.soywiz.korma.geom.*
 import kotlin.math.*
 
+private typealias SpatialNode = SpatialMesh.Node
+
 class SpatialMeshFind(val spatialMesh: SpatialMesh) {
     private var openedList = PriorityQueue<SpatialNode> { l, r -> l.F.compareTo(r.F) }
 
@@ -35,7 +37,6 @@ class SpatialMeshFind(val spatialMesh: SpatialMesh) {
 
                 for (neighborNode in getNodeNeighbors(currentNode)) {
                     // Ignore invalid paths and the ones on the closed list.
-                    if (neighborNode === null) continue
                     if (inClosedList(neighborNode)) continue
 
                     val G = currentNode.G + neighborNode.distanceToSpatialNode(currentNode)
@@ -77,7 +78,7 @@ class SpatialMeshFind(val spatialMesh: SpatialMesh) {
     private fun getAndRemoveFirstFromOpenedList(): SpatialNode = openedList.removeHead()
     private fun addNodeToClosedList(node: SpatialNode): Unit = run { node.closed = true }
     private fun inClosedList(node: SpatialNode): Boolean = node.closed
-    private fun getNodeNeighbors(node: SpatialNode): Array<SpatialNode?> = node.neighbors
+    private fun getNodeNeighbors(node: SpatialNode): ArrayList<SpatialNode> = node.neighbors
     private fun inOpenedList(node: SpatialNode): Boolean = openedList.contains(node)
 
     private fun updatedNodeOnOpenedList(node: SpatialNode): Unit {
