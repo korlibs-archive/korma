@@ -8,7 +8,8 @@ import kotlin.test.*
 class EdgeTest {
     private var p1: Point2d = Point2d(0, 0)
     private var p2: Point2d = Point2d(-1, 0)
-    private var e1: Edge = EdgeContext().createEdge(p1, p2)
+    val edgeContext = EdgeContext()
+    private var e1: Edge = edgeContext.createEdge(p1, p2)
 
     @Test
     fun testInstantiated() {
@@ -26,7 +27,7 @@ class EdgeTest {
     @Test
     fun testInEdgeList() {
         // q contains the edge_list
-        assertTrue(e1.ctx.getPointEdgeList(e1.q).indexOf(e1) != -1)
+        assertTrue(edgeContext.getPointEdgeList(e1.q).indexOf(e1) != -1)
     }
 }
 

@@ -46,14 +46,20 @@ import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.internal.*
 import kotlin.math.abs
 
+interface ITriangle {
+    val p1: Point2d
+    val p2: Point2d
+    val p3: Point2d
+}
+
 data class Triangle(
-    var p1: Point2d,
-    var p2: Point2d,
-    var p3: Point2d,
+    override var p1: Point2d,
+    override var p2: Point2d,
+    override var p3: Point2d,
     val ctx: EdgeContext = EdgeContext(),
     var fixOrientation: Boolean = false,
     var checkOrientation: Boolean = true
-) {
+) : ITriangle {
     var points = arrayOf(p1, p2, p3)
     var neighbors = arrayOfNulls<Triangle>(3) // Neighbor list
     var interior: Boolean = false // Has this triangle been marked as an interior triangle?

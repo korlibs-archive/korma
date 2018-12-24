@@ -138,36 +138,10 @@ class Basin {
     }
 }
 
-class Edge(
-    var p1: Point2d,
-    var p2: Point2d,
-    @Suppress("CanBeParameter") val ctx: EdgeContext
+class Edge internal constructor(
+    val p: Point2d,
+    val q: Point2d
 ) {
-    var p: Point2d
-    var q: Point2d
-
-    /// Constructor
-    init {
-        val swap = when {
-            p1.y > p2.y -> true
-            p1.y == p2.y -> {
-                if (p1.x == p2.x) throw Error("Repeat points")
-                (p1.x > p2.x)
-            }
-            else -> false
-        }
-
-        if (swap) {
-            this.q = p1
-            this.p = p2
-        } else {
-            this.p = p1
-            this.q = p2
-        }
-
-        ctx.getPointEdgeList(this.q).add(this)
-    }
-
     @Suppress("unused")
     fun hasPoint(point: Point2d): Boolean = (p == point) || (q == point)
 
@@ -248,7 +222,16 @@ class Node(
 class EdgeContext {
     val pointsToEdgeLists = hashMapOf<Point2d, ArrayList<Edge>>()
     fun getPointEdgeList(point: Point2d) = pointsToEdgeLists.getOrPut(point) { arrayListOf() }
-    fun createEdge(p1: Point2d, p2: Point2d): Edge = Edge(p1, p2, this)
+    fun createEdge(p1: Point2d, p2: Point2d): Edge {
+        val comp = Point2d.compare(p1, p2)
+        return when (comp) {
+            +1 -> Edge(p2, p1)
+            -1 -> Edge(p1, p2)
+            else -> throw Error("Repeat points")
+        }.also {
+            getPointEdgeList(it.q).add(it)
+        }
+    }
 }
 
 class Sweep(
@@ -814,7 +797,7 @@ class SweepContext() {
 
     private fun initEdges(polyline: List<Point2d>) {
         for (n in 0 until polyline.size) {
-            this.edgeList.add(Edge(polyline[n], polyline[(n + 1) % polyline.size], edgeContext))
+            this.edgeList.add(edgeContext.createEdge(polyline[n], polyline[(n + 1) % polyline.size]))
         }
     }
 

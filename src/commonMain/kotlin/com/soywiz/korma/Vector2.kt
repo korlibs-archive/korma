@@ -25,7 +25,6 @@ interface Vector2 {
         inline operator fun invoke(xy: Number): Vector2 = IVector2(xy.toDouble(), xy.toDouble())
         inline operator fun invoke(x: Number, y: Number): Vector2 = IVector2(x.toDouble(), y.toDouble())
 
-
         fun middle(a: Vector2, b: Vector2): MVector2 = MVector2((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
 
         fun angle(a: Vector2, b: Vector2): Double = acos((a.dot(b)) / (a.length * b.length))
@@ -39,18 +38,20 @@ interface Vector2 {
 
         object PointSorter : SortOps<PointArrayList>() {
             override fun compare(p: PointArrayList, l: Int, r: Int): Int {
-                val lx = p.getX(l)
-                val ly = p.getY(l)
-                val rx = p.getX(r)
-                val ry = p.getY(r)
-                val ret = ly.compareTo(ry)
-                return if (ret == 0) lx.compareTo(rx) else ret
+                return compare(p.getX(l), p.getY(l), p.getX(r), p.getY(r))
             }
 
             override fun swap(subject: PointArrayList, indexL: Int, indexR: Int) {
                 subject.swap(indexL, indexR)
             }
         }
+
+        fun compare(lx: Double, ly: Double, rx: Double, ry: Double): Int {
+            val ret = ly.compareTo(ry)
+            return if (ret == 0) lx.compareTo(rx) else ret
+        }
+
+        fun compare(l: Vector2, r: Vector2): Int = compare(l.x, l.y, r.x, r.y)
 
         fun angle(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double): Double {
             val ax = x1 - x2
