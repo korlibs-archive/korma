@@ -3,10 +3,10 @@ package com.soywiz.korma
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class Matrix4Test {
+class Matrix3DTest {
     @Test
     fun testMatrix4() {
-        val matrix = Matrix4()
+        val matrix = Matrix3D()
         val identityData = listOf(
             1, 0, 0, 0,
             0, 1, 0, 0,

@@ -1,9 +1,7 @@
 package com.soywiz.korma.geom
 
-import com.soywiz.korma.internal.umod
-import kotlin.math.PI
-import kotlin.math.absoluteValue
-import kotlin.math.atan2
+import com.soywiz.korma.internal.*
+import kotlin.math.*
 
 inline class Angle(val radians: Double) {
     override fun toString(): String = "Angle($degrees)"
@@ -59,7 +57,7 @@ inline class Angle(val radians: Double) {
         fun between(x0: Double, y0: Double, x1: Double, y1: Double): Angle =
             Angle.fromRadians(betweenRad(x0, y0, x1, y1))
 
-        fun betweenRad(p0: Point2d, p1: Point2d): Double = betweenRad(p0.x, p0.y, p1.x, p1.y)
+        fun betweenRad(p0: Point2d, p1: Point2d): Double = betweenRad(p0.x.toDouble(), p0.y.toDouble(), p1.x.toDouble(), p1.y.toDouble()).toDouble()
         fun between(p0: Point2d, p1: Point2d): Angle = Angle.fromRadians(betweenRad(p0, p1))
     }
 }

@@ -160,10 +160,10 @@ class SpatialMeshFind(val spatialMesh: SpatialMesh) {
                     val ay = b.y - a.y
                     val bx = c.x - a.x
                     val by = c.y - a.y
-                    return bx * ay - ax * by
+                    return (bx * ay - ax * by).toDouble()
                 }
 
-                private fun vdistsqr(a: Point2d, b: Point2d): Double = hypot(b.x - a.x, b.y - a.y)
+                private fun vdistsqr(a: Point2d, b: Point2d): Double = hypot(b.x - a.x, b.y - a.y).toDouble()
 
                 private fun vequal(a: Point2d, b: Point2d): Boolean = vdistsqr(a, b) < (0.001 * 0.001)
             }

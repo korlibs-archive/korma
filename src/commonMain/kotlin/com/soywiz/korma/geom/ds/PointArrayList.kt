@@ -1,18 +1,20 @@
 package com.soywiz.korma.geom.ds
 
 import com.soywiz.kds.*
+import com.soywiz.korma.*
+import com.soywiz.korma.algo.*
 import com.soywiz.korma.geom.*
 import kotlin.math.*
 
 interface IPointArrayList {
     val size: Int
-    fun getX(index: Int): Double
-    fun getY(index: Int): Double
+    fun getX(index: Int): Float
+    fun getY(index: Int): Float
 }
 
 class PointArrayList(capacity: Int = 7) : IPointArrayList {
-    private val xList = DoubleArrayList(capacity)
-    private val yList = DoubleArrayList(capacity)
+    private val xList = FloatArrayList(capacity)
+    private val yList = FloatArrayList(capacity)
     override val size get() = xList.size
 
     fun isEmpty() = size == 0
@@ -25,12 +27,12 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
         }
     }
 
-    fun add(x: Double, y: Double) = this.apply {
+    fun add(x: Float, y: Float) = this.apply {
         xList += x
         yList += y
     }
 
-    inline fun add(x: Number, y: Number) = add(x.toDouble(), y.toDouble())
+    inline fun add(x: Number, y: Number) = add(x.toFloat(), y.toFloat())
 
     fun add(p: Point2d) = add(p.x, p.y)
 
@@ -38,8 +40,8 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
         for (n in 0 until other.size) add(other.getX(n), other.getY(n))
     }
 
-    override fun getX(index: Int) = xList[index]
-    override fun getY(index: Int) = yList[index]
+    override fun getX(index: Int): Float = xList[index]
+    override fun getY(index: Int): Float = yList[index]
 
     override fun toString(): String {
         val sb = StringBuilder()
@@ -66,17 +68,20 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     }
 }
 
-fun DoubleArrayList.swap(indexA: Int, indexB: Int) {
+private fun FloatArrayList.swap(indexA: Int, indexB: Int) {
     val tmp = this[indexA]
     this[indexA] = this[indexB]
     this[indexB] = tmp
 }
 
+fun PointArrayList.sort() = genericSort(this, 0, this.size - 1, Vector2.Companion.Vector2Sorter)
+
+
 fun IPointArrayList.getPoint(index: Int) = Point2d(getX(index), getY(index))
 fun IPointArrayList.toPoints() = (0 until size).map { getPoint(it) }
-fun IPointArrayList.contains(x: Double, y: Double): Boolean {
+fun IPointArrayList.contains(x: Float, y: Float): Boolean {
     for (n in 0 until size) if (getX(n) == x && getY(n) == y) return true
     return false
 }
 
-inline fun IPointArrayList.contains(x: Number, y: Number): Boolean = contains(x.toDouble(), y.toDouble())
+inline fun IPointArrayList.contains(x: Number, y: Number): Boolean = contains(x.toFloat(), y.toFloat())

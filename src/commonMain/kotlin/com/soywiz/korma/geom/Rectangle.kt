@@ -59,7 +59,7 @@ data class Rectangle(
     fun setBounds(left: Double, top: Double, right: Double, bottom: Double) =
         setTo(left, top, right - left, bottom - top)
 
-    fun setBounds(left: Int, top: Int, right: Int, bottom: Int) = setTo(left, top, right - left, bottom - top)
+    inline fun setBounds(left: Number, top: Number, right: Number, bottom: Number) = setBounds(left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble())
 
     operator fun times(scale: Double) = Rectangle(x * scale, y * scale, width * scale, height * scale)
     operator fun div(scale: Double) = Rectangle(x / scale, y / scale, width / scale, height / scale)

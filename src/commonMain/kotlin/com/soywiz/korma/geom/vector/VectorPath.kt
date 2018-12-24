@@ -182,6 +182,7 @@ open class VectorPath(
     }
 
     private val bezierTemp = Bezier.Temp()
+    private val tempRect = Rectangle()
 
     fun appendBounds(bb: BoundsBuilder) {
         var lx = 0.0
@@ -199,12 +200,12 @@ open class VectorPath(
                 ly = y
             },
             quadTo = { cx, cy, ax, ay ->
-                bb.add(Bezier.quadBounds(lx, ly, cx, cy, ax, ay, bb.tempRect))
+                bb.add(Bezier.quadBounds(lx, ly, cx, cy, ax, ay, tempRect))
                 lx = ax
                 ly = ay
             },
             cubicTo = { cx1, cy1, cx2, cy2, ax, ay ->
-                bb.add(Bezier.cubicBounds(lx, ly, cx1, cy1, cx2, cy2, ax, ay, bb.tempRect, bezierTemp))
+                bb.add(Bezier.cubicBounds(lx, ly, cx1, cy1, cx2, cy2, ax, ay, tempRect, bezierTemp))
                 lx = ax
                 ly = ay
             },

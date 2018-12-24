@@ -242,7 +242,7 @@ class PointTest {
 
     @Test
     fun testNormalize() {
-        assertNotEquals(p3.length, 1.0)
+        assertNotEquals(p3.length, 1f)
         p3.normalize(); assertEqualsDouble(p3.length, 1.0, DELTA_FLOAT)
         p1.normalize(); assertEqualsDouble(p1.length, 1.0, DELTA_FLOAT)
         p2.normalize(); assertEqualsDouble(p2.length, 1.0, DELTA_FLOAT)

@@ -56,7 +56,7 @@ interface Triangle {
     companion object {
         fun area(p1: Point2d, p2: Point2d, p3: Point2d): Double = area(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
 
-        fun area(ax: Double, ay: Double, bx: Double, by: Double, cx: Double, cy: Double): Double {
+        fun area(ax: Float, ay: Float, bx: Float, by: Float, cx: Float, cy: Float): Double {
             val a = bx - ax
             val b = by - ay
             val c = cx - ax
@@ -129,10 +129,10 @@ interface Triangle {
          * @return true if d is inside circle, false if on circle edge
          */
         fun insideIncircle(pa: Point2d, pb: Point2d, pc: Point2d, pd: Point2d): Boolean {
-            val adx: Double = pa.x - pd.x
-            val ady: Double = pa.y - pd.y
-            val bdx: Double = pb.x - pd.x
-            val bdy: Double = pb.y - pd.y
+            val adx: Double = (pa.x - pd.x).toDouble()
+            val ady: Double = (pa.y - pd.y).toDouble()
+            val bdx: Double = (pb.x - pd.x).toDouble()
+            val bdy: Double = (pb.y - pd.y).toDouble()
 
             val adxbdy: Double = adx * bdy
             val bdxady: Double = bdx * ady
@@ -140,8 +140,8 @@ interface Triangle {
 
             if (oabd <= 0) return false
 
-            val cdx: Double = pc.x - pd.x
-            val cdy: Double = pc.y - pd.y
+            val cdx: Double = (pc.x - pd.x).toDouble()
+            val cdy: Double = (pc.y - pd.y).toDouble()
 
             val cdxady: Double = cdx * ady
             val adxcdy: Double = adx * cdy
@@ -161,8 +161,8 @@ interface Triangle {
         }
 
         fun inScanArea(pa: Point2d, pb: Point2d, pc: Point2d, pd: Point2d): Boolean {
-            val pdx: Double = pd.x
-            val pdy: Double = pd.y
+            val pdx: Double = pd.x.toDouble()
+            val pdy: Double = pd.y.toDouble()
             val adx: Double = pa.x - pdx
             val ady: Double = pa.y - pdy
             val bdx: Double = pb.x - pdx
@@ -213,7 +213,7 @@ fun Triangle.containsEdge(edge: Edge): Boolean = containsEdgePoints(edge.p, edge
 fun Triangle.containsEdgePoints(p1: Point2d, p2: Point2d): Boolean = containsPoint(p1) && containsPoint(p2)
 
 private fun _product(p1: Point2d, p2: Point2d, p3: Point2d): Double =
-    (p1.x - p3.x) * (p2.y - p3.y) - (p1.y - p3.y) * (p2.x - p3.x)
+    ((p1.x - p3.x) * (p2.y - p3.y) - (p1.y - p3.y) * (p2.x - p3.x)).toDouble()
 
 fun Triangle.pointInsideTriangle(pp: Point2d): Boolean = if (_product(p0, p1, p2) >= 0) {
     (_product(p0, p1, pp) >= 0) && (_product(p1, p2, pp)) >= 0 && (_product(p2, p0, pp) >= 0)

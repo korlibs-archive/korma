@@ -125,7 +125,7 @@ fun List<Point2d>.containsPoint(x: Double, y: Double): Boolean {
     for (n in 0 until this.size - 1) {
         val p1 = this[n + 0]
         val p2 = this[n + 1]
-        intersections += HorizontalLine.intersectionsWithLine(x, y, p1.x, p1.y, p2.x, p2.y)
+        intersections += HorizontalLine.intersectionsWithLine(x, y, p1.x.toDouble(), p1.y.toDouble(), p2.x.toDouble(), p2.y.toDouble())
     }
     return (intersections % 2) != 0
 }

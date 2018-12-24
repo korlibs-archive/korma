@@ -1,6 +1,6 @@
 package com.soywiz.korma
 
-class Matrix4(
+class Matrix3D(
     val data: FloatArray = floatArrayOf(
         1f, 0f, 0f, 0f,
         0f, 1f, 0f, 0f,
@@ -13,10 +13,10 @@ class Matrix4(
     operator fun set(x: Int, y: Int, value: Float) = run { data[index(x, y)] = value }
 
     companion object {
-        operator fun invoke(vararg data: Float) = Matrix4(data)
+        operator fun invoke(vararg data: Float) = Matrix3D(data)
     }
 
-    fun transpose(temp: Matrix4 = Matrix4(), tempLine: FloatArray = FloatArray(4)): Matrix4 {
+    fun transpose(temp: Matrix3D = Matrix3D(), tempLine: FloatArray = FloatArray(4)): Matrix3D {
         temp.copyFrom(this)
         this.setRow(0, temp.getColumn(0, tempLine))
         this.setRow(1, temp.getColumn(1, tempLine))
@@ -42,7 +42,7 @@ class Matrix4(
         return target
     }
 
-    fun setRow(n: Int, a: Float, b: Float, c: Float, d: Float): Matrix4 {
+    fun setRow(n: Int, a: Float, b: Float, c: Float, d: Float): Matrix3D {
         val m = n * 4
         data[m + 0] = a
         data[m + 1] = b
@@ -51,10 +51,10 @@ class Matrix4(
         return this
     }
 
-    fun setRow(n: Int, data: FloatArray): Matrix4 = setRow(n, data[0], data[1], data[2], data[3])
-    fun setColumn(n: Int, data: FloatArray): Matrix4 = setColumn(n, data[0], data[1], data[2], data[3])
+    fun setRow(n: Int, data: FloatArray): Matrix3D = setRow(n, data[0], data[1], data[2], data[3])
+    fun setColumn(n: Int, data: FloatArray): Matrix3D = setColumn(n, data[0], data[1], data[2], data[3])
 
-    fun setColumn(n: Int, a: Float, b: Float, c: Float, d: Float): Matrix4 {
+    fun setColumn(n: Int, a: Float, b: Float, c: Float, d: Float): Matrix3D {
         data[n + 0] = a
         data[n + 4] = b
         data[n + 8] = c
@@ -67,7 +67,7 @@ class Matrix4(
         a1: Float, b1: Float, c1: Float, d1: Float,
         a2: Float, b2: Float, c2: Float, d2: Float,
         a3: Float, b3: Float, c3: Float, d3: Float
-    ): Matrix4 = this.apply {
+    ): Matrix3D = this.apply {
         setRow(0, a0, b0, c0, d0)
         setRow(1, a1, b1, c1, d1)
         setRow(2, a2, b2, c2, d2)
@@ -83,7 +83,7 @@ class Matrix4(
         )
     }
 
-    fun setToMultiply(l: Matrix4, r: Matrix4) {
+    fun setToMultiply(l: Matrix3D, r: Matrix3D) {
         multiply(this.data, l.data, r.data)
     }
 
@@ -136,12 +136,12 @@ class Matrix4(
         return out
     }
 
-    fun copyFrom(that: Matrix4): Matrix4 {
+    fun copyFrom(that: Matrix3D): Matrix3D {
         for (n in 0 until 16) this.data[n] = that.data[n]
         return this
     }
 
-    fun setToOrtho(left: Float, top: Float, right: Float, bottom: Float, near: Float, far: Float): Matrix4 {
+    fun setToOrtho(left: Float, top: Float, right: Float, bottom: Float, near: Float, far: Float): Matrix3D {
         val lr = 1 / (left - right)
         val bt = 1 / (bottom - top)
         val nf = 1 / (near - far)
@@ -156,5 +156,5 @@ class Matrix4(
 
     override fun toString(): String = "Matrix4(${data.toList()})"
 
-    fun clone(): Matrix4 = Matrix4(data.copyOf())
+    fun clone(): Matrix3D = Matrix3D(data.copyOf())
 }

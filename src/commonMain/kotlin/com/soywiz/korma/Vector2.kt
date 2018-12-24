@@ -8,8 +8,8 @@ import com.soywiz.korma.interpolation.*
 import kotlin.math.*
 
 interface Vector2 {
-    val x: Double
-    val y: Double
+    val x: Float
+    val y: Float
 
     companion object {
         val Zero = Vector2(0, 0)
@@ -21,39 +21,30 @@ interface Vector2 {
         val Right = Vector2(+1, 0)
 
         operator fun invoke(v: Vector2): Vector2 = Vector2(v.x, v.y)
-        inline operator fun invoke(): Vector2 = IVector2(0.0, 0.0)
-        inline operator fun invoke(xy: Number): Vector2 = IVector2(xy.toDouble(), xy.toDouble())
-        inline operator fun invoke(x: Number, y: Number): Vector2 = IVector2(x.toDouble(), y.toDouble())
+        inline operator fun invoke(): Vector2 = IVector2(0f, 0f)
+        inline operator fun invoke(xy: Number): Vector2 = IVector2(xy.toFloat(), xy.toFloat())
+        inline operator fun invoke(x: Number, y: Number): Vector2 = IVector2(x.toFloat(), y.toFloat())
 
-        fun middle(a: Vector2, b: Vector2): MVector2 = MVector2((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
+        fun middle(a: Vector2, b: Vector2): MVector2 = MVector2((a.x + b.x) * 0.5f, (a.y + b.y) * 0.5f)
 
-        fun angle(a: Vector2, b: Vector2): Double = acos((a.dot(b)) / (a.length * b.length))
+        fun angle(a: Vector2, b: Vector2): Float = acos((a.dot(b)) / (a.length * b.length))
 
-        fun angle(ax: Double, ay: Double, bx: Double, by: Double): Double =
+        fun angle(ax: Float, ay: Float, bx: Float, by: Float): Float =
             acos(((ax * bx) + (ay * by)) / (hypot(ax, ay) * hypot(bx, by)))
 
-        fun sortPoints(points: PointArrayList): Unit {
-            genericSort(points, 0, points.size - 1, PointSorter)
+        object Vector2Sorter : SortOps<PointArrayList>() {
+            override fun PointArrayList.compare(l: Int, r: Int): Int = compare(getX(l), getY(l), getX(r), getY(r))
+            override fun PointArrayList.swapIndices(l: Int, r: Int) = this.swap(l, r)
         }
 
-        object PointSorter : SortOps<PointArrayList>() {
-            override fun compare(p: PointArrayList, l: Int, r: Int): Int {
-                return compare(p.getX(l), p.getY(l), p.getX(r), p.getY(r))
-            }
-
-            override fun swap(subject: PointArrayList, indexL: Int, indexR: Int) {
-                subject.swap(indexL, indexR)
-            }
-        }
-
-        fun compare(lx: Double, ly: Double, rx: Double, ry: Double): Int {
+        fun compare(lx: Float, ly: Float, rx: Float, ry: Float): Int {
             val ret = ly.compareTo(ry)
             return if (ret == 0) lx.compareTo(rx) else ret
         }
 
         fun compare(l: Vector2, r: Vector2): Int = compare(l.x, l.y, r.x, r.y)
 
-        fun angle(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double): Double {
+        fun angle(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float): Float {
             val ax = x1 - x2
             val ay = y1 - y2
             val al = hypot(ax, ay)
@@ -77,7 +68,7 @@ interface Vector2 {
 
 
 @PublishedApi
-internal class IVector2(override val x: Double, override val y: Double) : Vector2.Base(), Interpolable<Vector2> {
+internal class IVector2(override val x: Float, override val y: Float) : Vector2.Base(), Interpolable<Vector2> {
     override fun interpolateWith(other: Vector2, ratio: Double): Vector2 {
         return Vector2(
             ratio.interpolate(this.x, other.x),
@@ -86,37 +77,36 @@ internal class IVector2(override val x: Double, override val y: Double) : Vector
     }
 }
 
-class MVector2(override var x: Double = 0.0, override var y: Double = x) :
-    MutableInterpolable<MVector2>, Interpolable<MVector2>, Vector2.Base() {
+class MVector2(override var x: Float = 0f, override var y: Float = x) : MutableInterpolable<MVector2>, Interpolable<MVector2>, Vector2.Base() {
 
-    constructor(x: Float, y: Float) : this(x.toDouble(), y.toDouble())
-    constructor(x: Int, y: Int) : this(x.toDouble(), y.toDouble())
-    constructor(x: Long, y: Long) : this(x.toDouble(), y.toDouble())
-    constructor(v: Vector2) : this(v.x, v.y)
-    //inline constructor(x: Number, y: Number) : this(x.toDouble(), y.toDouble()) // @TODO: Suggest to avoid boxing?
+    companion object {
+        inline operator fun invoke(v: Vector2) = MVector2(v.x, v.y)
+    	inline operator fun invoke(x: Number, y: Number) = MVector2(x.toFloat(), y.toFloat())
+    }
 
-    inline fun setTo(x: Number, y: Number): MVector2 = setTo(x.toDouble(), y.toDouble())
+    inline fun setTo(x: Number, y: Number): MVector2 = setTo(x.toFloat(), y.toFloat())
 
-    fun setTo(x: Double, y: Double): MVector2 {
+    fun setTo(x: Float, y: Float): MVector2 {
         this.x = x
         this.y = y
         return this
     }
 
-    fun setToZero() = setTo(0.0, 0.0)
+    fun setToZero() = setTo(0f, 0f)
 
     /// Negate this point.
     fun neg() = setTo(-x, -y)
 
-    fun mul(s: Double) = setTo(x * s, y * s)
+    fun mul(s: Float) = setTo(x * s, y * s)
+    inline fun mul(s: Number) = mul(s.toFloat())
     fun add(p: Vector2) = this.setToAdd(this, p)
     fun sub(p: Vector2) = this.setToSub(this, p)
 
     fun copyFrom(that: Vector2) = setTo(that.x, that.y)
 
-    fun setToTransform(mat: IMatrix2d, p: Vector2): MVector2 = setToTransform(mat, p.x, p.y)
+    fun setToTransform(mat: IMatrix, p: Vector2): MVector2 = setToTransform(mat, p.x.toFloat(), p.y.toFloat())
 
-    fun setToTransform(mat: IMatrix2d, x: Double, y: Double): MVector2 = setTo(
+    fun setToTransform(mat: IMatrix, x: Float, y: Float): MVector2 = setTo(
         mat.transformX(x, y),
         mat.transformY(x, y)
     )
@@ -125,10 +115,10 @@ class MVector2(override var x: Double = 0.0, override var y: Double = x) :
     fun setToSub(a: Vector2, b: Vector2): MVector2 = setTo(a.x - b.x, a.y - b.y)
 
     fun setToMul(a: Vector2, b: Vector2): MVector2 = setTo(a.x * b.x, a.y * b.y)
-    fun setToMul(a: Vector2, s: Double): MVector2 = setTo(a.x * s, a.y * s)
+    fun setToMul(a: Vector2, s: Float): MVector2 = setTo(a.x * s, a.y * s)
 
     fun setToDiv(a: Vector2, b: Vector2): MVector2 = setTo(a.x / b.x, a.y / b.y)
-    fun setToDiv(a: Vector2, s: Double): MVector2 = setTo(a.x / s, a.y / s)
+    fun setToDiv(a: Vector2, s: Float): MVector2 = setTo(a.x / s, a.y / s)
 
     operator fun plusAssign(that: Vector2) {
         setTo(this.x + that.x, this.y + that.y)
@@ -139,12 +129,9 @@ class MVector2(override var x: Double = 0.0, override var y: Double = x) :
         this.setTo(this.x / len, this.y / len)
     }
 
-    val length: Double get() = hypot(x, y)
-    /*
+    val length: Float get() = hypot(x, y)
 
-    */
-
-    fun distanceTo(x: Double, y: Double) = hypot(x - this.x, y - this.y)
+    fun distanceTo(x: Float, y: Float) = hypot(x - this.x, y - this.y)
     fun distanceTo(that: Vector2) = distanceTo(that.x, that.y)
 
     override fun interpolateWith(other: MVector2, ratio: Double): MVector2 =
@@ -156,15 +143,15 @@ class MVector2(override var x: Double = 0.0, override var y: Double = x) :
 
 @Deprecated("", ReplaceWith("vec(x, y)"))
 inline fun Vec(x: Number, y: Number): Vector2 = vec(x, y)
-inline fun vec(x: Number, y: Number): Vector2 = MVector2(x.toDouble(), y.toDouble())
+inline fun vec(x: Number, y: Number): Vector2 = MVector2(x.toFloat(), y.toFloat())
 
 val MVector2.unit: Vector2 get() = this / length
 /*
 operator fun MVector2.plus(that: Vector2) = MVector2(this.x + that.x, this.y + that.y)
 operator fun MVector2.minus(that: Vector2) = MVector2(this.x - that.x, this.y - that.y)
 operator fun MVector2.times(that: Vector2) = this.x * that.x + this.y * that.y
-operator fun MVector2.times(v: Double) = MVector2(x * v, y * v)
-operator fun MVector2.div(v: Double) = MVector2(x / v, y / v)
+operator fun MVector2.times(v: Float) = MVector2(x * v, y * v)
+operator fun MVector2.div(v: Float) = MVector2(x / v, y / v)
 */
 
 // @TODO: mul instead of dot
@@ -174,19 +161,23 @@ operator fun Vector2.minus(that: Vector2): Vector2 = Vector2(this.x - that.x, th
 operator fun Vector2.times(that: Vector2): Vector2 = Vector2(this.x * that.x, this.y * that.y)
 operator fun Vector2.div(that: Vector2): Vector2 = Vector2(this.x / that.x, this.y / that.y)
 
-operator fun Vector2.times(scale: Double): Vector2 = Vector2(this.x * scale, this.y * scale)
-operator fun Vector2.div(scale: Double): Vector2 = Vector2(this.x / scale, this.y / scale)
+operator fun Vector2.times(scale: Float): Vector2 = Vector2(this.x * scale, this.y * scale)
+operator fun Vector2.div(scale: Float): Vector2 = Vector2(this.x / scale, this.y / scale)
+
+inline operator fun Vector2.times(scale: Number): Vector2 = Vector2(this.x * scale.toFloat(), this.y * scale.toFloat())
+inline operator fun Vector2.div(scale: Number): Vector2 = Vector2(this.x / scale.toFloat(), this.y / scale.toFloat())
 
 infix fun Vector2.dot(that: Vector2) = this.x * that.x + this.y * that.y
 //infix fun Vector2.mul(that: Vector2) = Vector2(this.x * that.x, this.y * that.y)
-fun Vector2.distanceTo(x: Double, y: Double) = hypot(x - this.x, y - this.y)
+fun Vector2.distanceTo(x: Float, y: Float) = hypot(x - this.x, y - this.y)
+inline fun Vector2.distanceTo(x: Number, y: Number) = distanceTo(x.toFloat(), y.toFloat())
 
 fun Vector2.distanceTo(that: Vector2) = distanceTo(that.x, that.y)
 
-fun Vector2.angleToRad(other: Vector2): Double = Angle.betweenRad(this.x, this.y, other.x, other.y)
-fun Vector2.angleTo(other: Vector2): Angle = Angle.between(this.x, this.y, other.x, other.y)
+fun Vector2.angleToRad(other: Vector2): Float = Angle.betweenRad(this.x.toDouble(), this.y.toDouble(), other.x.toDouble(), other.y.toDouble()).toFloat()
+fun Vector2.angleTo(other: Vector2): Angle = Angle.between(this.x.toDouble(), this.y.toDouble(), other.x.toDouble(), other.y.toDouble())
 
-fun Vector2.transformed(mat: IMatrix2d, out: MVector2 = MVector2()): MVector2 = out.setToTransform(mat, this)
+fun Vector2.transformed(mat: IMatrix, out: MVector2 = MVector2()): MVector2 = out.setToTransform(mat, this)
 
 operator fun Vector2.get(index: Int) = when (index) {
     0 -> x; 1 -> y
@@ -194,11 +185,11 @@ operator fun Vector2.get(index: Int) = when (index) {
 }
 
 val Vector2.unit: Vector2 get() = this / this.length
-val Vector2.length: Double get() = hypot(x, y)
-val Vector2.magnitude: Double get() = hypot(x, y)
+val Vector2.length: Float get() = hypot(x, y)
+val Vector2.magnitude: Float get() = hypot(x, y)
 val Vector2.normalized: Vector2
     get() {
-        val imag = 1.0 / magnitude
+        val imag = 1f / magnitude
         return Vector2(x * imag, y * imag)
     }
 
@@ -235,7 +226,7 @@ val Vector2Int.mutable: MVector2Int get() = MVector2Int(x, y)
 val Vector2Int.immutable: Vector2Int get() = Vector2Int(x, y)
 
 val Vector2.int get() = Vector2Int(x.toInt(), y.toInt())
-val Vector2Int.double get() = Vector2(x.toDouble(), y.toDouble())
+val Vector2Int.double get() = Vector2(x.toFloat(), y.toFloat())
 
 @Suppress("NOTHING_TO_INLINE")
 class MVector2Area(val size: Int) {
@@ -251,10 +242,10 @@ class MVector2Area(val size: Int) {
     operator fun Vector2.minus(other: Vector2): Vector2 = alloc().setToSub(this, other)
 
     operator fun Vector2.times(value: Vector2): Vector2 = alloc().setToMul(this, value)
-    inline operator fun Vector2.times(value: Number): Vector2 = alloc().setToMul(this, value.toDouble())
+    inline operator fun Vector2.times(value: Number): Vector2 = alloc().setToMul(this, value.toFloat())
 
     operator fun Vector2.div(value: Vector2): Vector2 = alloc().setToDiv(this, value)
-    inline operator fun Vector2.div(value: Number): Vector2 = alloc().setToDiv(this, value.toDouble())
+    inline operator fun Vector2.div(value: Number): Vector2 = alloc().setToDiv(this, value.toFloat())
 
     inline operator fun invoke(callback: MVector2Area.() -> Unit) {
         val oldOffset = offset

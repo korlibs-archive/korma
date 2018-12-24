@@ -4,8 +4,6 @@ import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.ds.*
 
 class BoundsBuilder {
-    val tempRect = Rectangle()
-
     private var xmin = Double.MAX_VALUE
     private var xmax = Double.MIN_VALUE
     private var ymin = Double.MAX_VALUE
@@ -25,6 +23,8 @@ class BoundsBuilder {
         ymax = kotlin.math.max(ymax, y)
         //println("add($x, $y) -> ($xmin,$ymin)-($xmax,$ymax)")
     }
+
+    inline fun add(x: Number, y: Number) = add(x.toDouble(), y.toDouble())
 
     fun getBounds(out: Rectangle = Rectangle()): Rectangle = out.setBounds(xmin, ymin, xmax, ymax)
 }
