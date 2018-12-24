@@ -1,4 +1,4 @@
-package com.soywiz.korma.sort
+package com.soywiz.korma.algo
 
 import kotlin.math.*
 
@@ -111,7 +111,7 @@ object SortOpsComparable : SortOps<MutableList<Comparable<Any>>>() {
 }
 
 fun <T : Comparable<T>> MutableList<T>.genericSort(left: Int = 0, right: Int = size - 1): MutableList<T> {
-    return com.soywiz.korma.sort.genericSort(this, left, right, SortOpsComparable as SortOps<MutableList<T>>)
+    return genericSort(this, left, right, SortOpsComparable as SortOps<MutableList<T>>)
 }
 
 fun <T : Comparable<T>> List<T>.genericSorted(left: Int = 0, right: Int = size - 1): List<T> {

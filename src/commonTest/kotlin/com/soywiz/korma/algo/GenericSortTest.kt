@@ -1,4 +1,4 @@
-package com.soywiz.korma.sort
+package com.soywiz.korma.algo
 
 import com.soywiz.korma.*
 import com.soywiz.korma.geom.ds.*
