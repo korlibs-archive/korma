@@ -204,7 +204,7 @@ internal abstract class ClipperBase protected constructor(val isPreserveCollinea
             }
             val locMin = LocalMinima()
             locMin.next = null
-            locMin.y = e.bot.y.toDouble()
+            locMin.y = e.bot.y
             locMin.leftBound = null
             locMin.rightBound = e
             locMin.rightBound!!.side = Edge.Side.RIGHT
@@ -240,7 +240,7 @@ internal abstract class ClipperBase protected constructor(val isPreserveCollinea
             //Compare their slopes to find which starts which bound ...
             val locMin = LocalMinima()
             locMin.next = null
-            locMin.y = e.bot.y.toDouble()
+            locMin.y = e.bot.y
             if (e.deltaX < e.prev!!.deltaX) {
                 locMin.leftBound = e.prev
                 locMin.rightBound = e
@@ -349,7 +349,7 @@ internal abstract class ClipperBase protected constructor(val isPreserveCollinea
                 e = if (LeftBoundIsForward) result.next!! else result.prev!!
                 val locMin = LocalMinima()
                 locMin.next = null
-                locMin.y = e.bot.y.toDouble()
+                locMin.y = e.bot.y
                 locMin.leftBound = null
                 locMin.rightBound = e
                 e.windDelta = 0
@@ -580,7 +580,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
     @Suppress("unused")
     fun clear() {
         polyNodes.childs.clear()
-        lowest.x = -1f
+        lowest.x = -1.0
     }
 
     private fun doMiter(j: Int, k: Int, r: Double) {
@@ -781,7 +781,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
     }
 
     private fun doRound(j: Int, k: Int) {
-        val a = atan2(inA, (normals[k].x * normals[j].x + normals[k].y * normals[j].y).toDouble())
+        val a = atan2(inA, normals[k].x * normals[j].x + normals[k].y * normals[j].y)
         val steps = kotlin.math.max(round(stepsPerRad * abs(a)).toInt(), 1)
 
         var x = normals[k].x
@@ -794,9 +794,9 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
                     round(srcPoly!![j].y + y * delta).toInt()
                 )
             )
-            x2 = x.toDouble()
-            x = (x * cos - sin * y).toFloat()
-            y = (x2 * sin + y * cos).toFloat()
+            x2 = x
+            x = x * cos - sin * y
+            y = x2 * sin + y * cos
         }
         destPoly!!.add(
             Vector2(
@@ -813,7 +813,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
         val njy = normals[j].y
         val sjx = srcPoly!![j].x
         val sjy = srcPoly!![j].y
-        val dx = tan(atan2(inA, (nkx * njx + nky * njy).toDouble()) / 4)
+        val dx = tan(atan2(inA, nkx * njx + nky * njy) / 4)
         destPoly!!.add(
             Vector2(
                 round(sjx + delta * (nkx - nky * dx)).toInt(),
@@ -943,7 +943,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
         val njx = normals[j].x
         val sjx = srcPoly!![j].x
         val sjy = srcPoly!![j].y
-        inA = (nkx * njy - njx * nky).toDouble()
+        inA = nkx * njy - njx * nky
 
         if (abs(inA * delta) < 1.0) {
             //dot product ...
@@ -1117,9 +1117,9 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
             prevE = if (e.prevInAEL === e1) e1.prevInAEL else e.prevInAEL
         }
 
-        if (prevE != null && prevE.outIdx >= 0 && Edge.topX(prevE, pt.y.toDouble()) == Edge.topX(
+        if (prevE != null && prevE.outIdx >= 0 && Edge.topX(prevE, pt.y) == Edge.topX(
                 e,
-                pt.y.toDouble()
+                pt.y
             ) && Edge.slopesEqual(
                 e,
                 prevE
@@ -1261,7 +1261,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
         while (e != null) {
             e.prevInSEL = e.prevInAEL
             e.nextInSEL = e.nextInAEL
-            e.current.x = Edge.topX(e, topY).toFloat()
+            e.current.x = Edge.topX(e, topY)
             e = e.nextInAEL
         }
 
@@ -1812,7 +1812,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                     if (lb.isContributing(clipFillType!!, subjFillType!!, clipType!!)) {
                         op1 = addOutPt(lb, lb.bot)
                     }
-                    insertScanbeam(lb.top.y.toDouble())
+                    insertScanbeam(lb.top.y)
                 }
                 else -> {
                     insertEdgeIntoAEL(lb, null)
@@ -1823,7 +1823,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                     if (lb.isContributing(clipFillType!!, subjFillType!!, clipType!!)) {
                         op1 = addLocalMinPoly(lb, rb, lb.bot)
                     }
-                    insertScanbeam(lb.top.y.toDouble())
+                    insertScanbeam(lb.top.y)
                 }
             }
 
@@ -1831,7 +1831,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                 if (rb.isHorizontal) {
                     addEdgeToSEL(rb)
                 } else {
-                    insertScanbeam(rb.top.y.toDouble())
+                    insertScanbeam(rb.top.y)
                 }
             }
 
@@ -1845,7 +1845,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                     //if the horizontal Rb and a 'ghost' horizontal overlap, then convert
                     //the 'ghost' join to a real join ready for later ...
                     val j = ghostJoins[i]
-                    if (doHorzSegmentsOverlap(j.outPt1!!.pt.x.toDouble(), j.offPt!!.x.toDouble(), rb.bot.x.toDouble(), rb.top.x.toDouble())) {
+                    if (doHorzSegmentsOverlap(j.outPt1!!.pt.x, j.offPt!!.x, rb.bot.x, rb.top.x)) {
                         addJoin(j.outPt1!!, op1, j.offPt!!)
                     }
                 }
@@ -2084,35 +2084,35 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
         //return false but for the edge.Dx value be equal due to double precision rounding.
         if (edge1.deltaX == edge2.deltaX) {
             ip.y = edge1.current.y
-            ip.x = Edge.topX(edge1, ip.y.toDouble()).toFloat()
+            ip.x = Edge.topX(edge1, ip.y)
             return
         }
 
-        if (edge1.delta.x == 0f) {
+        if (edge1.delta.x == 0.0) {
             ip.x = edge1.bot.x
             if (edge2.isHorizontal) {
                 ip.y = edge2.bot.y
             } else {
                 b2 = edge2.bot.y - edge2.bot.x / edge2.deltaX
-                ip.y = round(ip.x / edge2.deltaX + b2).toFloat()
+                ip.y = round(ip.x / edge2.deltaX + b2)
             }
-        } else if (edge2.delta.x == 0f) {
+        } else if (edge2.delta.x == 0.0) {
             ip.x = edge2.bot.x
             if (edge1.isHorizontal) {
                 ip.y = edge1.bot.y
             } else {
                 b1 = edge1.bot.y - edge1.bot.x / edge1.deltaX
-                ip.y = round(ip.x / edge1.deltaX + b1).toFloat()
+                ip.y = round(ip.x / edge1.deltaX + b1)
             }
         } else {
             b1 = edge1.bot.x - edge1.bot.y * edge1.deltaX
             b2 = edge2.bot.x - edge2.bot.y * edge2.deltaX
             val q = (b2 - b1) / (edge1.deltaX - edge2.deltaX)
-            ip.y = round(q).toFloat()
+            ip.y = round(q)
             if (abs(edge1.deltaX) < abs(edge2.deltaX)) {
-                ip.x = round(edge1.deltaX * q + b1).toFloat()
+                ip.x = round(edge1.deltaX * q + b1)
             } else {
-                ip.x = round(edge2.deltaX * q + b2).toFloat()
+                ip.x = round(edge2.deltaX * q + b2)
             }
         }
 
@@ -2123,9 +2123,9 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                 ip.y = edge2.top.y
             }
             if (abs(edge1.deltaX) < abs(edge2.deltaX)) {
-                ip.x = Edge.topX(edge1, ip.y.toDouble()).toFloat()
+                ip.x = Edge.topX(edge1, ip.y)
             } else {
-                ip.x = Edge.topX(edge2, ip.y.toDouble()).toFloat()
+                ip.x = Edge.topX(edge2, ip.y)
             }
         }
         //finally, don't allow 'ip' to be BELOW curr.getY() (ie bottom of scanbeam) ...
@@ -2133,9 +2133,9 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
             ip.y = edge1.current.y
             //better to use the more vertical edge to derive X ...
             if (abs(edge1.deltaX) > abs(edge2.deltaX)) {
-                ip.x = Edge.topX(edge2, ip.y.toDouble()).toFloat()
+                ip.x = Edge.topX(edge2, ip.y)
             } else {
-                ip.x = Edge.topX(edge1, ip.y.toDouble()).toFloat()
+                ip.x = Edge.topX(edge1, ip.y)
             }
         }
     }
@@ -2284,8 +2284,8 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                     }
                     addEdgeToSEL(e)
                 } else {
-                    e.current.x = Edge.topX(e, topY).toFloat()
-                    e.current.y = topY.toFloat()
+                    e.current.x = Edge.topX(e, topY)
+                    e.current.y = topY
                 }
 
                 if (strictlySimple) {
@@ -2388,10 +2388,10 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                                 var eNextHorz = sortedEdges
                                 while (eNextHorz != null) {
                                     if (eNextHorz.outIdx >= 0 && doHorzSegmentsOverlap(
-                                            horzEdge.bot.x.toDouble(),
-                                            horzEdge.top.x.toDouble(),
-                                            eNextHorz.bot.x.toDouble(),
-                                            eNextHorz.top.x.toDouble()
+                                            horzEdge.bot.x,
+                                            horzEdge.top.x,
+                                            eNextHorz.bot.x,
+                                            eNextHorz.top.x
                                         )
                                     ) {
                                         val op2 = addOutPt(eNextHorz, eNextHorz.bot)
@@ -2715,7 +2715,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
         e.prevInAEL = aelPrev
         e.nextInAEL = aelNext
         if (!e.isHorizontal) {
-            insertScanbeam(e.top.y.toDouble())
+            insertScanbeam(e.top.y)
         }
     }
 
@@ -2816,12 +2816,12 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
             Right: DoubleArray
         ) {
             if (HorzEdge.bot.x < HorzEdge.top.x) {
-                Left[0] = HorzEdge.bot.x.toDouble()
-                Right[0] = HorzEdge.top.x.toDouble()
+                Left[0] = HorzEdge.bot.x
+                Right[0] = HorzEdge.top.x
                 Dir[0] = Clipper.Direction.LEFT_TO_RIGHT
             } else {
-                Left[0] = HorzEdge.top.x.toDouble()
-                Right[0] = HorzEdge.bot.x.toDouble()
+                Left[0] = HorzEdge.top.x
+                Right[0] = HorzEdge.bot.x
                 Dir[0] = Clipper.Direction.RIGHT_TO_LEFT
             }
         }
@@ -2890,13 +2890,13 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                             result = 1 - result
                         } else {
                             val d = (poly0x - ptx) * (poly1y - pty) - (poly1x - ptx) * (poly0y - pty)
-                            if (d == 0f) return -1
+                            if (d == 0.0) return -1
                             if (d > 0 == poly1y > poly0y) result = 1 - result
                         }
                     } else {
                         if (poly1x > ptx) {
                             val d = (poly0x - ptx) * (poly1y - pty) - (poly1x - ptx) * (poly0y - pty)
-                            if (d == 0f) return -1
+                            if (d == 0.0) return -1
                             if (d > 0 == poly1y > poly0y) result = 1 - result
                         }
                     }
@@ -3055,7 +3055,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                 val leftV = DoubleArray(1)
                 val rightV = DoubleArray(1)
                 //Op1 -. Op1b & Op2 -. Op2b are the extremites of the horizontal edges
-                if (!getOverlap(op1.pt.x.toDouble(), op1b.pt.x.toDouble(), op2.pt.x.toDouble(), op2b.pt.x.toDouble(), leftV, rightV)) return false
+                if (!getOverlap(op1.pt.x, op1b.pt.x, op2.pt.x, op2b.pt.x, leftV, rightV)) return false
                 val left = leftV[0]
                 val right = rightV[0]
 
@@ -3381,10 +3381,10 @@ internal class Edge {
         return type == Clipper.PolyFillType.EVEN_ODD
     }
 
-    val isHorizontal: Boolean get() = delta.y == 0f
+    val isHorizontal: Boolean get() = delta.y == 0.0
 
-    fun isIntermediate(y: Double): Boolean = top.y.toDouble() == y && nextInLML != null
-    fun isMaxima(Y: Double): Boolean = top.y.toDouble() == Y && nextInLML == null
+    fun isIntermediate(y: Double): Boolean = top.y == y && nextInLML != null
+    fun isMaxima(Y: Double): Boolean = top.y == Y && nextInLML == null
 
     fun reverseHorizontal() {
         //swap horizontal edges' top and bottom x's so they follow the natural
@@ -3407,14 +3407,14 @@ internal class Edge {
     fun updateDeltaX() {
         delta.x = top.x - bot.x
         delta.y = top.y - bot.y
-        deltaX = (if (delta.y == 0f) HORIZONTAL else (delta.x / delta.y).toDouble())
+        deltaX = (if (delta.y == 0.0) HORIZONTAL else delta.x / delta.y)
     }
 
     companion object {
         fun doesE2InsertBeforeE1(e1: Edge, e2: Edge): Boolean = if (e2.current.x == e1.current.x) {
-            if (e2.top.y > e1.top.y) (e2.top.x < topX(e1, e2.top.y.toDouble())) else (e1.top.x > topX(
+            if (e2.top.y > e1.top.y) (e2.top.x < topX(e1, e2.top.y)) else (e1.top.x > topX(
                 e2,
-                e1.top.y.toDouble()
+                e1.top.y
             ))
         } else {
             (e2.current.x < e1.current.x)
@@ -3435,7 +3435,7 @@ internal class Edge {
         }
 
         fun topX(edge: Edge, currentY: Double): Double {
-            if (currentY == edge.top.y.toDouble()) return edge.top.x.toDouble()
+            if (currentY == edge.top.y) return edge.top.x
             return (edge.bot.x + round(edge.deltaX * (currentY - edge.bot.y))).toInt().toDouble()
         }
 
@@ -3723,7 +3723,7 @@ internal class Path private constructor(private val al: ArrayList<Vector2>) : Mu
                         result = 1 - result
                     } else {
                         val d = (ip.x - pt.x) * (ipNext.y - pt.y) - (ipNext.x - pt.x) * (ip.y - pt.y)
-                        if (d == 0f) {
+                        if (d == 0.0) {
                             return -1
                         } else if (d > 0 == ipNext.y > ip.y) {
                             result = 1 - result
@@ -3732,7 +3732,7 @@ internal class Path private constructor(private val al: ArrayList<Vector2>) : Mu
                 } else {
                     if (ipNext.x > pt.x) {
                         val d = (ip.x - pt.x) * (ipNext.y - pt.y) - (ipNext.x - pt.x) * (ip.y - pt.y)
-                        if (d == 0f) {
+                        if (d == 0.0) {
                             return -1
                         } else if (d > 0 == ipNext.y > ip.y) {
                             result = 1 - result
@@ -3875,16 +3875,16 @@ internal object Points {
         val b = ln2.x - ln1.x
         var c = a * ln1.x + b * ln1.y
         c = a * pt.x + b * pt.y - c
-        return (c * c / (a * a + b * b)).toDouble()
+        return c * c / (a * a + b * b)
     }
 
     fun getDeltaX(pt1: Vector2, pt2: Vector2): Double =
-        if (pt1.y == pt2.y) Edge.HORIZONTAL else ((pt2.x - pt1.x) / (pt2.y - pt1.y)).toDouble()
+        if (pt1.y == pt2.y) Edge.HORIZONTAL else (pt2.x - pt1.x) / (pt2.y - pt1.y)
 
     fun getUnitNormal(pt1: Vector2, pt2: Vector2): Vector2 {
         val dx = (pt2.x - pt1.x)
         val dy = (pt2.y - pt1.y)
-        if (dx == 0f && dy == 0f) return Vector2(0.0, 0.0)
+        if (dx == 0.0 && dy == 0.0) return Vector2(0.0, 0.0)
         val f = 1 * 1.0 / sqrt(dx * dx + dy * dy)
         return Vector2(dy * f, -dx * f)
     }
@@ -3896,11 +3896,11 @@ internal object Points {
     }
 
     fun slopesEqual(pt1: Vector2, pt2: Vector2, pt3: Vector2): Boolean =
-        (pt1.y - pt2.y) * (pt2.x - pt3.x) - (pt1.x - pt2.x) * (pt2.y - pt3.y) == 0f
+        (pt1.y - pt2.y) * (pt2.x - pt3.x) - (pt1.x - pt2.x) * (pt2.y - pt3.y) == 0.0
 
     @Suppress("unused")
     fun slopesEqual(pt1: Vector2, pt2: Vector2, pt3: Vector2, pt4: Vector2): Boolean =
-        (pt1.y - pt2.y) * (pt3.x - pt4.x) - (pt1.x - pt2.x) * (pt3.y - pt4.y) == 0f
+        (pt1.y - pt2.y) * (pt3.x - pt4.x) - (pt1.x - pt2.x) * (pt3.y - pt4.y) == 0.0
 
     fun slopesNearCollinear(pt1: Vector2, pt2: Vector2, pt3: Vector2, distSqrd: Double): Boolean {
         //this function is more accurate when the point that's GEOMETRICALLY

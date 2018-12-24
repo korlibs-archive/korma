@@ -7,8 +7,8 @@ enum class Orientation(val value: Int) {
 
     companion object {
         fun orient2d(pa: Point2d, pb: Point2d, pc: Point2d): Orientation {
-            val detleft: Double = ((pa.x - pc.x) * (pb.y - pc.y)).toDouble()
-            val detright: Double = ((pa.y - pc.y) * (pb.x - pc.x)).toDouble()
+            val detleft: Double = (pa.x - pc.x) * (pb.y - pc.y)
+            val detright: Double = (pa.y - pc.y) * (pb.x - pc.x)
             val `val`: Double = detleft - detright
 
             if ((`val` > -Constants.EPSILON) && (`val` < Constants.EPSILON)) return Orientation.COLLINEAR

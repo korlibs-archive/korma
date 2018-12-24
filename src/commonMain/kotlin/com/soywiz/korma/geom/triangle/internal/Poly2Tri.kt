@@ -80,10 +80,10 @@ internal class AdvancingFront(var head: Node, @Suppress("unused") var tail: Node
     }
 
     fun locatePoint(point: Point2d): Node? {
-        val px: Double = point.x.toDouble()
+        val px: Double = point.x
         //var node:* = this.FindSearchNode(px);
         var node: Node? = this.searchNode
-        val nx: Double = node!!.point.x.toDouble()
+        val nx: Double = node!!.point.x
 
         when {
             px == nx -> {
@@ -143,7 +143,7 @@ internal class EdgeEvent {
 internal class Node(var point: Point2d, var triangle: PolyTriangle? = null) {
     var prev: Node? = null
     var next: Node? = null
-    var value: Double = this.point.x.toDouble()
+    var value: Double = this.point.x
 
     /**
      *
@@ -161,10 +161,10 @@ internal class Node(var point: Point2d, var triangle: PolyTriangle? = null) {
              */
             val prev = this.prev ?: throw IllegalStateException("Not enough vertices")
             val next = this.next ?: throw IllegalStateException("Not enough vertices")
-            val ax: Double = (next.point.x - this.point.x).toDouble()
-            val ay: Double = (next.point.y - this.point.y).toDouble()
-            val bx: Double = (prev.point.x - this.point.x).toDouble()
-            val by: Double = (prev.point.y - this.point.y).toDouble()
+            val ax: Double = next.point.x - this.point.x
+            val ay: Double = next.point.y - this.point.y
+            val bx: Double = prev.point.x - this.point.x
+            val by: Double = prev.point.y - this.point.y
             return atan2(
                 ax * by - ay * bx,
                 ax * bx + ay * by
@@ -177,7 +177,7 @@ internal class Node(var point: Point2d, var triangle: PolyTriangle? = null) {
             return atan2(
                 this.point.y - nextNext.point.y, // ay
                 this.point.x - nextNext.point.x  // ax
-            ).toDouble()
+            )
         }
 }
 
@@ -443,7 +443,7 @@ internal class Sweep(private var context: SweepContext) {
         // No valid basins
         if (basin.rightNode == basin.bottomNode) return
 
-        basin.width = ((basin.rightNode!!.point.x - basin.leftNode!!.point.x).toDouble())
+        basin.width = (basin.rightNode!!.point.x - basin.leftNode!!.point.x)
         basin.leftHighest = (basin.leftNode!!.point.y > basin.rightNode!!.point.y)
 
         this.fillBasinReq(basin.bottomNode!!)
@@ -489,9 +489,9 @@ internal class Sweep(private var context: SweepContext) {
 
     fun isShallow(node: Node): Boolean {
         val height: Double = if (this.context.basin.leftHighest) {
-            (this.context.basin.leftNode!!.point.y - node.point.y).toDouble()
+            this.context.basin.leftNode!!.point.y - node.point.y
         } else {
-            (this.context.basin.rightNode!!.point.y - node.point.y).toDouble()
+            this.context.basin.rightNode!!.point.y - node.point.y
         }
 
         // if shallow stop filling
@@ -765,15 +765,15 @@ internal class SweepContext() {
     }
 
     fun initTriangulation() {
-        var xmin: Double = this.points.getX(0).toDouble()
-        var xmax: Double = this.points.getX(0).toDouble()
-        var ymin: Double = this.points.getY(0).toDouble()
-        var ymax: Double = this.points.getY(0).toDouble()
+        var xmin: Double = this.points.getX(0)
+        var xmax: Double = this.points.getX(0)
+        var ymin: Double = this.points.getY(0)
+        var ymax: Double = this.points.getY(0)
 
         // Calculate bounds
         for (n in 0 until this.points.size) {
-            val px = this.points.getX(n).toDouble()
-            val py = this.points.getY(n).toDouble()
+            val px = this.points.getX(n)
+            val py = this.points.getY(n)
             if (px > xmax) xmax = px
             if (px < xmin) xmin = px
             if (py > ymax) ymax = py
@@ -786,11 +786,11 @@ internal class SweepContext() {
         this.tail = Point2d(xmin - dy, ymin - dy)
 
         // Sort points along y-axis
-        this.points.sort()
+        Vector2.sortPoints(this.points)
         //throw(Error("@TODO Implement 'Sort points along y-axis' @see class SweepContext"));
     }
 
-    fun locateNode(point: Point2d): Node? = this.front.locateNode(point.x.toDouble())
+    fun locateNode(point: Point2d): Node? = this.front.locateNode(point.x)
 
     fun createAdvancingFront() {
         // Initial triangle

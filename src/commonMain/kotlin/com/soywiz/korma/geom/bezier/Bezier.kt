@@ -10,8 +10,8 @@ interface Bezier {
     fun calc(t: Double, target: MVector2 = MVector2()): MVector2
 
     class Quad(val p0: Point2d, val p1: Point2d, val p2: Point2d) : Bezier {
-        override fun getBounds(target: Rectangle): Rectangle = quadBounds(p0.x.toDouble(), p0.y.toDouble(), p1.x.toDouble(), p1.y.toDouble(), p2.x.toDouble(), p2.y.toDouble(), target)
-        override fun calc(t: Double, target: MVector2): MVector2 = quadCalc(p0.x.toDouble(), p0.y.toDouble(), p1.x.toDouble(), p1.y.toDouble(), p2.x.toDouble(), p2.y.toDouble(), t, target)
+        override fun getBounds(target: Rectangle): Rectangle = quadBounds(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, target)
+        override fun calc(t: Double, target: MVector2): MVector2 = quadCalc(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, t, target)
 
         // http://fontforge.github.io/bezier.html
         fun toCubic(): Cubic = Cubic(p0, p0 + (p1 - p0) * (2.0 / 3.0), p2 + (p1 - p2) * (2.0 / 3.0), p2)
@@ -20,8 +20,8 @@ interface Bezier {
     class Cubic(val p0: Point2d, val p1: Point2d, val p2: Point2d, val p3: Point2d) : Bezier {
         private val temp = Temp()
 
-        override fun getBounds(target: Rectangle): Rectangle = cubicBounds(p0.x.toDouble(), p0.y.toDouble(), p1.x.toDouble(), p1.y.toDouble(), p2.x.toDouble(), p2.y.toDouble(), p3.x.toDouble(), p3.y.toDouble(), target, temp)
-        override fun calc(t: Double, target: MVector2): MVector2 = cubicCalc(p0.x.toDouble(), p0.y.toDouble(), p1.x.toDouble(), p1.y.toDouble(), p2.x.toDouble(), p2.y.toDouble(), p3.x.toDouble(), p3.y.toDouble(), t, target)
+        override fun getBounds(target: Rectangle): Rectangle = cubicBounds(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, target, temp)
+        override fun calc(t: Double, target: MVector2): MVector2 = cubicCalc(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t, target)
     }
 
     class Temp {
@@ -193,8 +193,8 @@ fun Bezier.length(steps: Int = 100, temp: MVector2 = MVector2()): Double {
         if (n != 0) {
             length += hypot(oldX - temp.x, oldY - temp.y)
         }
-        oldX = temp.x.toDouble()
-        oldY = temp.y.toDouble()
+        oldX = temp.x
+        oldY = temp.y
     }
     return length
 }

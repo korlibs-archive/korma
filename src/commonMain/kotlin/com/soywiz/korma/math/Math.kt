@@ -24,11 +24,11 @@ fun divideIntegerSigned(a: Int, b: Int): Int = (a / b) or 0
 
 fun distance(a: Double, b: Double): Double = kotlin.math.abs(a - b)
 fun distance(x1: Double, y1: Double, x2: Double, y2: Double): Double = kotlin.math.hypot(x1 - x2, y1 - y2)
-inline fun distance(x1: Number, y1: Number, x2: Number, y2: Number): Double = distance(x1.toDouble(), y1.toDouble(), x2.toDouble(), y2.toDouble())
+fun distance(x1: Int, y1: Int, x2: Int, y2: Int): Double = kotlin.math.hypot((x1 - x2).toDouble(), (y1 - y2).toDouble())
 fun distance(a: Vector2, b: Vector2): Double = distance(a.x, a.y, b.x, b.y)
 fun distance(a: PointInt, b: PointInt): Double = distance(a.x, a.y, b.x, b.y)
 fun distanceXY(x1: Double, y1: Double, x2: Double, y2: Double): Double = hypot(x1 - x2, y1 - y2)
-fun distancePoint(a: Vector2, b: Vector2): Double = distanceXY(a.x.toDouble(), a.y.toDouble(), b.x.toDouble(), b.y.toDouble())
+fun distancePoint(a: Vector2, b: Vector2): Double = distanceXY(a.x, a.y, b.x, b.y)
 
 fun roundDecimalPlaces(value: Double, places: Int): Double {
     val placesFactor: Double = 10.0.pow(places.toDouble())

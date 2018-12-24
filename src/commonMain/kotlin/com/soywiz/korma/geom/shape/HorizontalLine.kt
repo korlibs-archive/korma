@@ -21,7 +21,7 @@ object HorizontalLine {
         SegmentEmitter.emit(4, curveGen = { p, t ->
             Bezier.quadCalc(bx0, by0, bx1, by1, bx2, by2, t, p)
         }, gen = { p0, p1 ->
-            count += intersectionsWithLine(ax, ay, p0.x.toDouble(), p0.y.toDouble(), p1.x.toDouble(), p1.y.toDouble())
+            count += intersectionsWithLine(ax, ay, p0.x, p0.y, p1.x, p1.y)
         }, p1 = t0, p2 = t1)
         return count
     }
@@ -36,7 +36,7 @@ object HorizontalLine {
         SegmentEmitter.emit(4, curveGen = { p, t ->
             Bezier.cubicCalc(bx0, by0, bx1, by1, bx2, by2, bx3, by3, t, p)
         }, gen = { p0, p1 ->
-            count += intersectionsWithLine(ax, ay, p0.x.toDouble(), p0.y.toDouble(), p1.x.toDouble(), p1.y.toDouble())
+            count += intersectionsWithLine(ax, ay, p0.x, p0.y, p1.x, p1.y)
         }, p1 = t0, p2 = t1)
         return count
     }
