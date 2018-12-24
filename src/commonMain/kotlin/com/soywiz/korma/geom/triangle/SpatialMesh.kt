@@ -4,11 +4,11 @@ import com.soywiz.korma.geom.*
 import kotlin.math.*
 
 class SpatialMesh {
-    private var mapTriangleToSpatialNode = hashMapOf<Triangle, Node>()
+    private var mapTriangleToSpatialNode = hashMapOf<ISpatialTriangle, Node>()
     var nodes = arrayListOf<Node>()
 
     @Suppress("ConvertSecondaryConstructorToPrimary")
-    constructor(triangles: Iterable<Triangle>) {
+    constructor(triangles: Iterable<ISpatialTriangle>) {
         for (triangle in triangles) {
             val node = getNodeFromTriangle(triangle)
             if (node != null) nodes.add(node)
@@ -27,7 +27,7 @@ class SpatialMesh {
         return null
     }
 
-    fun getNodeFromTriangle(triangle: Triangle?): Node? {
+    fun getNodeFromTriangle(triangle: ISpatialTriangle?): Node? {
         if (triangle === null) return null
 
         if (!mapTriangleToSpatialNode.containsKey(triangle)) {
@@ -56,7 +56,7 @@ class SpatialMesh {
         var x: Double = 0.0,
         var y: Double = 0.0,
         var z: Double = 0.0,
-        var triangle: Triangle? = null,
+        var triangle: ITriangle? = null,
         var G: Int = 0, // Cost
         var H: Int = 0, // Heuristic
         var neighbors: Array<Node?> = arrayOfNulls(3),

@@ -85,7 +85,23 @@ fun ITriangle.pointInsideTriangle(pp: Point2d): Boolean = if (_product(p0, p1, p
     (_product(p0, p1, pp) <= 0) && (_product(p1, p2, pp)) <= 0 && (_product(p2, p0, pp) <= 0)
 }
 
-fun EdgeContext.getCommonEdge(t1: Triangle, t2: Triangle): Edge {
+// Optimized?
+fun ITriangle.getPointIndexOffset(p: Point2d, offset: Int = 0): Int {
+    var no: Int = offset
+    for (n in 0 until 3) {
+        while (no < 0) no += 3
+        while (no > 2) no -= 3
+        if (p == (this.point(n))) return no
+        no++
+    }
+    throw Error("Point2d not in triangle")
+}
+
+fun ITriangle.pointCW(p: Point2d): Point2d = this.point(getPointIndexOffset(p, Triangle.CCW_OFFSET))
+fun ITriangle.pointCCW(p: Point2d): Point2d = this.point(getPointIndexOffset(p, Triangle.CW_OFFSET))
+
+
+fun EdgeContext.getCommonEdge(t1: ITriangle, t2: ITriangle): Edge {
     val commonIndexes = ArrayList<Point2d>()
     for (n in 0 until 3) {
         val point = t1.point(n)
@@ -119,15 +135,20 @@ fun Triangle(
     return Triangle(true, p0, p1, p2)
 }
 
+interface ISpatialTriangle : ITriangle {
+    val neighbors: List<ISpatialTriangle?>
+    val constrained_edge: BooleanArray
+}
+
 data class Triangle internal constructor(
     val dummy: Boolean,
     override var p0: Point2d,
     override var p1: Point2d,
     override var p2: Point2d
-) : ITriangle {
-    var neighbors = arrayOfNulls<Triangle>(3) // Neighbor list
+) : ISpatialTriangle {
+    override var neighbors = ArrayList<Triangle?>(3).apply { add(null); add(null); add(null) } // Neighbor list
     var interior: Boolean = false // Has this triangle been marked as an interior triangle?
-    var constrained_edge = BooleanArray(3) // Flags to determine if an edge is a Constrained edge
+    override var constrained_edge = BooleanArray(3) // Flags to determine if an edge is a Constrained edge
     var delaunay_edge = BooleanArray(3) // Flags to determine if an edge is a Delauney edge
 
     /**
@@ -180,17 +201,6 @@ data class Triangle internal constructor(
         throw(Error("Point2d not in triangle"));
     }*/
 
-    // Optimized?
-    fun getPointIndexOffset(p: Point2d, offset: Int = 0): Int {
-        var no: Int = offset
-        for (n in 0 until 3) {
-            while (no < 0) no += 3
-            while (no > 2) no -= 3
-            if (p == (this.point(n))) return no
-            no++
-        }
-        throw Error("Point2d not in triangle")
-    }
 
     /**
      * Alias for containsPoint
@@ -213,9 +223,7 @@ data class Triangle internal constructor(
     //private const CCW_OFFSET:Int = +1;
     //private const CW_OFFSET:Int = -1;
 
-    fun pointCW(p: Point2d): Point2d = this.point(getPointIndexOffset(p, CCW_OFFSET))
 
-    fun pointCCW(p: Point2d): Point2d = this.point(getPointIndexOffset(p, CW_OFFSET))
     fun neighborCW(p: Point2d): Triangle? = this.neighbors[getPointIndexOffset(p, CW_OFFSET)]
     fun neighborCCW(p: Point2d): Triangle? = this.neighbors[getPointIndexOffset(p, CCW_OFFSET)]
 
@@ -343,7 +351,7 @@ data class Triangle internal constructor(
         this.delaunay_edge[2] = false
     }
 
-    override fun hashCode(): Int = p0.hashCode() + p1.hashCode() + p2.hashCode()
+    override fun hashCode(): Int = p0.hashCode() + p1.hashCode() * 3 + p2.hashCode() * 5
 
     override fun equals(other: Any?): Boolean =
         (other is Triangle) && (this.p0 == other.p0) && (this.p1 == other.p1) && (this.p2 == other.p2)
@@ -353,8 +361,8 @@ data class Triangle internal constructor(
     override fun toString(): String = "Triangle(${this.point(0)}, ${this.point(1)}, ${this.point(2)})"
 
     companion object {
-        private const val CW_OFFSET: Int = +1
-        private const val CCW_OFFSET: Int = -1
+        internal const val CW_OFFSET: Int = +1
+        internal const val CCW_OFFSET: Int = -1
 
         fun area(p1: Point2d, p2: Point2d, p3: Point2d): Double = area(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
 
@@ -366,7 +374,7 @@ data class Triangle internal constructor(
             return abs(a * d - c * b) / 2.0
         }
 
-        fun getNotCommonVertexIndex(t1: Triangle, t2: Triangle): Int {
+        fun getNotCommonVertexIndex(t1: ITriangle, t2: ITriangle): Int {
             var sum = 0
             var index: Int = -1
             if (!t2.containsPoint(t1.point(0))) {
@@ -385,7 +393,7 @@ data class Triangle internal constructor(
             return index
         }
 
-        fun getNotCommonVertex(t1: Triangle, t2: Triangle): Point2d = t1.point(getNotCommonVertexIndex(t1, t2))
+        fun getNotCommonVertex(t1: ITriangle, t2: ITriangle): Point2d = t1.point(getNotCommonVertexIndex(t1, t2))
 
 
         /**
