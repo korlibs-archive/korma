@@ -4,8 +4,6 @@ import com.soywiz.korma.geom.*
 
 class BinPacker(val width: Double, val height: Double, val algo: Algo = MaxRects(width, height)) {
     interface Algo {
-        val maxWidth: Double
-        val maxHeight: Double
         fun add(width: Double, height: Double): Rectangle?
     }
 

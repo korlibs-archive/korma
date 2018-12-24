@@ -1,8 +1,6 @@
 package com.soywiz.korma.geom
 
-import com.soywiz.korma.MVector2
-import com.soywiz.korma.Vector2
-import com.soywiz.korma.distanceTo
+import com.soywiz.korma.*
 
 typealias Point2d = Vector2
 typealias MPoint2d = MVector2
@@ -11,6 +9,15 @@ typealias MPoint = MVector2
 
 @Deprecated("", replaceWith = ReplaceWith("Point2d"), level = DeprecationLevel.ERROR)
 typealias IPoint2d = Point2d
+
+@Deprecated("", replaceWith = ReplaceWith("PointInt"))
+typealias IPointInt = PointInt
+
+typealias PointInt = Vector2Int
+typealias MPointInt = MVector2Int
+
+fun IPointInt(x: Int, y: Int): Vector2Int = Vector2Int(x, y)
+fun PointInt(x: Int, y: Int): Vector2Int = Vector2Int(x, y)
 
 // @TODO: Check if this avoid boxing!
 //inline fun Point2d(x: Number, y: Number) = Vector2(x.toDouble(), y.toDouble())

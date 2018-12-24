@@ -91,8 +91,9 @@ data class Matrix2d(
         ratio.interpolate(l.ty, r.ty)
     )
 
-    fun copyFrom(that: IMatrix2d) {
+    fun copyFrom(that: IMatrix2d): Matrix2d {
         setTo(that.a, that.b, that.c, that.d, that.tx, that.ty)
+        return this
     }
 
     fun rotateDeg(thetaDeg: Double) = rotate(Angle.toRadians(thetaDeg))
@@ -257,16 +258,6 @@ data class Matrix2d(
         this.ty = ty
     }
 
-    fun createGradientBox(
-        width: Double,
-        height: Double,
-        rotation: Double = 0.0,
-        tx: Double = 0.0,
-        ty: Double = 0.0
-    ): Unit {
-        this.createBox(width / 1638.4, height / 1638.4, rotation, tx + width / 2, ty + height / 2)
-    }
-
     data class Transform(
         var x: Double = 0.0, var y: Double = 0.0,
         var scaleX: Double = 1.0, var scaleY: Double = 1.0,
@@ -370,11 +361,10 @@ data class Matrix2d(
     }
 }
 
-// This is to be able to mix integers with doubles without boxing at all due to the inline
 inline fun Matrix2d(a: Number, b: Number = 0.0, c: Number = 0.0, d: Number = 1.0, tx: Number = 0.0, ty: Number = 0.0) =
     Matrix2d(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
 
-fun Matrix2d(m: Matrix2d): Matrix2d = m.copy()
+fun Matrix2d(m: Matrix2d, out: Matrix2d = Matrix2d()): Matrix2d = out.copyFrom(m)
 
 fun IMatrix2d.transformX(px: Double, py: Double): Double = this.a * px + this.c * py + this.tx
 fun IMatrix2d.transformY(px: Double, py: Double): Double = this.d * py + this.b * px + this.ty

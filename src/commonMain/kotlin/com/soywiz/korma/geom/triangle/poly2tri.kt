@@ -1,3 +1,43 @@
+/*
+Poly2Tri:Fast and Robust Simple Polygon triangulation with/without holes
+                        by Sweep Line Algorithm
+                               Liang, Wu
+        http://www.mema.ucl.ac.be/~wu/Poly2Tri/poly2tri.html
+        Copyright (C) 2003, 2004, 2005, ALL RIGHTS RESERVED.
+
+---------------------------------------------------------------------
+wu@mema.ucl.ac.be                           wuliang@femagsoft.com
+Centre for Sys. Eng. & App. Mech.           FEMAGSoft S.A.
+Universite Cathalique de Louvain            4, Avenue Albert Einstein
+Batiment Euler, Avenue Georges Lemaitre, 4  B-1348 Louvain-la-Neuve
+B-1348, Louvain-la-Neuve                    Belgium
+Belgium
+---------------------------------------------------------------------
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHAN-
+TABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+This program may be freely redistributed under the condition that all
+the copyright notices in all source files ( including the copyright
+notice printed when the `-h' switch is selected) are not removed.Both
+the binary and source codes may not be sold or included in any comme-
+rcial products without a license from the corresponding author(s) &
+entities.
+
+1) Arbitrary precision floating-point arithmetic and fast robust geo-
+   metric predicates (predicates.cc) is copyrighted by
+   Jonathan Shewchuk (http://www.cs.berkeley.edu/~jrs) and you may get
+   the source code from http://www.cs.cmu.edu/~quake/robust.html
+
+2) The shell script mps2eps is copyrighted by Jon Edvardsson
+   (http://www.ida.liu.se/~pelab/members/index.php4/?12) and you may
+   get the copy from http://www.ida.liu.se/~joned/download/mps2eps/
+
+3) All other source codes and exmaples files distributed in Poly2Tri
+   are copyrighted by Liang, Wu (http://www.mema.ucl.ac.be/~wu) and
+   FEMAGSoft S.A.
+ */
 package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.Vector2
@@ -783,7 +823,7 @@ class SweepContext() {
         this.addPolyline(polyline)
     }
 
-    protected fun addPoints(points: List<Point2d>) {
+    private fun addPoints(points: List<Point2d>) {
         for (point in points) this.points.add(point)
     }
 
@@ -801,7 +841,7 @@ class SweepContext() {
         addPolyline(polyline)
     }
 
-    protected fun initEdges(polyline: List<Point2d>) {
+    private fun initEdges(polyline: List<Point2d>) {
         for (n in 0 until polyline.size) {
             this.edge_list.add(Edge(polyline[n], polyline[(n + 1) % polyline.size], edgeContext))
         }

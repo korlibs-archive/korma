@@ -27,7 +27,7 @@ class NewFunnel {
     }
 
 
-    fun push(p1: Point2d, p2: Point2d = p1): Unit {
+    fun push(p1: Point2d, p2: Point2d = p1) {
         this.portals.add(Portal(p1, p2))
         /*if (p2 == p1) {
             trace('channel.push(' + p1 + ');');
@@ -365,7 +365,7 @@ class SpatialNode(
     var triangle: Triangle? = null,
     var G: Int = 0, // Cost
     var H: Int = 0, // Heuristic
-    var neighbors: Array<SpatialNode?> = arrayOfNulls<SpatialNode>(3),
+    var neighbors: Array<SpatialNode?> = arrayOfNulls(3),
     var parent: SpatialNode? = null,
     var closed: Boolean = false
 ) {

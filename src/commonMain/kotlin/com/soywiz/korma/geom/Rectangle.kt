@@ -143,7 +143,6 @@ inline fun IRectangle(x: Number, y: Number, width: Number, height: Number) =
 
 //////////// INT
 
-
 interface IRectangleInt {
     val x: Int
     val y: Int

@@ -8,7 +8,9 @@ class Matrix4(
         0f, 0f, 0f, 1f
     )
 ) {
-    operator fun get(x: Int, y: Int) = data[y * 4 + x]
+    fun index(x: Int, y: Int) = y * 4 + x
+    operator fun get(x: Int, y: Int): Float = data[index(x, y)]
+    operator fun set(x: Int, y: Int, value: Float) = run { data[index(x, y)] = value }
 
     companion object {
         operator fun invoke(vararg data: Float) = Matrix4(data)

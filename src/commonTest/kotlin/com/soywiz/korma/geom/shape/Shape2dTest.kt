@@ -1,8 +1,10 @@
 package com.soywiz.korma.geom.shape
 
 import com.soywiz.korma.geom.*
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import com.soywiz.korma.geom.ds.*
+import com.soywiz.korma.geom.vector.*
+import kotlin.math.*
+import kotlin.test.*
 
 class Shape2dTest {
     @Test
@@ -33,15 +35,23 @@ class Shape2dTest {
 
     @Test
     fun vectorPathToShape2d() {
-        val vp = VectorPath().apply { circle(0.0, 0.0, 100.0) }
-        assertEquals(78, vp.toShape2d().paths.totalVertices)
+        val exactArea = Shape2d.Circle(0, 0, 100).area
+        val vp = VectorPath().apply { circle(0, 0, 100) }
+        val shape = vp.toShape2d()
+        assertEquals(true, shape.closed)
+        assertTrue(abs(exactArea - shape.area) / exactArea < 0.01)
+        assertEquals(77, shape.paths.totalVertices)
     }
 
     @Test
     fun triangulate() {
+        val shape = Rectangle(0, 0, 100, 100).toShape()
+        //println(shape)
+        //println(shape.getAllPoints())
+        //println(shape.getAllPoints().toPoints())
         assertEquals(
             "[Triangle((0, 100), (100, 0), (100, 100)), Triangle((0, 100), (0, 0), (100, 0))]",
-            Rectangle(0, 0, 100, 100).toShape().triangulate().toString()
+            shape.triangulate().toString()
         )
     }
 

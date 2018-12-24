@@ -3,8 +3,8 @@ package com.soywiz.korma.geom.binpack
 import com.soywiz.korma.geom.Rectangle
 
 class MaxRects(
-    override val maxWidth: Double,
-    override val maxHeight: Double
+    maxWidth: Double,
+    maxHeight: Double
 ) : BinPacker.Algo {
     var freeRectangles = arrayListOf(Rectangle(0.0, 0.0, maxWidth, maxHeight))
 

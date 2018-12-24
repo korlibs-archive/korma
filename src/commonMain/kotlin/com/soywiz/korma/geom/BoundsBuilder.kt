@@ -1,6 +1,7 @@
 package com.soywiz.korma.geom
 
 import com.soywiz.korma.Vector2
+import com.soywiz.korma.geom.ds.*
 
 class BoundsBuilder {
     val tempRect = Rectangle()
@@ -25,16 +26,21 @@ class BoundsBuilder {
         //println("add($x, $y) -> ($xmin,$ymin)-($xmax,$ymax)")
     }
 
-    fun add(p: Vector2) = add(p.x, p.y)
-
-    fun add(ps: Iterable<Vector2>) = this.apply { for (p in ps) add(p) }
-
-    fun add(rect: Rectangle) = this.apply {
-        if (rect.isNotEmpty) {
-            add(rect.left, rect.top)
-            add(rect.right, rect.bottom)
-        }
-    }
-
     fun getBounds(out: Rectangle = Rectangle()): Rectangle = out.setBounds(xmin, ymin, xmax, ymax)
 }
+
+fun BoundsBuilder.add(p: Vector2) = add(p.x, p.y)
+
+fun BoundsBuilder.add(ps: Iterable<Vector2>) = this.apply { for (p in ps) add(p) }
+
+fun BoundsBuilder.add(ps: IPointArrayList) {
+    for (n in 0 until ps.size) add(ps.getX(n), ps.getY(n))
+}
+
+fun BoundsBuilder.add(rect: Rectangle) = this.apply {
+    if (rect.isNotEmpty) {
+        add(rect.left, rect.top)
+        add(rect.right, rect.bottom)
+    }
+}
+

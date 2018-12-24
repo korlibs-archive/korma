@@ -9,8 +9,7 @@ interface ISize {
     val height: Double
 }
 
-data class Size(override var width: Double, override var height: Double) : MutableInterpolable<Size>,
-    Interpolable<Size>, Sizeable, ISize {
+data class Size(override var width: Double, override var height: Double) : MutableInterpolable<Size>, Interpolable<Size>, Sizeable, ISize {
     data class Immutable(override val width: Double, override val height: Double) : ISize
 
     override val size: Size = this

@@ -49,7 +49,7 @@ import kotlin.math.*
 
 private fun vector2(v: Vector2) = Vector2(v.x, v.y)
 
-interface Clipper {
+internal interface Clipper {
     enum class ClipType { INTERSECTION, UNION, DIFFERENCE, XOR }
     enum class Direction { RIGHT_TO_LEFT, LEFT_TO_RIGHT }
     enum class EndType { CLOSED_POLYGON, CLOSED_LINE, OPEN_BUTT, OPEN_SQUARE, OPEN_ROUND }
@@ -77,7 +77,7 @@ interface Clipper {
     }
 }
 
-abstract class ClipperBase protected constructor(val isPreserveCollinear: Boolean) : Clipper { //constructor (nb: no external instantiation)
+internal abstract class ClipperBase protected constructor(val isPreserveCollinear: Boolean) : Clipper { //constructor (nb: no external instantiation)
     protected inner class LocalMinima {
         var y: Double = 0.0
         var leftBound: Edge? = null
@@ -504,10 +504,7 @@ abstract class ClipperBase protected constructor(val isPreserveCollinear: Boolea
 
 }
 
-class ClipperOffset(
-    private val miterLimit: Double = 2.0,
-    private val arcTolerance: Double = ClipperOffset.DEFAULT_ARC_TOLERANCE
-) {
+internal class ClipperOffset(private val miterLimit: Double = 2.0, private val arcTolerance: Double = ClipperOffset.DEFAULT_ARC_TOLERANCE) {
 
     private var destPolys: Paths? = null
     private var srcPoly: Path? = null
@@ -985,7 +982,7 @@ class ClipperOffset(
 }
 
 @Suppress("unused")
-class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESERVE_COLINEAR and initOptions != 0) {
+internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESERVE_COLINEAR and initOptions != 0) {
     private inner class IntersectNode {
         var edge1: Edge? = null
         var edge2: Edge? = null
@@ -3219,7 +3216,7 @@ class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESERVE_COLINE
 
 }//------------------------------------------------------------------------------
 
-class Edge {
+internal class Edge {
     enum class Side { LEFT, RIGHT }
 
     var bot: MVector2 = MVector2(); set(v) = run { field.copyFrom(v) }
@@ -3414,13 +3411,13 @@ class Edge {
     }
 }
 
-@Suppress("unused")
 /**
  * A pure convenience class to avoid writing List<IntPoint> everywhere.
 
  * @author Tobias Mahlmann
 </IntPoint> */
-class Path private constructor(private val al: ArrayList<Vector2>) : MutableList<Vector2> by al, RandomAccess {
+@Suppress("unused")
+internal class Path private constructor(private val al: ArrayList<Vector2>) : MutableList<Vector2> by al, RandomAccess {
     constructor(initialCapacity: Int = 0) : this(ArrayList<Vector2>(initialCapacity))
 
     constructor(vararg points: Vector2) : this(points.size) {
@@ -3739,7 +3736,7 @@ class Path private constructor(private val al: ArrayList<Vector2>) : MutableList
 
  * @author Tobias Mahlmann
 </Path> */
-class Paths private constructor(private val al: ArrayList<Path>) : MutableList<Path> by al {
+internal class Paths private constructor(private val al: ArrayList<Path>) : MutableList<Path> by al {
     constructor() : this(arrayListOf())
 
     constructor(initialCapacity: Int) : this(ArrayList(initialCapacity))
@@ -3825,7 +3822,7 @@ class Paths private constructor(private val al: ArrayList<Path>) : MutableList<P
     }
 }
 
-object Points {
+internal object Points {
     fun arePointsClose(pt1: Vector2, pt2: Vector2, distSqrd: Double): Boolean {
         val dx = pt1.x - pt2.x
         val dy = pt1.y - pt2.y
@@ -3892,7 +3889,7 @@ object Points {
 }
 
 @Suppress("unused")
-open class PolyNode {
+internal open class PolyNode {
     enum class NodeType { ANY, OPEN, CLOSED }
 
     var parent: PolyNode? = null
@@ -3932,7 +3929,7 @@ open class PolyNode {
 }
 
 @Suppress("unused")
-class PolyTree : PolyNode() {
+internal class PolyTree : PolyNode() {
     val allPolys = ArrayList<PolyNode>()
 
     fun clear() {

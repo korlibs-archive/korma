@@ -89,9 +89,7 @@ interface Bezier {
             x1: Double, y1: Double,
             t: Double,
             target: MVector2 = MVector2()
-        ): MVector2 {
-            return quadCalc(x0, y0, xc, yc, x1, y1, t) { x, y -> target.setTo(x, y) }
-        }
+        ): MVector2 = quadCalc(x0, y0, xc, yc, x1, y1, t) { x, y -> target.setTo(x, y) }
 
         fun cubicBounds(
             x0: Double, y0: Double, x1: Double, y1: Double,
