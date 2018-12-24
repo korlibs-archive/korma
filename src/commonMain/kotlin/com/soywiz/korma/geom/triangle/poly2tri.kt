@@ -42,25 +42,12 @@ entities.
 
 package com.soywiz.korma.geom.triangle
 
-import com.soywiz.korma.Vector2
-import com.soywiz.korma.geom.Orientation
-import com.soywiz.korma.geom.Point2d
+import com.soywiz.korma.*
+import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.ds.*
 import com.soywiz.korma.geom.internal.*
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashSet
-import kotlin.collections.List
-import kotlin.collections.arrayListOf
-import kotlin.collections.distinct
-import kotlin.collections.flatMap
-import kotlin.collections.getOrPut
-import kotlin.collections.hashMapOf
-import kotlin.collections.listOf
-import kotlin.collections.minusAssign
-import kotlin.collections.plusAssign
 import kotlin.collections.set
-import kotlin.math.PI
-import kotlin.math.atan2
+import kotlin.math.*
 
 class AdvancingFront(
     var head: Node,
@@ -154,7 +141,7 @@ class Basin {
 class Edge(
     var p1: Point2d,
     var p2: Point2d,
-    val ctx: EdgeContext
+    @Suppress("CanBeParameter") val ctx: EdgeContext
 ) {
     var p: Point2d
     var q: Point2d
@@ -181,6 +168,7 @@ class Edge(
         ctx.getPointEdgeList(this.q).add(this)
     }
 
+    @Suppress("unused")
     fun hasPoint(point: Point2d): Boolean = (p == point) || (q == point)
 
     companion object {
@@ -209,7 +197,7 @@ class Edge(
 }
 
 class EdgeEvent {
-    var constrained_edge: Edge? = null
+    var constrainedEdge: Edge? = null
     var right: Boolean = false
 }
 
@@ -319,9 +307,9 @@ class Sweep(
     }
 
     fun edgeEventByEdge(edge: Edge, node: Node) {
-        val edge_event = this.context.edgeEvent
-        edge_event.constrained_edge = edge
-        edge_event.right = (edge.p.x > edge.q.x)
+        val edgeEvent = this.context.edgeEvent
+        edgeEvent.constrainedEdge = edge
+        edgeEvent.right = (edge.p.x > edge.q.x)
 
         val triangle = node.triangle!!
 
@@ -367,15 +355,15 @@ class Sweep(
         triangle.markNeighborTriangle(node.triangle!!)
         this.context.addToSet(triangle)
 
-        val new_node = Node(point)
-        new_node.next = node.next
-        new_node.prev = node
-        node.next!!.prev = new_node
-        node.next = new_node
+        val newNode = Node(point)
+        newNode.next = node.next
+        newNode.prev = node
+        node.next!!.prev = newNode
+        node.next = newNode
 
         if (!legalize(triangle)) this.context.mapTriangleToNodes(triangle)
 
-        return new_node
+        return newNode
     }
 
     /**
@@ -725,7 +713,7 @@ class Sweep(
 
             // @TODO: equals?
             if ((p == eq) && (op == ep)) {
-                if ((eq == this.context.edgeEvent.constrained_edge!!.q) && (ep == this.context.edgeEvent.constrained_edge!!.p)) {
+                if ((eq == this.context.edgeEvent.constrainedEdge!!.q) && (ep == this.context.edgeEvent.constrainedEdge!!.p)) {
                     tt.markConstrainedEdgeByPoints(ep, eq)
                     ot.markConstrainedEdgeByPoints(ep, eq)
                     this.legalize(tt)
@@ -790,7 +778,7 @@ class Sweep(
 class SweepContext() {
     var triangles: ArrayList<Triangle> = ArrayList()
     var points: PointArrayList = PointArrayList()
-    var edge_list: ArrayList<Edge> = ArrayList()
+    var edgeList: ArrayList<Edge> = ArrayList()
     val edgeContext = EdgeContext()
 
     val set = LinkedHashSet<Triangle>()
@@ -826,7 +814,7 @@ class SweepContext() {
 
     private fun initEdges(polyline: List<Point2d>) {
         for (n in 0 until polyline.size) {
-            this.edge_list.add(Edge(polyline[n], polyline[(n + 1) % polyline.size], edgeContext))
+            this.edgeList.add(Edge(polyline[n], polyline[(n + 1) % polyline.size], edgeContext))
         }
     }
 

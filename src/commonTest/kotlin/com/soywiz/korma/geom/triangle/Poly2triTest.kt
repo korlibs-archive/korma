@@ -1,6 +1,5 @@
 package com.soywiz.korma.geom.triangle
 
-import com.soywiz.kds.*
 import com.soywiz.korma.*
 import com.soywiz.korma.geom.*
 import kotlin.math.*
@@ -34,7 +33,7 @@ class EdgeTest {
 class NewFunnelTest {
     @Test
     fun testStringPull() {
-        val channel = NewFunnel()
+        val channel = SpatialMeshFind.Channel.Funnel()
 
         channel.push(Point2d(1, 0))
         channel.push(Point2d(0, 4), Point2d(4, 3))
@@ -46,7 +45,6 @@ class NewFunnelTest {
 
         assertEquals("[(1, 0), (4, 3), (10, 1), (12, -11)]", channel.path.toString())
     }
-
 }
 
 class OrientationTest {

@@ -316,6 +316,8 @@ data class Triangle(
         this.delaunay_edge[2] = false
     }
 
+    override fun hashCode(): Int = p1.hashCode() + p2.hashCode() + p3.hashCode()
+
     override fun equals(other: Any?): Boolean =
         (other is Triangle) && (this.p1 == other.p1) && (this.p2 == other.p2) && (this.p3 == other.p3)
 
@@ -330,22 +332,23 @@ data class Triangle(
         }
     }
 
-    val area: Double
-        get() {
-            val a = p2.x - p1.x
-            val b = p2.y - p1.y
-
-            val c = p3.x - p1.x
-            val d = p3.y - p1.y
-
-            return abs(a * d - b * c) / 2.0
-        }
+    val area: Double get() = area(p1, p2, p3)
 
     override fun toString(): String = "Triangle(${this.points[0]}, ${this.points[1]}, ${this.points[2]})"
 
     companion object {
         private const val CW_OFFSET: Int = +1
         private const val CCW_OFFSET: Int = -1
+
+        fun area(p1: Point2d, p2: Point2d, p3: Point2d): Double = area(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
+
+        fun area(ax: Double, ay: Double, bx: Double, by: Double, cx: Double, cy: Double): Double {
+            val a = bx - ax
+            val b = by - ay
+            val c = cx - ax
+            val d = cy - ay
+            return abs(a * d - c * b) / 2.0
+        }
 
         fun getNotCommonVertexIndex(t1: Triangle, t2: Triangle): Int {
             var sum: Int = 0
