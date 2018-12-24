@@ -1,5 +1,6 @@
 package com.soywiz.korma.geom.clipper
 
+import com.soywiz.korma.*
 import com.soywiz.korma.geom.shape.internal.*
 import kotlin.test.*
 
@@ -7,8 +8,8 @@ class ClipperTest {
     @Test
     fun name() {
         val clipper = DefaultClipper()
-        val path1 = Path(Point2d(0, 0), Point2d(10, 0), Point2d(10, 10), Point2d(0, 10))
-        val path2 = Path(Point2d(5 + 0, 0), Point2d(5 + 10, 0), Point2d(5 + 10, 10), Point2d(5 + 0, 10))
+        val path1 = Path(Vector2(0, 0), Vector2(10, 0), Vector2(10, 10), Vector2(0, 10))
+        val path2 = Path(Vector2(5 + 0, 0), Vector2(5 + 10, 0), Vector2(5 + 10, 10), Vector2(5 + 0, 10))
         val paths = Paths()
 
         clipper.addPath(path1, Clipper.PolyType.CLIP, true)
