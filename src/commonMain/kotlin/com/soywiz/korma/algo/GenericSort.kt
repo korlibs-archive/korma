@@ -2,27 +2,12 @@ package com.soywiz.korma.algo
 
 import kotlin.math.*
 
-//fun <T> quickSort(subject: T, first: Int, last: Int, compare: (T, Int, Int) -> Int, swap: (T, Int, Int) -> Unit): T {
-//    if (last > first) {
-//        val pivot = (first + last) / 2
-//        var left = first
-//        var right = last
-//        while (left <= right) {
-//            while (compare(subject, left, pivot) < 0) left++
-//            while (compare(subject, right, pivot) > 0) right--
-//            if (left <= right) {
-//                swap(subject, left, right)
-//                left++
-//                right--
-//            }
-//        }
-//        quickSort(subject, first, right, compare, swap)
-//        quickSort(subject, left, last, compare, swap)
-//    }
-//    return subject
-//}
-
-private const val RUN = 32
+fun <T> genericSort(subject: T, left: Int, right: Int, ops: SortOps<T>): T {
+    //insertionSort(subject, left, right, ops)
+    //mergeSort(subject, left, right, ops)
+    timSort(subject, left, right, ops)
+    return subject
+}
 
 private fun <T> insertionSort(arr: T, left: Int, right: Int, ops: SortOps<T>) {
     for (n in left + 1..right) {
@@ -67,6 +52,8 @@ private fun <T> mergeSort(arr: T, l: Int, r: Int, ops: SortOps<T>) {
 }
 
 private fun <T> timSort(arr: T, l: Int, r: Int, ops: SortOps<T>) {
+    val RUN = 32
+
     val n = r - l + 1
     for (i in 0 until n step RUN) {
         insertionSort(arr, l + i, l + min((i + 31), (n - 1)), ops)
@@ -80,14 +67,6 @@ private fun <T> timSort(arr: T, l: Int, r: Int, ops: SortOps<T>) {
         }
         size *= 2
     }
-}
-
-// Simplest sort. @TODO: implement TimSort
-fun <T> genericSort(subject: T, left: Int, right: Int, ops: SortOps<T>): T {
-    //insertionSort(subject, left, right, ops)
-    //mergeSort(subject, left, right, ops)
-    timSort(subject, left, right, ops)
-    return subject
 }
 
 abstract class SortOps<T> {

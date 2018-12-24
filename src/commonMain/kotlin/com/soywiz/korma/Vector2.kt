@@ -5,7 +5,6 @@ import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.ds.*
 import com.soywiz.korma.internal.*
 import com.soywiz.korma.interpolation.*
-import com.soywiz.korma.sort.*
 import kotlin.math.*
 
 interface Vector2 {

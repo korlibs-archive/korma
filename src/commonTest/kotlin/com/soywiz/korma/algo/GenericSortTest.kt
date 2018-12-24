@@ -12,6 +12,9 @@ class GenericSortTest {
         assertEquals(listOf(0, 1, 2, 3, 4), listOf(1, 2, 0, 3, 4).genericSorted())
         assertEquals(listOf(0, 1, 2, 3, 4), listOf(1, 0, 2, 3, 4).genericSorted())
         assertEquals(listOf(0, 1, 2, 3, 4), listOf(0, 1, 2, 3, 4).genericSorted())
+
+        assertEquals(listOf(0), listOf(0).genericSorted())
+        assertEquals(listOf(0, 1), listOf(1, 0).genericSorted())
     }
 
     @Test
