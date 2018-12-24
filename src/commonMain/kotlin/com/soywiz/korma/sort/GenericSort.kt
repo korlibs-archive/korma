@@ -1,19 +1,35 @@
 package com.soywiz.korma.sort
 
-fun <T> quickSort(subject: T, left: Int, right: Int, compare: (T, Int, Int) -> Int, swap: (T, Int, Int) -> Unit): T {
-    var i = left
-    var j = right
-    val pivot = (left + right) / 2
-    while (i <= j) {
-        while (compare(subject, i, pivot) < 0) i++
-        while (compare(subject, j, pivot) > 0) j--
-        if (i <= j) {
-            swap(subject, i, j)
-            i++
-            j--
+//fun <T> quickSort(subject: T, first: Int, last: Int, compare: (T, Int, Int) -> Int, swap: (T, Int, Int) -> Unit): T {
+//    if (last > first) {
+//        val pivot = (first + last) / 2
+//        var left = first
+//        var right = last
+//        while (left <= right) {
+//            while (compare(subject, left, pivot) < 0) left++
+//            while (compare(subject, right, pivot) > 0) right--
+//            if (left <= right) {
+//                swap(subject, left, right)
+//                left++
+//                right--
+//            }
+//        }
+//        quickSort(subject, first, right, compare, swap)
+//        quickSort(subject, left, last, compare, swap)
+//    }
+//    return subject
+//}
+
+// Simplest sort. @TODO: implement TimSort
+fun <T> genericSort(subject: T, left: Int, right: Int, compare: (T, Int, Int) -> Int, swap: (T, Int, Int) -> Unit): T {
+    for (n in left + 1 .. right) {
+        for (m in n downTo left + 1) {
+            if (compare(subject, m, m - 1) < 0) {
+                swap(subject, m, m -1)
+            } else {
+                break
+            }
         }
     }
-    if (left < i - 1) quickSort(subject, left, i - 1, compare, swap)
-    if (i < right) quickSort(subject, i, right, compare, swap)
     return subject
 }

@@ -1,9 +1,10 @@
 package com.soywiz.korma
 
 import com.soywiz.korma.geom.*
+import com.soywiz.korma.geom.ds.*
 import com.soywiz.korma.internal.*
 import com.soywiz.korma.interpolation.*
-import com.soywiz.korma.math.*
+import com.soywiz.korma.sort.*
 import kotlin.math.*
 
 interface Vector2 {
@@ -32,16 +33,24 @@ interface Vector2 {
         fun angle(ax: Double, ay: Double, bx: Double, by: Double): Double =
             acos(((ax * bx) + (ay * by)) / (hypot(ax, ay) * hypot(bx, by)))
 
+        fun sortPoints(points: PointArrayList): Unit {
+            genericSort(points, 0, points.size - 1, compare = { p, l, r ->
+                val lx = p.getX(l)
+                val ly = p.getY(l)
+                val rx = p.getX(r)
+                val ry = p.getY(r)
+                val ret = ly.compareTo(ry)
+                if (ret == 0) lx.compareTo(rx) else ret
+            }, swap = { p, l, r -> p.swap(l, r) })
+        }
+
         fun sortPoints(points: ArrayList<Vector2>): Unit {
             points.sortWith(Comparator { l, r -> cmpPoints(l, r) })
         }
 
         private fun cmpPoints(l: Vector2, r: Vector2): Int {
-            var ret: Double = l.y - r.y
-            if (ret == 0.0) ret = l.x - r.x
-            if (ret < 0) return -1
-            if (ret > 0) return +1
-            return 0
+            val ret = l.y.compareTo(r.y)
+            return if (ret == 0) l.x.compareTo(r.x) else ret
         }
 
         fun angle(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double): Double {
