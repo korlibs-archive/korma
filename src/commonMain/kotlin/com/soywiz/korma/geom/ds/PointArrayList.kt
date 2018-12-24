@@ -15,6 +15,9 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     private val yList = DoubleArrayList(capacity)
     override val size get() = xList.size
 
+    fun isEmpty() = size == 0
+    fun isNotEmpty() = size != 0
+
     companion object {
         operator fun invoke(capacity: Int = 7, callback: PointArrayList.() -> Unit): PointArrayList = PointArrayList(capacity).apply(callback)
         operator fun invoke(points: List<Point2d>): PointArrayList = PointArrayList(points.size) {
@@ -28,6 +31,8 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     }
 
     inline fun add(x: Number, y: Number) = add(x.toDouble(), y.toDouble())
+
+    fun add(p: Point2d) = add(p.x, p.y)
 
     fun add(other: IPointArrayList) = this.apply {
         for (n in 0 until other.size) add(other.getX(n), other.getY(n))
@@ -54,6 +59,17 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
         sb.append(']')
         return sb.toString()
     }
+
+    fun swap(indexA: Int, indexB: Int) {
+        xList.swap(indexA, indexB)
+        yList.swap(indexA, indexB)
+    }
+}
+
+fun DoubleArrayList.swap(indexA: Int, indexB: Int) {
+    val tmp = this[indexA]
+    this[indexA] = this[indexB]
+    this[indexB] = tmp
 }
 
 fun IPointArrayList.getPoint(index: Int) = Point2d(getX(index), getY(index))

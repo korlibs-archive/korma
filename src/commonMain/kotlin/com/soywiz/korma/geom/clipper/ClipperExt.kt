@@ -49,7 +49,7 @@ internal fun Shape2d.clipperOp(other: Shape2d, op: Clipper.ClipType): Shape2d {
 }
 
 internal fun VectorPath.toClipperPaths(): Paths {
-    return Paths(toPaths2().map { Path(it) })
+    return Paths(toPathList().map { Path(it.toPoints()) })
 }
 
 internal fun VectorPath.LineCap.toClipper(): Clipper.EndType = when (this) {

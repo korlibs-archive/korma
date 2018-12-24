@@ -49,7 +49,7 @@ fun Shape2d.extendLine(size: Double, join: VectorPath.LineJoin = VectorPath.Line
 }
 
 // @TODO: Instead of use curveSteps, let's determine the maximum distance between points for the curve, or the maximum angle (so we have a quality factor instead)
-inline fun VectorPath.toPaths2(flush: () -> Unit, emit: (x: Double, y: Double) -> Unit, curveSteps: Int = 20) {
+inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Double, y: Double) -> Unit, curveSteps: Int = 20) {
     var lx = 0.0
     var ly = 0.0
     flush()
@@ -91,16 +91,16 @@ inline fun VectorPath.toPaths2(flush: () -> Unit, emit: (x: Double, y: Double) -
     flush()
 }
 
-fun VectorPath.toPaths2(): List<List<Point2d>> {
-    val paths = arrayListOf<ArrayList<Point2d>>()
-    var path = arrayListOf<Point2d>()
-    toPaths2({
+fun VectorPath.toPathList(): List<IPointArrayList> {
+    val paths = arrayListOf<IPointArrayList>()
+    var path = PointArrayList()
+    emitPoints({
         if (path.isNotEmpty()) {
             paths += path
-            path = ArrayList()
+            path = PointArrayList()
         }
     }, { x, y ->
-        path.add(Point2d(x, y))
+        path.add(x, y)
     })
     return paths
 }
