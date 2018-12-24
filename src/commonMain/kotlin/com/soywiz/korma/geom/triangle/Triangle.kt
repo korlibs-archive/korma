@@ -100,6 +100,73 @@ fun ITriangle.getPointIndexOffset(p: Point2d, offset: Int = 0): Int {
 fun ITriangle.pointCW(p: Point2d): Point2d = this.point(getPointIndexOffset(p, Triangle.CCW_OFFSET))
 fun ITriangle.pointCCW(p: Point2d): Point2d = this.point(getPointIndexOffset(p, Triangle.CW_OFFSET))
 
+fun ISpatialTriangle.neighborCW(p: Point2d): ISpatialTriangle? = this.neighbors[getPointIndexOffset(p, Triangle.CW_OFFSET)]
+fun ISpatialTriangle.neighborCCW(p: Point2d): ISpatialTriangle? = this.neighbors[getPointIndexOffset(p, Triangle.CCW_OFFSET)]
+
+fun ISpatialTriangle.getConstrainedEdgeCW(p: Point2d): Boolean = this.constrained_edge[getPointIndexOffset(p, Triangle.CW_OFFSET)]
+fun ISpatialTriangle.setConstrainedEdgeCW(p: Point2d, ce: Boolean): Boolean =
+    ce.also { this.constrained_edge[getPointIndexOffset(p, Triangle.CW_OFFSET)] = ce }
+
+fun ISpatialTriangle.getConstrainedEdgeCCW(p: Point2d): Boolean = this.constrained_edge[getPointIndexOffset(p, Triangle.CCW_OFFSET)]
+fun ISpatialTriangle.setConstrainedEdgeCCW(p: Point2d, ce: Boolean): Boolean =
+    ce.also { this.constrained_edge[getPointIndexOffset(p, Triangle.CCW_OFFSET)] = ce }
+
+fun ISpatialTriangle.getDelaunayEdgeCW(p: Point2d): Boolean = this.delaunay_edge[getPointIndexOffset(p, Triangle.CW_OFFSET)]
+fun ISpatialTriangle.setDelaunayEdgeCW(p: Point2d, e: Boolean): Boolean =
+    e.also { this.delaunay_edge[getPointIndexOffset(p, Triangle.CW_OFFSET)] = e }
+
+fun ISpatialTriangle.getDelaunayEdgeCCW(p: Point2d): Boolean = this.delaunay_edge[getPointIndexOffset(p, Triangle.CCW_OFFSET)]
+fun ISpatialTriangle.setDelaunayEdgeCCW(p: Point2d, e: Boolean): Boolean =
+    e.also { this.delaunay_edge[getPointIndexOffset(p, Triangle.CCW_OFFSET)] = e }
+
+fun ISpatialTriangle.clearNeigbors() {
+    this.neighbors[0] = null
+    this.neighbors[1] = null
+    this.neighbors[2] = null
+}
+
+fun ISpatialTriangle.clearDelunayEdges() {
+    this.delaunay_edge[0] = false
+    this.delaunay_edge[1] = false
+    this.delaunay_edge[2] = false
+}
+
+
+/**
+ * Legalize triangle by rotating clockwise.<br>
+ * This method takes either 1 parameter (then the triangle is rotated around
+ * points(0)) or 2 parameters (then the triangle is rotated around the first
+ * parameter).
+ */
+fun ISpatialTriangle.legalize(opoint: Point2d, npoint: Point2d? = null) {
+    if (npoint == null) return this.legalize(this.point(0), opoint)
+
+    when (opoint) {
+        this.point(0) -> {
+            this.p1 = this.point(0)
+            this.p0 = this.point(2)
+            this.p2 = npoint
+        }
+        this.point(1) -> {
+            this.p2 = this.point(1)
+            this.p1 = this.point(0)
+            this.p0 = npoint
+        }
+        this.point(2) -> {
+            this.p0 = this.point(2)
+            this.p2 = this.point(1)
+            this.p1 = npoint
+        }
+        else -> throw Error("Invalid js.poly2tri.Triangle.Legalize call!")
+    }
+}
+
+/**
+ * The neighbor across to given point.
+ */
+fun ISpatialTriangle.neighborAcross(p: Point2d): ISpatialTriangle? = this.neighbors[getPointIndexOffset(p, 0)]
+
+fun ITriangle.oppositePoint(t: ITriangle, p: Point2d): Point2d = this.pointCW(t.pointCW(p))
 
 fun EdgeContext.getCommonEdge(t1: ITriangle, t2: ITriangle): Edge {
     val commonIndexes = ArrayList<Point2d>()
@@ -136,9 +203,154 @@ fun Triangle(
 }
 
 interface ISpatialTriangle : ITriangle {
-    val neighbors: List<ISpatialTriangle?>
+    override var p0: Point2d
+    override var p1: Point2d
+    override var p2: Point2d
+    var interior: Boolean
+    val neighbors: ArrayList<ISpatialTriangle?>
     val constrained_edge: BooleanArray
+    val delaunay_edge: BooleanArray
 }
+
+
+/**
+ * Update neighbor pointers.<br>
+ * This method takes either 3 parameters (<code>p1</code>, <code>p2</code> and
+ * <code>t</code>) or 1 parameter (<code>t</code>).
+ * @param   t   Triangle object.
+ * @param   p1  Point2d object.
+ * @param   p2  Point2d object.
+ */
+fun ISpatialTriangle.markNeighbor(t: ISpatialTriangle, p1: Point2d, p2: Point2d) {
+    if ((p1 == (this.point(2)) && p2 == (this.point(1))) || (p1 == (this.point(1)) && p2 == (this.point(2)))) {
+        this.neighbors[0] = t
+        return
+    }
+    if ((p1 == (this.point(0)) && p2 == (this.point(2))) || (p1 == (this.point(2)) && p2 == (this.point(0)))) {
+        this.neighbors[1] = t
+        return
+    }
+    if ((p1 == (this.point(0)) && p2 == (this.point(1))) || (p1 == (this.point(1)) && p2 == (this.point(0)))) {
+        this.neighbors[2] = t
+        return
+    }
+    throw Error("Invalid markNeighbor call (1)!")
+}
+
+fun ISpatialTriangle.markNeighborTriangle(that: ISpatialTriangle) {
+    // exhaustive search to update neighbor pointers
+    if (that.containsEdgePoints(this.point(1), this.point(2))) {
+        this.neighbors[0] = that
+        that.markNeighbor(this, this.point(1), this.point(2))
+        return
+    }
+
+    if (that.containsEdgePoints(this.point(0), this.point(2))) {
+        this.neighbors[1] = that
+        that.markNeighbor(this, this.point(0), this.point(2))
+        return
+    }
+
+    if (that.containsEdgePoints(this.point(0), this.point(1))) {
+        this.neighbors[2] = that
+        that.markNeighbor(this, this.point(0), this.point(1))
+        return
+    }
+}
+
+/*public fun getPointIndexOffset(p:Point2d, offset:Int = 0):uint {
+	for (var n:uint = 0; n < 3; n++) if (p == (this.points[n])) return (n + offset) % 3;
+	throw(Error("Point2d not in triangle"));
+}*/
+
+
+/**
+ * Alias for containsPoint
+ *
+ * @param    p
+ * @return
+ */
+fun ITriangle.isPointAVertex(p: Point2d): Boolean = containsPoint(p)
+//for (var n:uint = 0; n < 3; n++) if (p == [this.points[n]]) return true;
+//return false;
+
+/**
+ * Return the point clockwise to the given point.
+ * Return the point counter-clockwise to the given point.
+ *
+ * Return the neighbor clockwise to given point.
+ * Return the neighbor counter-clockwise to given point.
+ */
+
+//private const CCW_OFFSET:Int = +1;
+//private const CW_OFFSET:Int = -1;
+
+
+
+/**
+ * Alias for getPointIndexOffset
+ *
+ * @param    p
+ */
+// @TODO: Do not use exceptions
+fun ITriangle.index(p: Point2d): Int = try {
+    this.getPointIndexOffset(p, 0)
+} catch (e: Throwable) {
+    -1
+}
+
+fun ITriangle.edgeIndex(p1: Point2d, p2: Point2d): Int {
+    if (p1 == this.point(0)) {
+        if (p2 == this.point(1)) return 2
+        if (p2 == this.point(2)) return 1
+    } else if (p1 == this.point(1)) {
+        if (p2 == this.point(2)) return 0
+        if (p2 == this.point(0)) return 2
+    } else if (p1 == this.point(2)) {
+        if (p2 == this.point(0)) return 1
+        if (p2 == this.point(1)) return 0
+    }
+    return -1
+}
+
+
+/**
+ * Mark an edge of this triangle as constrained.<br>
+ * This method takes either 1 parameter (an edge index or an Edge instance) or
+ * 2 parameters (two Point2d instances defining the edge of the triangle).
+ */
+fun ISpatialTriangle.markConstrainedEdgeByIndex(index: Int): Unit = run { this.constrained_edge[index] = true }
+
+fun ISpatialTriangle.markConstrainedEdgeByEdge(edge: Edge): Unit = this.markConstrainedEdgeByPoints(edge.p, edge.q)
+
+fun ISpatialTriangle.markConstrainedEdgeByPoints(p: Point2d, q: Point2d) {
+    if ((q == (this.point(0)) && p == (this.point(1))) || (q == (this.point(1)) && p == (this.point(0)))) {
+        this.constrained_edge[2] = true
+    } else if ((q == (this.point(0)) && p == (this.point(2))) || (q == (this.point(2)) && p == (this.point(0)))) {
+        this.constrained_edge[1] = true
+    } else if ((q == (this.point(1)) && p == (this.point(2))) || (q == (this.point(2)) && p == (this.point(1)))) {
+        this.constrained_edge[0] = true
+    }
+}
+
+// isEdgeSide
+/**
+ * Checks if a side from this triangle is an edge side.
+ * If sides are not marked they will be marked.
+ *
+ * @param    ep
+ * @param    eq
+ * @return
+ */
+fun ISpatialTriangle.isEdgeSide(ep: Point2d, eq: Point2d): Boolean {
+    val index = this.edgeIndex(ep, eq)
+    if (index == -1) return false
+    this.markConstrainedEdgeByIndex(index)
+    this.neighbors[index]?.markConstrainedEdgeByPoints(ep, eq)
+    return true
+}
+
+val ISpatialTriangle.area: Double get() = Triangle.area(p0, p1, p2)
 
 data class Triangle internal constructor(
     val dummy: Boolean,
@@ -146,217 +358,15 @@ data class Triangle internal constructor(
     override var p1: Point2d,
     override var p2: Point2d
 ) : ISpatialTriangle {
-    override var neighbors = ArrayList<Triangle?>(3).apply { add(null); add(null); add(null) } // Neighbor list
-    var interior: Boolean = false // Has this triangle been marked as an interior triangle?
-    override var constrained_edge = BooleanArray(3) // Flags to determine if an edge is a Constrained edge
-    var delaunay_edge = BooleanArray(3) // Flags to determine if an edge is a Delauney edge
-
-    /**
-     * Update neighbor pointers.<br>
-     * This method takes either 3 parameters (<code>p1</code>, <code>p2</code> and
-     * <code>t</code>) or 1 parameter (<code>t</code>).
-     * @param   t   Triangle object.
-     * @param   p1  Point2d object.
-     * @param   p2  Point2d object.
-     */
-    fun markNeighbor(t: Triangle, p1: Point2d, p2: Point2d) {
-        if ((p1 == (this.point(2)) && p2 == (this.point(1))) || (p1 == (this.point(1)) && p2 == (this.point(2)))) {
-            this.neighbors[0] = t
-            return
-        }
-        if ((p1 == (this.point(0)) && p2 == (this.point(2))) || (p1 == (this.point(2)) && p2 == (this.point(0)))) {
-            this.neighbors[1] = t
-            return
-        }
-        if ((p1 == (this.point(0)) && p2 == (this.point(1))) || (p1 == (this.point(1)) && p2 == (this.point(0)))) {
-            this.neighbors[2] = t
-            return
-        }
-        throw Error("Invalid markNeighbor call (1)!")
-    }
-
-    fun markNeighborTriangle(that: Triangle) {
-        // exhaustive search to update neighbor pointers
-        if (that.containsEdgePoints(this.point(1), this.point(2))) {
-            this.neighbors[0] = that
-            that.markNeighbor(this, this.point(1), this.point(2))
-            return
-        }
-
-        if (that.containsEdgePoints(this.point(0), this.point(2))) {
-            this.neighbors[1] = that
-            that.markNeighbor(this, this.point(0), this.point(2))
-            return
-        }
-
-        if (that.containsEdgePoints(this.point(0), this.point(1))) {
-            this.neighbors[2] = that
-            that.markNeighbor(this, this.point(0), this.point(1))
-            return
-        }
-    }
-
-    /*public fun getPointIndexOffset(p:Point2d, offset:Int = 0):uint {
-        for (var n:uint = 0; n < 3; n++) if (p == (this.points[n])) return (n + offset) % 3;
-        throw(Error("Point2d not in triangle"));
-    }*/
-
-
-    /**
-     * Alias for containsPoint
-     *
-     * @param    p
-     * @return
-     */
-    fun isPointAVertex(p: Point2d): Boolean = containsPoint(p)
-    //for (var n:uint = 0; n < 3; n++) if (p == [this.points[n]]) return true;
-    //return false;
-
-    /**
-     * Return the point clockwise to the given point.
-     * Return the point counter-clockwise to the given point.
-     *
-     * Return the neighbor clockwise to given point.
-     * Return the neighbor counter-clockwise to given point.
-     */
-
-    //private const CCW_OFFSET:Int = +1;
-    //private const CW_OFFSET:Int = -1;
-
-
-    fun neighborCW(p: Point2d): Triangle? = this.neighbors[getPointIndexOffset(p, CW_OFFSET)]
-    fun neighborCCW(p: Point2d): Triangle? = this.neighbors[getPointIndexOffset(p, CCW_OFFSET)]
-
-    fun getConstrainedEdgeCW(p: Point2d): Boolean = this.constrained_edge[getPointIndexOffset(p, CW_OFFSET)]
-    fun setConstrainedEdgeCW(p: Point2d, ce: Boolean): Boolean =
-        ce.also { this.constrained_edge[getPointIndexOffset(p, CW_OFFSET)] = ce }
-
-    fun getConstrainedEdgeCCW(p: Point2d): Boolean = this.constrained_edge[getPointIndexOffset(p, CCW_OFFSET)]
-    fun setConstrainedEdgeCCW(p: Point2d, ce: Boolean): Boolean =
-        ce.also { this.constrained_edge[getPointIndexOffset(p, CCW_OFFSET)] = ce }
-
-    fun getDelaunayEdgeCW(p: Point2d): Boolean = this.delaunay_edge[getPointIndexOffset(p, CW_OFFSET)]
-    fun setDelaunayEdgeCW(p: Point2d, e: Boolean): Boolean =
-        e.also { this.delaunay_edge[getPointIndexOffset(p, CW_OFFSET)] = e }
-
-    fun getDelaunayEdgeCCW(p: Point2d): Boolean = this.delaunay_edge[getPointIndexOffset(p, CCW_OFFSET)]
-    fun setDelaunayEdgeCCW(p: Point2d, e: Boolean): Boolean =
-        e.also { this.delaunay_edge[getPointIndexOffset(p, CCW_OFFSET)] = e }
-
-    /**
-     * The neighbor across to given point.
-     */
-    fun neighborAcross(p: Point2d): Triangle? = this.neighbors[getPointIndexOffset(p, 0)]
-
-    fun oppositePoint(t: Triangle, p: Point2d): Point2d = this.pointCW(t.pointCW(p))
-
-    /**
-     * Legalize triangle by rotating clockwise.<br>
-     * This method takes either 1 parameter (then the triangle is rotated around
-     * points(0)) or 2 parameters (then the triangle is rotated around the first
-     * parameter).
-     */
-    fun legalize(opoint: Point2d, npoint: Point2d? = null) {
-        if (npoint == null) return this.legalize(this.point(0), opoint)
-
-        if (opoint == this.point(0)) {
-            this.p1 = this.point(0)
-            this.p0 = this.point(2)
-            this.p2 = npoint
-        } else if (opoint == this.point(1)) {
-            this.p2 = this.point(1)
-            this.p1 = this.point(0)
-            this.p0 = npoint
-        } else if (opoint == this.point(2)) {
-            this.p0 = this.point(2)
-            this.p2 = this.point(1)
-            this.p1 = npoint
-        } else {
-            throw Error("Invalid js.poly2tri.Triangle.Legalize call!")
-        }
-    }
-
-    /**
-     * Alias for getPointIndexOffset
-     *
-     * @param    p
-     */
-    // @TODO: Do not use exceptions
-    fun index(p: Point2d): Int = try {
-        this.getPointIndexOffset(p, 0)
-    } catch (e: Throwable) {
-        -1
-    }
-
-    fun edgeIndex(p1: Point2d, p2: Point2d): Int {
-        if (p1 == this.point(0)) {
-            if (p2 == this.point(1)) return 2
-            if (p2 == this.point(2)) return 1
-        } else if (p1 == this.point(1)) {
-            if (p2 == this.point(2)) return 0
-            if (p2 == this.point(0)) return 2
-        } else if (p1 == this.point(2)) {
-            if (p2 == this.point(0)) return 1
-            if (p2 == this.point(1)) return 0
-        }
-        return -1
-    }
-
-
-    /**
-     * Mark an edge of this triangle as constrained.<br>
-     * This method takes either 1 parameter (an edge index or an Edge instance) or
-     * 2 parameters (two Point2d instances defining the edge of the triangle).
-     */
-    fun markConstrainedEdgeByIndex(index: Int): Unit = run { this.constrained_edge[index] = true }
-
-    fun markConstrainedEdgeByEdge(edge: Edge): Unit = this.markConstrainedEdgeByPoints(edge.p, edge.q)
-
-    fun markConstrainedEdgeByPoints(p: Point2d, q: Point2d) {
-        if ((q == (this.point(0)) && p == (this.point(1))) || (q == (this.point(1)) && p == (this.point(0)))) {
-            this.constrained_edge[2] = true
-        } else if ((q == (this.point(0)) && p == (this.point(2))) || (q == (this.point(2)) && p == (this.point(0)))) {
-            this.constrained_edge[1] = true
-        } else if ((q == (this.point(1)) && p == (this.point(2))) || (q == (this.point(2)) && p == (this.point(1)))) {
-            this.constrained_edge[0] = true
-        }
-    }
-
-    // isEdgeSide
-    /**
-     * Checks if a side from this triangle is an edge side.
-     * If sides are not marked they will be marked.
-     *
-     * @param    ep
-     * @param    eq
-     * @return
-     */
-    fun isEdgeSide(ep: Point2d, eq: Point2d): Boolean {
-        val index = this.edgeIndex(ep, eq)
-        if (index == -1) return false
-        this.markConstrainedEdgeByIndex(index)
-        this.neighbors[index]?.markConstrainedEdgeByPoints(ep, eq)
-        return true
-    }
-
-    fun clearNeigbors() {
-        this.neighbors[0] = null
-        this.neighbors[1] = null
-        this.neighbors[2] = null
-    }
-
-    fun clearDelunayEdges() {
-        this.delaunay_edge[0] = false
-        this.delaunay_edge[1] = false
-        this.delaunay_edge[2] = false
-    }
+    override val neighbors: ArrayList<ISpatialTriangle?> = ArrayList<Triangle?>(3).apply { add(null); add(null); add(null) } as ArrayList<ISpatialTriangle?> // Neighbor list
+    override var interior: Boolean = false // Has this triangle been marked as an interior triangle?
+    override val constrained_edge = BooleanArray(3) // Flags to determine if an edge is a Constrained edge
+    override val delaunay_edge = BooleanArray(3) // Flags to determine if an edge is a Delauney edge
 
     override fun hashCode(): Int = p0.hashCode() + p1.hashCode() * 3 + p2.hashCode() * 5
 
     override fun equals(other: Any?): Boolean =
         (other is Triangle) && (this.p0 == other.p0) && (this.p1 == other.p1) && (this.p2 == other.p2)
-
-    val area: Double get() = area(p0, p1, p2)
 
     override fun toString(): String = "Triangle(${this.point(0)}, ${this.point(1)}, ${this.point(2)})"
 
@@ -410,7 +420,7 @@ data class Triangle internal constructor(
          *       n4                    n4
          * </pre>
          */
-        fun rotateTrianglePair(t: Triangle, p: Point2d, ot: Triangle, op: Point2d) {
+        fun rotateTrianglePair(t: ISpatialTriangle, p: Point2d, ot: ISpatialTriangle, op: Point2d) {
             val n1 = t.neighborCCW(p)
             val n2 = t.neighborCW(p)
             val n3 = ot.neighborCCW(op)
@@ -455,10 +465,10 @@ data class Triangle internal constructor(
             t.markNeighborTriangle(ot)
         }
 
-        fun getUniquePointsFromTriangles(triangles: ArrayList<Triangle>) =
+        fun getUniquePointsFromTriangles(triangles: List<ITriangle>) =
             triangles.flatMap { listOf(it.p0, it.p1, it.p2) }.distinct()
 
-        fun traceList(triangles: ArrayList<Triangle>) {
+        fun traceList(triangles: List<ITriangle>) {
             val pointsList = Triangle.getUniquePointsFromTriangles(triangles)
             val pointsMap = hashMapOf<Point2d, Int>()
             var points_length = 0

@@ -71,7 +71,7 @@ class SpatialMesh {
     }
 
     companion object {
-        fun fromTriangles(triangles: Iterable<Triangle>): SpatialMesh = SpatialMesh(triangles)
+        fun fromTriangles(triangles: Iterable<ISpatialTriangle>): SpatialMesh = SpatialMesh(triangles)
     }
 
     override fun toString() = "SpatialMesh(" + nodes.toString() + ")"

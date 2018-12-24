@@ -110,14 +110,14 @@ fun VectorPath.toShape2d(): Shape2d = this.toClipperPaths().toShape2d()
 fun Shape2d.getAllPoints(out: PointArrayList = PointArrayList()): PointArrayList = out.apply { for (path in this@getAllPoints.paths) add(path) }
 fun Shape2d.toPolygon(): Shape2d.Polygon = if (this is Shape2d.Polygon) this else Shape2d.Polygon(this.getAllPoints())
 
-fun List<Point2d>.triangulate(): List<Triangle> {
+fun List<Point2d>.triangulate(): List<ISpatialTriangle> {
     val sc = SweepContext(this)
     val s = Sweep(sc)
     s.triangulate()
     return sc.triangles.toList()
 }
 
-fun Shape2d.triangulate(): List<Triangle> = this.getAllPoints().toPoints().triangulate()
+fun Shape2d.triangulate(): List<ISpatialTriangle> = this.getAllPoints().toPoints().triangulate()
 
 fun List<Point2d>.containsPoint(x: Double, y: Double): Boolean {
     var intersections = 0

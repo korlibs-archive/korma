@@ -177,7 +177,7 @@ class EdgeEvent {
 
 class Node(
     var point: Point2d,
-    var triangle: Triangle? = null
+    var triangle: ISpatialTriangle? = null
 ) {
     var prev: Node? = null
     var next: Node? = null
@@ -262,7 +262,7 @@ class Sweep(
     fun finalizationPolygon() {
         // Get an Internal triangle to start with
         val next = this.context.front.head.next!!
-        var t: Triangle = next.triangle!!
+        var t: ISpatialTriangle = next.triangle!!
         val p: Point2d = next.point
         while (!t.getConstrainedEdgeCW(p)) t = t.neighborCCW(p)!!
 
@@ -306,7 +306,7 @@ class Sweep(
         this.edgeEventByPoints(edge.p, edge.q, triangle, edge.q)
     }
 
-    fun edgeEventByPoints(ep: Point2d, eq: Point2d, triangle: Triangle, point: Point2d) {
+    fun edgeEventByPoints(ep: Point2d, eq: Point2d, triangle: ISpatialTriangle, point: Point2d) {
         if (triangle.isEdgeSide(ep, eq)) return
 
         val p1: Point2d = triangle.pointCCW(point)
@@ -410,12 +410,12 @@ class Sweep(
     /**
      * Returns true if triangle was legalized
      */
-    fun legalize(t: Triangle): Boolean {
+    fun legalize(t: ISpatialTriangle): Boolean {
         // To legalize a triangle we start by finding if any of the three edges
         // violate the Delaunay condition
         for (i in 0 until 3) {
             if (t.delaunay_edge[i]) continue
-            val ot: Triangle = t.neighbors[i] ?: continue
+            val ot: ISpatialTriangle = t.neighbors[i] ?: continue
             val p: Point2d = t.point(i)
             val op: Point2d = ot.oppositePoint(t, p)
             val oi: Int = ot.index(op)
@@ -680,9 +680,9 @@ class Sweep(
         }
     }
 
-    fun flipEdgeEvent(ep: Point2d, eq: Point2d, t: Triangle, p: Point2d) {
+    fun flipEdgeEvent(ep: Point2d, eq: Point2d, t: ISpatialTriangle, p: Point2d) {
         var tt = t
-        val ot: Triangle = tt.neighborAcross(p) ?: throw Error("[BUG:FIXME] FLIP failed due to missing triangle!")
+        val ot: ISpatialTriangle = tt.neighborAcross(p) ?: throw Error("[BUG:FIXME] FLIP failed due to missing triangle!")
         // If we want to integrate the fillEdgeEvent do it here
         // With current implementation we should never get here
 
@@ -716,7 +716,7 @@ class Sweep(
         }
     }
 
-    fun nextFlipTriangle(o: Orientation, t: Triangle, ot: Triangle, p: Point2d, op: Point2d): Triangle {
+    fun nextFlipTriangle(o: Orientation, t: ISpatialTriangle, ot: ISpatialTriangle, p: Point2d, op: Point2d): ISpatialTriangle {
         val tt = if (o == Orientation.CCW) ot else t
         // ot is not crossing edge after flip
         tt.delaunay_edge[tt.edgeIndex(p, op)] = true
@@ -726,7 +726,7 @@ class Sweep(
     }
 
     companion object {
-        fun nextFlipPoint(ep: Point2d, eq: Point2d, ot: Triangle, op: Point2d): Point2d {
+        fun nextFlipPoint(ep: Point2d, eq: Point2d, ot: ITriangle, op: Point2d): Point2d {
             return when (Orientation.orient2d(eq, op, ep)) {
                 Orientation.CW -> ot.pointCCW(op) // Right
                 Orientation.CCW -> ot.pointCW(op) // Left
@@ -735,7 +735,7 @@ class Sweep(
         }
     }
 
-    fun flipScanEdgeEvent(ep: Point2d, eq: Point2d, flip_triangle: Triangle, t: Triangle, p: Point2d) {
+    fun flipScanEdgeEvent(ep: Point2d, eq: Point2d, flip_triangle: ITriangle, t: ISpatialTriangle, p: Point2d) {
         val ot = t.neighborAcross(p)
             ?: throw Error("[BUG:FIXME] FLIP failed due to missing triangle") // If we want to integrate the fillEdgeEvent do it here With current implementation we should never get here
 
@@ -759,12 +759,12 @@ class Sweep(
 }
 
 class SweepContext() {
-    var triangles: ArrayList<Triangle> = ArrayList()
+    var triangles: ArrayList<ISpatialTriangle> = ArrayList()
     var points: PointArrayList = PointArrayList()
     var edgeList: ArrayList<Edge> = ArrayList()
     val edgeContext = EdgeContext()
 
-    val set = LinkedHashSet<Triangle>()
+    val set = LinkedHashSet<ISpatialTriangle>()
 
     lateinit var front: AdvancingFront
     lateinit var head: Point2d
@@ -801,7 +801,7 @@ class SweepContext() {
         }
     }
 
-    fun addToSet(triangle: Triangle) {
+    fun addToSet(triangle: ISpatialTriangle) {
         this.set += triangle
     }
 
@@ -863,7 +863,7 @@ class SweepContext() {
         // do nothing
     }
 
-    fun mapTriangleToNodes(triangle: Triangle) {
+    fun mapTriangleToNodes(triangle: ISpatialTriangle) {
         for (n in 0 until 3) {
             if (triangle.neighbors[n] == null) {
                 val neighbor: Node? = this.front.locatePoint(triangle.pointCW(triangle.point(n)))
@@ -873,11 +873,11 @@ class SweepContext() {
     }
 
     @Suppress("unused")
-    fun removeFromMap(triangle: Triangle) {
+    fun removeFromMap(triangle: ISpatialTriangle) {
         this.set -= triangle
     }
 
-    fun meshClean(triangle: Triangle?, level: Int = 0) {
+    fun meshClean(triangle: ISpatialTriangle?, level: Int = 0) {
         if (level == 0) {
             //for each (var mappedTriangle:Triangle in this.map) println(mappedTriangle);
         }

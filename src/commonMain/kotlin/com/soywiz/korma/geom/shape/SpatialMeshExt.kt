@@ -3,8 +3,8 @@ package com.soywiz.korma.geom.shape
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.triangle.*
 
-fun List<Triangle>.toSpatialMesh(): SpatialMesh = SpatialMesh.fromTriangles(this)
-fun List<Triangle>.pathFind(): SpatialMeshFind = SpatialMeshFind(this.toSpatialMesh())
+fun List<ISpatialTriangle>.toSpatialMesh(): SpatialMesh = SpatialMesh.fromTriangles(this)
+fun List<ISpatialTriangle>.pathFind(): SpatialMeshFind = SpatialMeshFind(this.toSpatialMesh())
 
 fun SpatialMeshFind.funnel(p0: Point2d, p1: Point2d): List<Point2d> {
     val pf = this
