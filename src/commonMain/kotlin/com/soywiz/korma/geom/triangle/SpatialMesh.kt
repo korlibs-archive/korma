@@ -31,10 +31,12 @@ class SpatialMesh {
         if (triangle === null) return null
 
         if (!mapTriangleToSpatialNode.containsKey(triangle)) {
-            val tp = triangle.points
+            val tp0 = triangle.p0
+            val tp1 = triangle.p1
+            val tp2 = triangle.p2
             val sn = Node(
-                x = ((tp[0].x + tp[1].x + tp[2].x) / 3).toInt().toDouble(),
-                y = ((tp[0].y + tp[1].y + tp[2].y) / 3).toInt().toDouble(),
+                x = ((tp0.x + tp1.x + tp2.x) / 3).toInt().toDouble(),
+                y = ((tp0.y + tp1.y + tp2.y) / 3).toInt().toDouble(),
                 z = 0.0,
                 triangle = triangle,
                 G = 0,

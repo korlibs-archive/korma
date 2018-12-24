@@ -416,7 +416,7 @@ class Sweep(
         for (i in 0 until 3) {
             if (t.delaunay_edge[i]) continue
             val ot: Triangle = t.neighbors[i] ?: continue
-            val p: Point2d = t.points[i]
+            val p: Point2d = t.point(i)
             val op: Point2d = ot.oppositePoint(t, p)
             val oi: Int = ot.index(op)
 
@@ -847,9 +847,9 @@ class SweepContext() {
 
         addToSet(triangle)
 
-        val head = Node(triangle.points[1], triangle)
-        val middle = Node(triangle.points[0], triangle)
-        val tail = Node(triangle.points[2])
+        val head = Node(triangle.p1, triangle)
+        val middle = Node(triangle.p0, triangle)
+        val tail = Node(triangle.p2)
 
         this.front = AdvancingFront(head, tail)
 
@@ -866,7 +866,7 @@ class SweepContext() {
     fun mapTriangleToNodes(triangle: Triangle) {
         for (n in 0 until 3) {
             if (triangle.neighbors[n] == null) {
-                val neighbor: Node? = this.front.locatePoint(triangle.pointCW(triangle.points[n]))
+                val neighbor: Node? = this.front.locatePoint(triangle.pointCW(triangle.point(n)))
                 if (neighbor != null) neighbor.triangle = triangle
             }
         }

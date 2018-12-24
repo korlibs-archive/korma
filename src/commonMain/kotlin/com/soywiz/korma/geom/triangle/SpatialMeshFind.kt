@@ -153,8 +153,8 @@ class SpatialMeshFind(val spatialMesh: SpatialMesh) {
 
             // Add portals.
 
-            var currentVertexCW: Point2d = firstTriangle.points[startVertexIndex]
-            var currentVertexCCW: Point2d = firstTriangle.points[startVertexIndex]
+            var currentVertexCW: Point2d = firstTriangle.point(startVertexIndex)
+            var currentVertexCCW: Point2d = firstTriangle.point(startVertexIndex)
             //var currentTriangle:Triangle = firstTriangle;
 
             portals.push(startPoint)
