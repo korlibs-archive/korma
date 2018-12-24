@@ -34,6 +34,9 @@ inline class Angle(val radians: Double) {
         fun degreesToRadians(deg: Double) = deg * DEG2RAD
         fun radiansToDegrees(rad: Double) = rad * RAD2DEG
 
+        fun degreesToRadians(deg: Float): Float = (deg * DEG2RAD).toFloat()
+        fun radiansToDegrees(rad: Float): Float = (rad * RAD2DEG).toFloat()
+
         fun toRadians(v: Double): Double = v / 180.0 * kotlin.math.PI
         fun toDegrees(v: Double): Double = v * 180.0 / kotlin.math.PI
 

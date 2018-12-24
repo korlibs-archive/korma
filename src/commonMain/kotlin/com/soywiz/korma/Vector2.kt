@@ -114,9 +114,9 @@ class MVector2(override var x: Double = 0.0, override var y: Double = x) :
 
     fun copyFrom(that: Vector2) = setTo(that.x, that.y)
 
-    fun setToTransform(mat: IMatrix2d, p: Vector2): MVector2 = setToTransform(mat, p.x, p.y)
+    fun setToTransform(mat: IMatrix, p: Vector2): MVector2 = setToTransform(mat, p.x, p.y)
 
-    fun setToTransform(mat: IMatrix2d, x: Double, y: Double): MVector2 = setTo(
+    fun setToTransform(mat: IMatrix, x: Double, y: Double): MVector2 = setTo(
         mat.transformX(x, y),
         mat.transformY(x, y)
     )
@@ -186,7 +186,7 @@ fun Vector2.distanceTo(that: Vector2) = distanceTo(that.x, that.y)
 fun Vector2.angleToRad(other: Vector2): Double = Angle.betweenRad(this.x, this.y, other.x, other.y)
 fun Vector2.angleTo(other: Vector2): Angle = Angle.between(this.x, this.y, other.x, other.y)
 
-fun Vector2.transformed(mat: IMatrix2d, out: MVector2 = MVector2()): MVector2 = out.setToTransform(mat, this)
+fun Vector2.transformed(mat: IMatrix, out: MVector2 = MVector2()): MVector2 = out.setToTransform(mat, this)
 
 operator fun Vector2.get(index: Int) = when (index) {
     0 -> x; 1 -> y
