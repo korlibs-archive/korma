@@ -262,71 +262,27 @@ class PointTest {
 
 @Suppress("unused")
 class SpatialMeshTest {
-    //var points:ArrayList<Point2d>
-    //var triangles:ArrayList<Triangle>
-//
-    //protected fun addPoint(info:String):Unit {
-    //	var result = /^p(\d+):\s*(-?\d+)\s*,\s*(-?\d+)$/ig.exec(info)
-    //	var pointId = parseInt(result[1])
-    //	var point:Point2d = Point2d(parseInt(result[2]), parseInt(result[3]))
-    //	if (points.length < pointId + 1) points.length = pointId + 1
-    //	points[pointId] = point
-    //}
-//
-    //protected fun addTriangle(info:String):Unit {
-    //	var result = /^t(\d+):\s*p(\d+)\s*,\s*p(\d+)\s*,\s*p(\d+)$/ig.exec(info)
-    //	var triangleId:int = parseInt(result[1])
-    //	var p1:Point2d = points[parseInt(result[1 + 1])]
-    //	var p2:Point2d = points[parseInt(result[1 + 2])]
-    //	var p3:Point2d = points[parseInt(result[1 + 3])]
-    //	var triangle:Triangle = Triangle(p1, p2, p3, true, false)
-    //	if (triangles.length < triangleId + 1) triangles.length = triangleId + 1
-    //	triangles[triangleId] = triangle
-    //	//trace(triangleId);
-    //}
-//
-    //protected fun addNeighbors(info:String):Unit {
-    //	var tt = info.replace(/[t|\s]+/gi, '').split(':')
-    //	var triangleId = parseInt(tt[0])
-    //	var neighborIds:Array = tt[1].split(',').map(function(v:*, index:int, arr:Array):int { return parseInt(v); })
-    //	var n:int = 0
-    //	for (neighborId in neighborIds) {
-    //	triangles[triangleId].neighbors[n++] = triangles[neighborId]
-    //	}
-//
-    //}
-//
-    //init {
-    //	points    = ArrayList<Point2d>()
-    //	triangles = ArrayList<Triangle>()
-//
-    //	addPoint("p1: 1,  0")
-    //	addPoint("p2: 2,  3")
-    //	addPoint("p3: 3,  1")
-    //	addPoint("p4: 4,  3")
-    //	addPoint("p5: 2, -1")
-    //	addPoint("p6: 4,  4")
-    //	addPoint("p7: 0,  2")
-//
-    //	addTriangle("t1: p1, p2, p3")
-    //	addTriangle("t2: p2, p3, p4")
-    //	addTriangle("t3: p1, p3, p5")
-    //	addTriangle("t4: p2, p6, p4")
-    //	addTriangle("t5: p7, p2, p1")
-//
-    //	addNeighbors("t1: t2, t3, t5")
-    //	addNeighbors("t2: t1, t4")
-    //	addNeighbors("t3: t1")
-    //	addNeighbors("t4: t2")
-    //	addNeighbors("t5: t1")
-    //}
-//
-    //@Test
-    //fun testTest():Unit {
-    //	val spatialMesh = SpatialMesh.fromTriangles(triangles.slice(1, triangles.size))
-    //	assertTrue("SpatialMesh(SpatialNode(2, 1),SpatialNode(3, 2),SpatialNode(2, 0),SpatialNode(3, 3),SpatialNode(1, 1))", spatialMesh.toString())
-    //}
+    val p1 = Point2d(1,  0)
+    val p2 = Point2d(2,  3)
+    val p3 = Point2d(3,  1)
+    val p4 = Point2d(4,  3)
+    val p5 = Point2d(2, -1)
+    val p6 = Point2d(4,  4)
+    val p7 = Point2d(0,  2)
 
+    val t1 = Triangle(p1, p2, p3, true)
+    val t2 = Triangle(p2, p3, p4, true)
+    val t3 = Triangle(p1, p3, p5, true)
+    val t4 = Triangle(p2, p6, p4, true)
+    val t5 = Triangle(p7, p2, p1, true)
+
+    val triangles = listOf(t1, t2, t3, t4, t5)
+
+    @Test
+    fun testTest() {
+        val spatialMesh = SpatialMesh(triangles)
+        assertEquals("SpatialMesh(SpatialNode(2, 1),SpatialNode(3, 2),SpatialNode(2, 0),SpatialNode(3, 3),SpatialNode(1, 1))", spatialMesh.toString())
+    }
 }
 
 class SweepContextTest {
@@ -418,7 +374,7 @@ class TriangleTest {
     @Test
     fun testInstantiated() {
         @Suppress("USELESS_IS_CHECK")
-        assertTrue(t1 is Triangle)
+        assertTrue(t1 is PolyTriangle)
     }
 
     @Test

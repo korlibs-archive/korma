@@ -1,14 +1,15 @@
 package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.geom.*
+import com.soywiz.korma.internal.*
 import kotlin.math.*
 
 class SpatialMesh {
-    private var mapTriangleToSpatialNode = hashMapOf<ITriangle, Node>()
+    private var mapTriangleToSpatialNode = hashMapOf<Triangle, Node>()
     var nodes = arrayListOf<Node>()
 
     @Suppress("ConvertSecondaryConstructorToPrimary")
-    constructor(triangles: Iterable<ITriangle>) {
+    constructor(triangles: Iterable<Triangle>) {
         for (triangle in triangles) {
             val node = getNodeFromTriangle(triangle)
             if (node != null) nodes.add(node)
@@ -38,7 +39,7 @@ class SpatialMesh {
         return null
     }
 
-    fun getNodeFromTriangle(triangle: ITriangle?): Node? {
+    fun getNodeFromTriangle(triangle: Triangle?): Node? {
         if (triangle === null) return null
 
         if (!mapTriangleToSpatialNode.containsKey(triangle)) {
@@ -72,7 +73,7 @@ class SpatialMesh {
         val x: Double,
         val y: Double,
         val z: Double,
-        val triangle: ITriangle,
+        val triangle: Triangle,
         var G: Int = 0, // Cost
         var H: Int = 0, // Heuristic
         var parent: Node? = null,
@@ -91,12 +92,8 @@ class SpatialMesh {
 
         fun distanceToSpatialNode(that: Node): Int = hypot(this.x - that.x, this.y - that.y).toInt()
 
-        override fun toString(): String = "SpatialNode($x, $y)"
+        override fun toString(): String = "SpatialNode(${x.niceStr}, ${y.niceStr})"
     }
 
-    companion object {
-        fun fromTriangles(triangles: Iterable<ITriangle>): SpatialMesh = SpatialMesh(triangles)
-    }
-
-    override fun toString() = "SpatialMesh(" + nodes.toString() + ")"
+    override fun toString() = "SpatialMesh(" + nodes.joinToString(",") + ")"
 }
