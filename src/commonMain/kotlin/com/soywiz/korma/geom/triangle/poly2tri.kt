@@ -38,12 +38,15 @@ entities.
    are copyrighted by Liang, Wu (http://www.mema.ucl.ac.be/~wu) and
    FEMAGSoft S.A.
  */
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.Vector2
 import com.soywiz.korma.geom.Orientation
 import com.soywiz.korma.geom.Point2d
 import com.soywiz.korma.geom.ds.*
+import com.soywiz.korma.geom.internal.*
 import kotlin.collections.ArrayList
 import kotlin.collections.LinkedHashSet
 import kotlin.collections.List
@@ -61,22 +64,22 @@ import kotlin.math.atan2
 
 class AdvancingFront(
     var head: Node,
-    var tail: Node
+    @Suppress("unused") var tail: Node
 ) {
-    var search_node: Node = head
+    var searchNode: Node = head
 
     /*fun findSearchNode(x) {
         return this.search_node;
     }*/
 
     fun locateNode(x: Double): Node? {
-        var node: Node = this.search_node
+        var node: Node = this.searchNode
 
         if (x < node.value) {
             while (node.prev != null) {
                 node = node.prev!!
                 if (x >= node.value) {
-                    this.search_node = node
+                    this.searchNode = node
                     return node
                 }
             }
@@ -84,7 +87,7 @@ class AdvancingFront(
             while (node.next != null) {
                 node = node.next!!
                 if (x < node.value) {
-                    this.search_node = node.prev!!
+                    this.searchNode = node.prev!!
                     return node.prev!!
                 }
             }
@@ -95,65 +98,57 @@ class AdvancingFront(
     fun locatePoint(point: Point2d): Node? {
         val px: Double = point.x
         //var node:* = this.FindSearchNode(px);
-        var node: Node? = this.search_node
+        var node: Node? = this.searchNode
         val nx: Double = node!!.point.x
 
-        if (px == nx) {
-            if (point != (node.point)) {
-                // We might have two nodes with same x value for a short time
-                if (point == (node.prev!!.point)) {
-                    node = node.prev
-                } else if (point == (node.next!!.point)) {
-                    node = node.next
-                } else {
-                    throw(Error("Invalid AdvancingFront.locatePoint call!"))
+        when {
+            px == nx -> {
+                if (point != (node.point)) {
+                    // We might have two nodes with same x value for a short time
+                    node = when (point) {
+                        (node.prev!!.point) -> node.prev
+                        (node.next!!.point) -> node.next
+                        else -> throw(Error("Invalid AdvancingFront.locatePoint call!"))
+                    }
                 }
             }
-        } else if (px < nx) {
-            node = node.prev
-            while (node != null) {
-                if (point == (node.point)) break
+            px < nx -> {
                 node = node.prev
+                while (node != null) {
+                    if (point == (node.point)) break
+                    node = node.prev
+                }
             }
-        } else {
-            node = node.next
-            while (node != null) {
-                if (point == (node.point)) break
+            else -> {
                 node = node.next
+                while (node != null) {
+                    if (point == (node.point)) break
+                    node = node.next
+                }
             }
         }
 
-        if (node != null) this.search_node = node
+        if (node != null) this.searchNode = node
         return node
     }
 
 }
 
 class Basin {
-    var left_node: Node? = null
-    var bottom_node: Node? = null
-    var right_node: Node? = null
+    var leftNode: Node? = null
+    var bottomNode: Node? = null
+    var rightNode: Node? = null
     var width: Double = 0.0
-    var left_highest: Boolean = false
+    var leftHighest: Boolean = false
 
-    fun clear(): Unit {
-        this.left_node = null
-        this.bottom_node = null
-        this.right_node = null
+    @Suppress("unused")
+    fun clear() {
+        this.leftNode = null
+        this.bottomNode = null
+        this.rightNode = null
         this.width = 0.0
-        this.left_highest = false
+        this.leftHighest = false
     }
-}
-
-object Constants {
-    /*
-     * Inital triangle factor, seed triangle will extend 30% of
-     * PointSet width to both left and right.
-     */
-    const val kAlpha: Double = 0.3
-    const val EPSILON: Double = 1e-12
-    const val PI_2: Double = PI / 2
-    const val PI_3div4: Double = 3 * PI / 4
 }
 
 class Edge(
@@ -166,15 +161,13 @@ class Edge(
 
     /// Constructor
     init {
-        var swap: Boolean = false
-
-        if (p1.y > p2.y) {
-            swap = true
-        } else if (p1.y == p2.y) {
-            if (p1.x == p2.x) throw Error("Repeat points")
-            swap = (p1.x > p2.x)
-        } else {
-            swap = false
+        val swap = when {
+            p1.y > p2.y -> true
+            p1.y == p2.y -> {
+                if (p1.x == p2.x) throw Error("Repeat points")
+                (p1.x > p2.x)
+            }
+            else -> false
         }
 
         if (swap) {
@@ -194,12 +187,13 @@ class Edge(
         fun getUniquePointsFromEdges(edges: ArrayList<Edge>): List<Point2d> =
             edges.flatMap { listOf(it.p, it.q) }.distinct()
 
-        fun traceList(edges: ArrayList<Edge>): Unit {
+        @Suppress("unused")
+        fun traceList(edges: ArrayList<Edge>) {
             val pointsList = getUniquePointsFromEdges(edges)
             val pointsMap = hashMapOf<Point2d, Int>()
 
-            var points_length = 0
-            for (point in pointsList) pointsMap[point] = ++points_length
+            var pointsLength = 0
+            for (point in pointsList) pointsMap[point] = ++pointsLength
 
             fun getPointName(point: Point2d): String = "p" + pointsMap[point]
 
@@ -229,7 +223,6 @@ class Node(
 
     /**
      *
-     * @param node - middle node
      * @return the angle between 3 front nodes
      */
     val holeAngle: Double
@@ -271,21 +264,20 @@ class EdgeContext {
 }
 
 class Sweep(
-    protected var context: SweepContext
+    private var context: SweepContext
 ) {
     val edgeContext get() = context.edgeContext
     /**
      * Triangulate simple polygon with holes.
-     * @param   tcx SweepContext object.
      */
-    fun triangulate(): Unit {
+    fun triangulate() {
         context.initTriangulation()
         context.createAdvancingFront()
         sweepPoints()                    // Sweep points; build mesh
         finalizationPolygon()            // Clean up
     }
 
-    fun sweepPoints(): Unit {
+    fun sweepPoints() {
         for (i in 1 until this.context.points.size) {
             val point: Point2d = this.context.points.getPoint(i)
             val node: Node = this.pointEvent(point)
@@ -296,7 +288,7 @@ class Sweep(
         }
     }
 
-    fun finalizationPolygon(): Unit {
+    fun finalizationPolygon() {
         // Get an Internal triangle to start with
         val next = this.context.front.head.next!!
         var t: Triangle = next.triangle!!
@@ -314,7 +306,7 @@ class Sweep(
      */
     fun pointEvent(point: Point2d): Node {
         val node = this.context.locateNode(point)!!
-        val new_node = newFrontTriangle(point, node)
+        val newNode = newFrontTriangle(point, node)
 
         // Only need to check +epsilon since point never have smaller
         // x value than node due to how we fetch nodes from the front
@@ -322,12 +314,12 @@ class Sweep(
 
         //tcx.AddNode(new_node);
 
-        fillAdvancingFront(new_node)
-        return new_node
+        fillAdvancingFront(newNode)
+        return newNode
     }
 
-    fun edgeEventByEdge(edge: Edge, node: Node): Unit {
-        val edge_event = this.context.edge_event
+    fun edgeEventByEdge(edge: Edge, node: Node) {
+        val edge_event = this.context.edgeEvent
         edge_event.constrained_edge = edge
         edge_event.right = (edge.p.x > edge.q.x)
 
@@ -343,7 +335,7 @@ class Sweep(
         this.edgeEventByPoints(edge.p, edge.q, triangle, edge.q)
     }
 
-    fun edgeEventByPoints(ep: Point2d, eq: Point2d, triangle: Triangle, point: Point2d): Unit {
+    fun edgeEventByPoints(ep: Point2d, eq: Point2d, triangle: Triangle, point: Point2d) {
         if (triangle.isEdgeSide(ep, eq)) return
 
         val p1: Point2d = triangle.pointCCW(point)
@@ -370,12 +362,12 @@ class Sweep(
     }
 
     fun newFrontTriangle(point: Point2d, node: Node): Node {
-        val triangle: Triangle = Triangle(point, node.point, node.next!!.point, edgeContext)
+        val triangle = Triangle(point, node.point, node.next!!.point, edgeContext)
 
         triangle.markNeighborTriangle(node.triangle!!)
         this.context.addToSet(triangle)
 
-        val new_node: Node = Node(point)
+        val new_node = Node(point)
         new_node.next = node.next
         new_node.prev = node
         node.next!!.prev = new_node
@@ -388,11 +380,10 @@ class Sweep(
 
     /**
      * Adds a triangle to the advancing front to fill a hole.
-     * @param tcx
      * @param node - middle node, that is the bottom of the hole
      */
-    fun fill(node: Node): Unit {
-        val triangle: Triangle = Triangle(node.prev!!.point, node.point, node.next!!.point, edgeContext)
+    fun fill(node: Node) {
+        val triangle = Triangle(node.prev!!.point, node.point, node.next!!.point, edgeContext)
 
         // TODO: should copy the constrained_edge value from neighbor triangles
         //       for now constrained_edge values are copied during the legalize
@@ -416,7 +407,7 @@ class Sweep(
     /**
      * Fills holes in the Advancing Front
      */
-    fun fillAdvancingFront(n: Node): Unit {
+    fun fillAdvancingFront(n: Node) {
         var node: Node
         var angle: Double
 
@@ -476,14 +467,9 @@ class Sweep(
                 // We now got one valid Delaunay Edge shared by two triangles
                 // This gives us 4 edges to check for Delaunay
 
-                var not_legalized: Boolean
-
                 // Make sure that triangle to node mapping is done only one time for a specific triangle
-                not_legalized = !this.legalize(t)
-                if (not_legalized) this.context.mapTriangleToNodes(t)
-
-                not_legalized = !this.legalize(ot)
-                if (not_legalized) this.context.mapTriangleToNodes(ot)
+                if (!this.legalize(t)) this.context.mapTriangleToNodes(t)
+                if (!this.legalize(ot)) this.context.mapTriangleToNodes(ot)
 
                 // Reset the Delaunay edges, since they only are valid Delaunay edges
                 // until we add a triangle or point.
@@ -506,13 +492,12 @@ class Sweep(
      * First we decide a left,bottom and right node that forms the
      * boundaries of the basin. Then we do a reqursive fill.
      *
-     * @param tcx
      * @param node - starting node, this or next node will be left node
      */
-    fun fillBasin(node: Node): Unit {
+    fun fillBasin(node: Node) {
         val context = this.context
         val basin = context.basin
-        basin.left_node = if (Orientation.orient2d(
+        basin.leftNode = if (Orientation.orient2d(
                 node.point,
                 node.next!!.point,
                 node.next!!.next!!.point
@@ -520,35 +505,34 @@ class Sweep(
         ) node.next!!.next else node.next
 
         // Find the bottom and right node
-        basin.bottom_node = basin.left_node
-        while ((basin.bottom_node!!.next != null) && (basin.bottom_node!!.point.y >= basin.bottom_node!!.next!!.point.y)) {
-            basin.bottom_node = basin.bottom_node!!.next
+        basin.bottomNode = basin.leftNode
+        while ((basin.bottomNode!!.next != null) && (basin.bottomNode!!.point.y >= basin.bottomNode!!.next!!.point.y)) {
+            basin.bottomNode = basin.bottomNode!!.next
         }
 
         // No valid basin
-        if (basin.bottom_node == basin.left_node) return
+        if (basin.bottomNode == basin.leftNode) return
 
-        basin.right_node = basin.bottom_node
-        while ((basin.right_node!!.next != null) && (basin.right_node!!.point.y < basin.right_node!!.next!!.point.y)) {
-            basin.right_node = basin.right_node!!.next
+        basin.rightNode = basin.bottomNode
+        while ((basin.rightNode!!.next != null) && (basin.rightNode!!.point.y < basin.rightNode!!.next!!.point.y)) {
+            basin.rightNode = basin.rightNode!!.next
         }
 
         // No valid basins
-        if (basin.right_node == basin.bottom_node) return
+        if (basin.rightNode == basin.bottomNode) return
 
-        basin.width = (basin.right_node!!.point.x - basin.left_node!!.point.x)
-        basin.left_highest = (basin.left_node!!.point.y > basin.right_node!!.point.y)
+        basin.width = (basin.rightNode!!.point.x - basin.leftNode!!.point.x)
+        basin.leftHighest = (basin.leftNode!!.point.y > basin.rightNode!!.point.y)
 
-        this.fillBasinReq(basin.bottom_node!!)
+        this.fillBasinReq(basin.bottomNode!!)
     }
 
     /**
      * Recursive algorithm to fill a Basin with triangles
      *
-     * @param tcx
      * @param node - bottom_node
      */
-    fun fillBasinReq(node: Node): Unit {
+    fun fillBasinReq(node: Node) {
         @Suppress("NAME_SHADOWING")
         var node = node
         // if shallow stop filling
@@ -556,54 +540,63 @@ class Sweep(
 
         this.fill(node)
 
-        if (node.prev == this.context.basin.left_node && node.next == this.context.basin.right_node) {
-            return
-        } else if (node.prev == this.context.basin.left_node) {
-            if (Orientation.orient2d(node.point, node.next!!.point, node.next!!.next!!.point) == Orientation.CW) return
-            node = node.next!!
-        } else if (node.next == this.context.basin.right_node) {
-            if (Orientation.orient2d(node.point, node.prev!!.point, node.prev!!.prev!!.point) == Orientation.CCW) return
-            node = node.prev!!
-        } else {
-            // Continue with the neighbor node with lowest Y value
-            node = if (node.prev!!.point.y < node.next!!.point.y) node.prev!! else node.next!!
+        when {
+            node.prev == this.context.basin.leftNode && node.next == this.context.basin.rightNode -> {
+                return
+            }
+            node.prev == this.context.basin.leftNode -> {
+                if (Orientation.orient2d(node.point, node.next!!.point, node.next!!.next!!.point) == Orientation.CW) {
+                    return
+                }
+                node = node.next!!
+            }
+            node.next == this.context.basin.rightNode -> {
+                if (Orientation.orient2d(node.point, node.prev!!.point, node.prev!!.prev!!.point) == Orientation.CCW) {
+                    return
+                }
+                node = node.prev!!
+            }
+            else -> {
+                // Continue with the neighbor node with lowest Y value
+                node = if (node.prev!!.point.y < node.next!!.point.y) node.prev!! else node.next!!
+            }
         }
 
         this.fillBasinReq(node)
     }
 
     fun isShallow(node: Node): Boolean {
-        val height: Double = if (this.context.basin.left_highest) {
-            this.context.basin.left_node!!.point.y - node.point.y
+        val height: Double = if (this.context.basin.leftHighest) {
+            this.context.basin.leftNode!!.point.y - node.point.y
         } else {
-            this.context.basin.right_node!!.point.y - node.point.y
+            this.context.basin.rightNode!!.point.y - node.point.y
         }
 
         // if shallow stop filling
         return (this.context.basin.width > height)
     }
 
-    fun fillEdgeEvent(edge: Edge, node: Node): Unit {
-        if (this.context.edge_event.right) {
+    fun fillEdgeEvent(edge: Edge, node: Node) {
+        if (this.context.edgeEvent.right) {
             this.fillRightAboveEdgeEvent(edge, node)
         } else {
             this.fillLeftAboveEdgeEvent(edge, node)
         }
     }
 
-    fun fillRightAboveEdgeEvent(edge: Edge, node: Node): Unit {
-        var node = node
-        while (node.next!!.point.x < edge.p.x) {
+    fun fillRightAboveEdgeEvent(edge: Edge, node: Node) {
+        var n = node
+        while (n.next!!.point.x < edge.p.x) {
             // Check if next node is below the edge
-            if (Orientation.orient2d(edge.q, node.next!!.point, edge.p) == Orientation.CCW) {
-                this.fillRightBelowEdgeEvent(edge, node)
+            if (Orientation.orient2d(edge.q, n.next!!.point, edge.p) == Orientation.CCW) {
+                this.fillRightBelowEdgeEvent(edge, n)
             } else {
-                node = node.next!!
+                n = n.next!!
             }
         }
     }
 
-    fun fillRightBelowEdgeEvent(edge: Edge, node: Node): Unit {
+    fun fillRightBelowEdgeEvent(edge: Edge, node: Node) {
         if (node.point.x >= edge.p.x) return
         if (Orientation.orient2d(node.point, node.next!!.point, node.next!!.next!!.point) == Orientation.CCW) {
             // Concave
@@ -614,7 +607,7 @@ class Sweep(
         }
     }
 
-    fun fillRightConcaveEdgeEvent(edge: Edge, node: Node): Unit {
+    fun fillRightConcaveEdgeEvent(edge: Edge, node: Node) {
         this.fill(node.next!!)
         if (node.next!!.point != edge.p) {
             // Next above or below edge?
@@ -630,7 +623,7 @@ class Sweep(
         }
     }
 
-    fun fillRightConvexEdgeEvent(edge: Edge, node: Node): Unit {
+    fun fillRightConvexEdgeEvent(edge: Edge, node: Node) {
         // Next concave or convex?
         if (Orientation.orient2d(
                 node.next!!.point,
@@ -653,13 +646,13 @@ class Sweep(
     }
 
     fun fillLeftAboveEdgeEvent(edge: Edge, node: Node) {
-        var node = node
-        while (node.prev!!.point.x > edge.p.x) {
+        var n = node
+        while (n.prev!!.point.x > edge.p.x) {
             // Check if next node is below the edge
-            if (Orientation.orient2d(edge.q, node.prev!!.point, edge.p) == Orientation.CW) {
-                this.fillLeftBelowEdgeEvent(edge, node)
+            if (Orientation.orient2d(edge.q, n.prev!!.point, edge.p) == Orientation.CW) {
+                this.fillLeftBelowEdgeEvent(edge, n)
             } else {
-                node = node.prev!!
+                n = n.prev!!
             }
         }
     }
@@ -717,55 +710,48 @@ class Sweep(
     }
 
     fun flipEdgeEvent(ep: Point2d, eq: Point2d, t: Triangle, p: Point2d) {
-        var t = t
-        val ot: Triangle = t.neighborAcross(p) ?: throw Error("[BUG:FIXME] FLIP failed due to missing triangle!")
+        var tt = t
+        val ot: Triangle = tt.neighborAcross(p) ?: throw Error("[BUG:FIXME] FLIP failed due to missing triangle!")
         // If we want to integrate the fillEdgeEvent do it here
         // With current implementation we should never get here
 
-        val op: Point2d = ot.oppositePoint(t, p)
+        val op: Point2d = ot.oppositePoint(tt, p)
 
-        if (Triangle.inScanArea(p, t.pointCCW(p), t.pointCW(p), op)) {
+        if (Triangle.inScanArea(p, tt.pointCCW(p), tt.pointCW(p), op)) {
             // Lets rotate shared edge one vertex CW
-            Triangle.rotateTrianglePair(t, p, ot, op)
-            this.context.mapTriangleToNodes(t)
+            Triangle.rotateTrianglePair(tt, p, ot, op)
+            this.context.mapTriangleToNodes(tt)
             this.context.mapTriangleToNodes(ot)
 
             // @TODO: equals?
             if ((p == eq) && (op == ep)) {
-                if ((eq == this.context.edge_event.constrained_edge!!.q) && (ep == this.context.edge_event.constrained_edge!!.p)) {
-                    t.markConstrainedEdgeByPoints(ep, eq)
+                if ((eq == this.context.edgeEvent.constrained_edge!!.q) && (ep == this.context.edgeEvent.constrained_edge!!.p)) {
+                    tt.markConstrainedEdgeByPoints(ep, eq)
                     ot.markConstrainedEdgeByPoints(ep, eq)
-                    this.legalize(t)
+                    this.legalize(tt)
                     this.legalize(ot)
                 } else {
                     // XXX: I think one of the triangles should be legalized here?
                 }
             } else {
                 val o: Orientation = Orientation.orient2d(eq, op, ep)
-                t = this.nextFlipTriangle(o, t, ot, p, op)
-                this.flipEdgeEvent(ep, eq, t, p)
+                tt = this.nextFlipTriangle(o, tt, ot, p, op)
+                this.flipEdgeEvent(ep, eq, tt, p)
             }
         } else {
             val newP: Point2d = nextFlipPoint(ep, eq, ot, op)
-            this.flipScanEdgeEvent(ep, eq, t, ot, newP)
-            this.edgeEventByPoints(ep, eq, t, p)
+            this.flipScanEdgeEvent(ep, eq, tt, ot, newP)
+            this.edgeEventByPoints(ep, eq, tt, p)
         }
     }
 
     fun nextFlipTriangle(o: Orientation, t: Triangle, ot: Triangle, p: Point2d, op: Point2d): Triangle {
-        if (o == Orientation.CCW) {
-            // ot is not crossing edge after flip
-            ot.delaunay_edge[ot.edgeIndex(p, op)] = true
-            this.legalize(ot)
-            ot.clearDelunayEdges()
-            return t
-        } else {
-            // t is not crossing edge after flip
-            t.delaunay_edge[t.edgeIndex(p, op)] = true
-            this.legalize(t)
-            t.clearDelunayEdges()
-            return ot
-        }
+        val tt = if (o == Orientation.CCW) ot else t
+        // ot is not crossing edge after flip
+        tt.delaunay_edge[tt.edgeIndex(p, op)] = true
+        this.legalize(tt)
+        tt.clearDelunayEdges()
+        return if (o == Orientation.CCW) t else ot
     }
 
     companion object {
@@ -778,7 +764,7 @@ class Sweep(
         }
     }
 
-    fun flipScanEdgeEvent(ep: Point2d, eq: Point2d, flip_triangle: Triangle, t: Triangle, p: Point2d): Unit {
+    fun flipScanEdgeEvent(ep: Point2d, eq: Point2d, flip_triangle: Triangle, t: Triangle, p: Point2d) {
         val ot = t.neighborAcross(p)
             ?: throw Error("[BUG:FIXME] FLIP failed due to missing triangle") // If we want to integrate the fillEdgeEvent do it here With current implementation we should never get here
 
@@ -802,9 +788,9 @@ class Sweep(
 }
 
 class SweepContext() {
-    var triangles: ArrayList<Triangle> = ArrayList<Triangle>()
+    var triangles: ArrayList<Triangle> = ArrayList()
     var points: PointArrayList = PointArrayList()
-    var edge_list: ArrayList<Edge> = ArrayList<Edge>()
+    var edge_list: ArrayList<Edge> = ArrayList()
     val edgeContext = EdgeContext()
 
     val set = LinkedHashSet<Triangle>()
@@ -813,12 +799,8 @@ class SweepContext() {
     lateinit var head: Point2d
     lateinit var tail: Point2d
 
-    lateinit var af_head: Node
-    lateinit var af_middle: Node
-    lateinit var af_tail: Node
-
     val basin: Basin = Basin()
-    var edge_event: EdgeEvent = EdgeEvent()
+    var edgeEvent = EdgeEvent()
 
     constructor(polyline: List<Point2d>) : this() {
         this.addPolyline(polyline)
@@ -852,6 +834,14 @@ class SweepContext() {
         this.set += triangle
     }
 
+    companion object {
+        /*
+		 * Inital triangle factor, seed triangle will extend 30% of
+		 * PointSet width to both left and right.
+		 */
+        private const val kAlpha: Double = 0.3
+    }
+
     fun initTriangulation() {
         var xmin: Double = this.points.getX(0)
         var xmax: Double = this.points.getX(0)
@@ -868,8 +858,8 @@ class SweepContext() {
             if (py < ymin) ymin = py
         }
 
-        val dx: Double = Constants.kAlpha * (xmax - xmin)
-        val dy: Double = Constants.kAlpha * (ymax - ymin)
+        val dx: Double = kAlpha * (xmax - xmin)
+        val dy: Double = kAlpha * (ymax - ymin)
         this.head = Point2d(xmax + dx, ymin - dy)
         this.tail = Point2d(xmin - dy, ymin - dy)
 
@@ -880,15 +870,15 @@ class SweepContext() {
 
     fun locateNode(point: Point2d): Node? = this.front.locateNode(point.x)
 
-    fun createAdvancingFront(): Unit {
+    fun createAdvancingFront() {
         // Initial triangle
-        val triangle: Triangle = Triangle(this.points.getPoint(0), this.tail, this.head, edgeContext)
+        val triangle = Triangle(this.points.getPoint(0), this.tail, this.head, edgeContext)
 
         addToSet(triangle)
 
-        val head: Node = Node(triangle.points[1], triangle)
-        val middle: Node = Node(triangle.points[0], triangle)
-        val tail: Node = Node(triangle.points[2])
+        val head = Node(triangle.points[1], triangle)
+        val middle = Node(triangle.points[0], triangle)
+        val tail = Node(triangle.points[2])
 
         this.front = AdvancingFront(head, tail)
 
@@ -898,7 +888,7 @@ class SweepContext() {
         tail.prev = middle
     }
 
-    fun removeNode(node: Node) {
+    fun removeNode(@Suppress("UNUSED_PARAMETER") node: Node) {
         // do nothing
     }
 
@@ -911,6 +901,7 @@ class SweepContext() {
         }
     }
 
+    @Suppress("unused")
     fun removeFromMap(triangle: Triangle) {
         this.set -= triangle
     }
