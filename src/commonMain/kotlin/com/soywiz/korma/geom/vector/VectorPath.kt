@@ -180,42 +180,12 @@ open class VectorPath(
         if (isEmpty()) moveTo(x, y)
     }
 
-    private val bezierTemp = Bezier.Temp()
-
-    fun appendBounds(bb: BoundsBuilder) {
-        var lx = 0.0
-        var ly = 0.0
-
-        visitCmds(
-            moveTo = { x, y ->
-                bb.add(x, y)
-                lx = x
-                ly = y
-            },
-            lineTo = { x, y ->
-                bb.add(x, y)
-                lx = x
-                ly = y
-            },
-            quadTo = { cx, cy, ax, ay ->
-                bb.add(Bezier.quadBounds(lx, ly, cx, cy, ax, ay, bb.tempRect))
-                lx = ax
-                ly = ay
-            },
-            cubicTo = { cx1, cy1, cx2, cy2, ax, ay ->
-                bb.add(Bezier.cubicBounds(lx, ly, cx1, cy1, cx2, cy2, ax, ay, bb.tempRect, bezierTemp))
-                lx = ax
-                ly = ay
-            },
-            close = {
-
-            }
-        )
-    }
+    @PublishedApi
+    internal val bezierTemp = Bezier.Temp()
 
     fun getBounds(out: Rectangle = Rectangle(), bb: BoundsBuilder = BoundsBuilder()): Rectangle {
         bb.reset()
-        appendBounds(bb)
+        bb.add(this)
         return bb.getBounds(out)
     }
 
@@ -277,4 +247,36 @@ open class VectorPath(
         this.lastX = path.lastX
         this.lastY = path.lastY
     }
+}
+
+fun BoundsBuilder.add(path: VectorPath) {
+    val bb = this
+    var lx = 0.0
+    var ly = 0.0
+
+    path.visitCmds(
+        moveTo = { x, y ->
+            bb.add(x, y)
+            lx = x
+            ly = y
+        },
+        lineTo = { x, y ->
+            bb.add(x, y)
+            lx = x
+            ly = y
+        },
+        quadTo = { cx, cy, ax, ay ->
+            bb.add(Bezier.quadBounds(lx, ly, cx, cy, ax, ay, bb.tempRect))
+            lx = ax
+            ly = ay
+        },
+        cubicTo = { cx1, cy1, cx2, cy2, ax, ay ->
+            bb.add(Bezier.cubicBounds(lx, ly, cx1, cy1, cx2, cy2, ax, ay, bb.tempRect, path.bezierTemp))
+            lx = ax
+            ly = ay
+        },
+        close = {
+
+        }
+    )
 }
