@@ -242,6 +242,8 @@ data class Matrix(
         var skewX: Float = 0f, var skewY: Float = 0f,
         var rotation: Float = 0f
     ) {
+        companion object
+
         var rotationDegrees: Float
             get() = Angle.radiansToDegrees(rotation)
             set(value) = run { rotation = Angle.degreesToRadians(value) }
@@ -401,6 +403,81 @@ class Matrix3D(
     init {
         if (data.size != 16) error("Matrix3D data must be of size 16 (4x4)")
     }
+
+    companion object {
+        operator fun invoke(
+            a0: Float, b0: Float, c0: Float, d0: Float,
+            a1: Float, b1: Float, c1: Float, d1: Float,
+            a2: Float, b2: Float, c2: Float, d2: Float,
+            a3: Float, b3: Float, c3: Float, d3: Float
+        ) = Matrix3D(floatArrayOf(
+            a0, b0, c0, d0,
+            a1, b1, c1, d1,
+            a2, b2, c2, d2,
+            a3, b3, c3, d3
+        ))
+
+        operator fun invoke(
+            a0: Float, b0: Float, c0: Float,
+            a1: Float, b1: Float, c1: Float,
+            a2: Float, b2: Float, c2: Float
+        ) = Matrix3D(floatArrayOf(
+            a0, b0, c0, 0f,
+            a1, b1, c1, 0f,
+            a2, b2, c2, 0f,
+            0f, 0f, 0f, 1f
+        ))
+
+        fun multiply(out: FloatArray, a: FloatArray, b: FloatArray): FloatArray {
+            val a00 = a[0]
+            val a01 = a[1]
+            val a02 = a[2]
+            val a03 = a[3]
+            val a10 = a[4]
+            val a11 = a[5]
+            val a12 = a[6]
+            val a13 = a[7]
+            val a20 = a[8]
+            val a21 = a[9]
+            val a22 = a[10]
+            val a23 = a[11]
+            val a30 = a[12]
+            val a31 = a[13]
+            val a32 = a[14]
+            val a33 = a[15]
+
+            // Cache only the current line of the second matrix
+            var b0 = b[0]
+            var b1 = b[1]
+            var b2 = b[2]
+            var b3 = b[3]
+            out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30
+            out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31
+            out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32
+            out[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33
+
+            b0 = b[4]; b1 = b[5]; b2 = b[6]; b3 = b[7]
+            out[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30
+            out[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31
+            out[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32
+            out[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33
+
+            b0 = b[8]; b1 = b[9]; b2 = b[10]; b3 = b[11]
+            out[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30
+            out[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31
+            out[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32
+            out[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33
+
+            b0 = b[12]; b1 = b[13]; b2 = b[14]; b3 = b[15]
+            out[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30
+            out[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31
+            out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32
+            out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33
+
+            return out
+        }
+    }
+
     operator fun set(x: Int, y: Int, value: Float) = run { data[index(x, y)] = value }
 
     fun transpose(temp: Matrix3D = Matrix3D(), tempLine: FloatArray = FloatArray(4)): Matrix3D {
@@ -482,59 +559,6 @@ class Matrix3D(
     override fun toString(): String = "Matrix3D(${data.toList()})"
 
     fun clone(): Matrix3D = Matrix3D(data.copyOf())
-
-    companion object {
-        operator fun invoke(vararg data: Float) = Matrix3D(data)
-
-        fun multiply(out: FloatArray, a: FloatArray, b: FloatArray): FloatArray {
-            val a00 = a[0]
-            val a01 = a[1]
-            val a02 = a[2]
-            val a03 = a[3]
-            val a10 = a[4]
-            val a11 = a[5]
-            val a12 = a[6]
-            val a13 = a[7]
-            val a20 = a[8]
-            val a21 = a[9]
-            val a22 = a[10]
-            val a23 = a[11]
-            val a30 = a[12]
-            val a31 = a[13]
-            val a32 = a[14]
-            val a33 = a[15]
-
-            // Cache only the current line of the second matrix
-            var b0 = b[0]
-            var b1 = b[1]
-            var b2 = b[2]
-            var b3 = b[3]
-            out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30
-            out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31
-            out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32
-            out[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33
-
-            b0 = b[4]; b1 = b[5]; b2 = b[6]; b3 = b[7]
-            out[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30
-            out[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31
-            out[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32
-            out[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33
-
-            b0 = b[8]; b1 = b[9]; b2 = b[10]; b3 = b[11]
-            out[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30
-            out[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31
-            out[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32
-            out[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33
-
-            b0 = b[12]; b1 = b[13]; b2 = b[14]; b3 = b[15]
-            out[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30
-            out[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31
-            out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32
-            out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33
-
-            return out
-        }
-    }
 }
 
 fun Matrix3D.copyToFloatWxH(out: FloatArray, w: Int, h: Int) {

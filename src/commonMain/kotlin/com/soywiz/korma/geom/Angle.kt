@@ -37,6 +37,12 @@ inline class Angle(val radians: Float) {
         fun toRadians(v: Float): Float = v / 180f * PI
         fun toDegrees(v: Float): Float = v * 180f / PI
 
+        fun normalizeRadian(value: Float): Float {
+            var vv = (value + kotlin.math.PI.toFloat()) % (kotlin.math.PI.toFloat() * 2f)
+            vv += if (vv > 0f) -kotlin.math.PI.toFloat() else kotlin.math.PI.toFloat()
+            return vv
+        }
+
         fun shortRadDistanceTo(fromRad: Float, toRad: Float): Float {
             val r0 = fromRad umod MAX_RADIANS
             val r1 = toRad umod MAX_RADIANS
@@ -56,6 +62,10 @@ inline class Angle(val radians: Float) {
         fun between(p0: IPoint, p1: IPoint): Angle = Angle.fromRadians(betweenRad(p0, p1))
     }
 }
+
+fun cos(angle: Angle): Float = kotlin.math.cos(angle.radians)
+fun sin(angle: Angle): Float = kotlin.math.sin(angle.radians)
+fun tan(angle: Angle): Float = kotlin.math.tan(angle.radians)
 
 val Angle.degrees get() = Angle.rad2deg(radians)
 
