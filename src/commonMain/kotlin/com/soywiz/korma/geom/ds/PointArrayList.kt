@@ -42,6 +42,13 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     override fun getX(index: Int) = xList[index]
     override fun getY(index: Int) = yList[index]
 
+    fun setX(index: Int, x: Double) = run { xList[index] = x }
+    fun setY(index: Int, y: Double) = run { yList[index] = y }
+    fun setXY(index: Int, x: Double, y: Double) {
+        xList[index] = x
+        yList[index] = y
+    }
+
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append('[')
@@ -87,8 +94,10 @@ fun DoubleArrayList.swap(indexA: Int, indexB: Int) {
     this[indexB] = tmp
 }
 
-fun IPointArrayList.getPoint(index: Int) = IPoint(getX(index), getY(index))
-fun IPointArrayList.toPoints() = (0 until size).map { getPoint(it) }
+fun IPointArrayList.getPoint(index: Int): Point = Point(getX(index), getY(index))
+fun IPointArrayList.getIPoint(index: Int): IPoint = IPoint(getX(index), getY(index))
+fun IPointArrayList.toPoints(): List<Point> = (0 until size).map { getPoint(it) }
+fun IPointArrayList.toIPoints(): List<IPoint> = (0 until size).map { getIPoint(it) }
 fun IPointArrayList.contains(x: Double, y: Double): Boolean {
     for (n in 0 until size) if (getX(n) == x && getY(n) == y) return true
     return false
