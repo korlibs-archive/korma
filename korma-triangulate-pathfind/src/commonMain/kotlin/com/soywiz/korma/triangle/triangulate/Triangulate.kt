@@ -6,7 +6,7 @@ import com.soywiz.korma.geom.shape.*
 import com.soywiz.korma.geom.triangle.*
 import com.soywiz.korma.triangle.internal.*
 
-fun List<Point2d>.triangulate(): List<Triangle> {
+fun List<IPoint>.triangulate(): List<Triangle> {
     val sc = SweepContext(this)
     val s = Sweep(sc)
     s.triangulate()

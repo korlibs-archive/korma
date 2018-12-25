@@ -1,27 +1,26 @@
 package com.soywiz.korma.geom.bezier
 
-import com.soywiz.korma.*
 import com.soywiz.korma.geom.*
 import kotlin.math.*
 
 //(x0,y0) is start point; (x1,y1),(x2,y2) is control points; (x3,y3) is end point.
 interface Bezier {
     fun getBounds(target: Rectangle = Rectangle()): Rectangle
-    fun calc(t: Double, target: MVector2 = MVector2()): MVector2
+    fun calc(t: Double, target: Point = Point()): Point
 
-    class Quad(val p0: Point2d, val p1: Point2d, val p2: Point2d) : Bezier {
+    class Quad(val p0: IPoint, val p1: IPoint, val p2: IPoint) : Bezier {
         override fun getBounds(target: Rectangle): Rectangle = quadBounds(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, target)
-        override fun calc(t: Double, target: MVector2): MVector2 = quadCalc(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, t, target)
+        override fun calc(t: Double, target: Point): Point = quadCalc(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, t, target)
 
         // http://fontforge.github.io/bezier.html
         fun toCubic(): Cubic = Cubic(p0, p0 + (p1 - p0) * (2.0 / 3.0), p2 + (p1 - p2) * (2.0 / 3.0), p2)
     }
 
-    class Cubic(val p0: Point2d, val p1: Point2d, val p2: Point2d, val p3: Point2d) : Bezier {
+    class Cubic(val p0: IPoint, val p1: IPoint, val p2: IPoint, val p3: IPoint) : Bezier {
         private val temp = Temp()
 
         override fun getBounds(target: Rectangle): Rectangle = cubicBounds(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, target, temp)
-        override fun calc(t: Double, target: MVector2): MVector2 = cubicCalc(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t, target)
+        override fun calc(t: Double, target: Point): Point = cubicCalc(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t, target)
     }
 
     class Temp {
@@ -31,8 +30,8 @@ interface Bezier {
     }
 
     companion object {
-        operator fun invoke(p0: Point2d, p1: Point2d, p2: Point2d): Bezier.Quad = Bezier.Quad(p0, p1, p2)
-        operator fun invoke(p0: Point2d, p1: Point2d, p2: Point2d, p3: Point2d): Bezier.Cubic =
+        operator fun invoke(p0: IPoint, p1: IPoint, p2: IPoint): Bezier.Quad = Bezier.Quad(p0, p1, p2)
+        operator fun invoke(p0: IPoint, p1: IPoint, p2: IPoint, p3: IPoint): Bezier.Cubic =
             Bezier.Cubic(p0, p1, p2, p3)
 
         // http://fontforge.github.io/bezier.html
@@ -88,8 +87,8 @@ interface Bezier {
             xc: Double, yc: Double,
             x1: Double, y1: Double,
             t: Double,
-            target: MVector2 = MVector2()
-        ): MVector2 = quadCalc(x0, y0, xc, yc, x1, y1, t) { x, y -> target.setTo(x, y) }
+            target: Point = Point()
+        ): Point = quadCalc(x0, y0, xc, yc, x1, y1, t) { x, y -> target.setTo(x, y) }
 
         fun cubicBounds(
             x0: Double, y0: Double, x1: Double, y1: Double,
@@ -178,12 +177,12 @@ interface Bezier {
         fun cubicCalc(
             x0: Double, y0: Double, x1: Double, y1: Double,
             x2: Double, y2: Double, x3: Double, y3: Double,
-            t: Double, target: MVector2 = MVector2()
-        ): MVector2 = cubicCalc(x0, y0, x1, y1, x2, y2, x3, y3, t) { x, y -> target.setTo(x, y) }
+            t: Double, target: Point = Point()
+        ): Point = cubicCalc(x0, y0, x1, y1, x2, y2, x3, y3, t) { x, y -> target.setTo(x, y) }
     }
 }
 
-fun Bezier.length(steps: Int = 100, temp: MVector2 = MVector2()): Double {
+fun Bezier.length(steps: Int = 100, temp: Point = Point()): Double {
     val dt = 1.0 / steps.toDouble()
     var oldX = 0.0
     var oldY = 0.0

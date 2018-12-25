@@ -1,9 +1,7 @@
 package com.soywiz.korma.geom
 
-import com.soywiz.korma.*
 import com.soywiz.korma.internal.*
 import com.soywiz.korma.interpolation.*
-import com.soywiz.korma.math.*
 
 interface IRectangle {
     val x: Double
@@ -65,7 +63,7 @@ data class Rectangle(
     operator fun div(scale: Double) = Rectangle(x / scale, y / scale, width / scale, height / scale)
 
     operator fun contains(that: Rectangle) = isContainedIn(that, this)
-    operator fun contains(that: Point2d) = contains(x, y)
+    operator fun contains(that: IPoint) = contains(x, y)
     fun contains(x: Double, y: Double) = (x >= left && x < right) && (y >= top && y < bottom)
 
     infix fun intersects(that: Rectangle): Boolean = intersectsX(that) && intersectsY(that)
@@ -127,7 +125,7 @@ data class Rectangle(
         ratio.interpolate(l.height, r.height)
     )
 
-    fun getAnchoredPosition(anchor: Anchor, out: MVector2 = MVector2()): MVector2 =
+    fun getAnchoredPosition(anchor: Anchor, out: Point = Point()): Point =
         out.setTo(left + width * anchor.sx, top + height * anchor.sy)
 
     fun toInt() = RectangleInt(x, y, width, height)
@@ -150,9 +148,9 @@ interface IRectangleInt {
     val height: Int
 }
 
-data class RectangleInt(val position: MPositionInt, val size: SizeInt) : IRectangleInt {
+data class RectangleInt(val position: PointInt, val size: SizeInt) : IRectangleInt {
     constructor(x: Int = 0, y: Int = 0, width: Int = 0, height: Int = 0) : this(
-        MPositionInt(x, y),
+        PointInt(x, y),
         SizeInt(width, height)
     )
 
@@ -207,7 +205,7 @@ data class RectangleInt(val position: MPositionInt, val size: SizeInt) : IRectan
             height
         )
 
-    fun getAnchorPosition(anchor: Anchor, out: MPositionInt = MPositionInt()): MPositionInt =
+    fun getAnchorPosition(anchor: Anchor, out: PointInt = PointInt()): PointInt =
         out.setTo((x + width * anchor.sx).toInt(), (y + height * anchor.sy).toInt())
 
     operator fun contains(v: SizeInt): Boolean = (v.width <= width) && (v.height <= height)
@@ -220,7 +218,7 @@ data class RectangleInt(val position: MPositionInt, val size: SizeInt) : IRectan
 val IRectangle.int get() = RectangleInt(x, y, width, height)
 val IRectangleInt.double get() = Rectangle(x, y, width, height)
 
-fun IRectangleInt.anchor(ax: Double, ay: Double): Vector2Int =
+fun IRectangleInt.anchor(ax: Double, ay: Double): IPointInt =
     PointInt((x + width * ax).toInt(), (y + height * ay).toInt())
 
 val IRectangleInt.center get() = anchor(0.5, 0.5)

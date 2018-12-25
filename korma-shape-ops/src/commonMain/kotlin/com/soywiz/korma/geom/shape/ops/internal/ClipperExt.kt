@@ -5,7 +5,7 @@ import com.soywiz.korma.geom.ds.*
 import com.soywiz.korma.geom.shape.*
 import com.soywiz.korma.geom.vector.*
 
-internal fun Path.toPoints(): List<Point2d> = (0 until this.size).map { this@toPoints[it] }
+internal fun Path.toPoints(): List<IPoint> = (0 until this.size).map { this@toPoints[it] }
 
 internal fun Path.toShape2d(): Shape2d {
     if (this.size == 4) {

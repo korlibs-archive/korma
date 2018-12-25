@@ -42,7 +42,6 @@ entities.
 
 package com.soywiz.korma.triangle.internal
 
-import com.soywiz.korma.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.ds.*
 import com.soywiz.korma.geom.triangle.*
@@ -78,7 +77,7 @@ internal class AdvancingFront(var head: Node, @Suppress("unused") var tail: Node
         return null
     }
 
-    fun locatePoint(point: Point2d): Node? {
+    fun locatePoint(point: IPoint): Node? {
         val px: Double = point.x
         //var node:* = this.FindSearchNode(px);
         var node: Node? = this.searchNode
@@ -139,7 +138,7 @@ internal class EdgeEvent {
     var right: Boolean = false
 }
 
-internal class Node(var point: Point2d, var triangle: PolyTriangle? = null) {
+internal class Node(var point: IPoint, var triangle: PolyTriangle? = null) {
     var prev: Node? = null
     var next: Node? = null
     var value: Double = this.point.x
@@ -181,9 +180,9 @@ internal class Node(var point: Point2d, var triangle: PolyTriangle? = null) {
 }
 
 internal class EdgeContext {
-    val pointsToEdgeLists = hashMapOf<Point2d, ArrayList<Edge>>()
-    fun getPointEdgeList(point: Point2d) = pointsToEdgeLists.getOrPut(point) { arrayListOf() }
-    fun createEdge(p1: Point2d, p2: Point2d): Edge = Edge(p1, p2).also { getPointEdgeList(it.q).add(it) }
+    val pointsToEdgeLists = hashMapOf<IPoint, ArrayList<Edge>>()
+    fun getPointEdgeList(point: IPoint) = pointsToEdgeLists.getOrPut(point) { arrayListOf() }
+    fun createEdge(p1: IPoint, p2: IPoint): Edge = Edge(p1, p2).also { getPointEdgeList(it.q).add(it) }
 }
 
 internal class Sweep(private var context: SweepContext) {
@@ -200,7 +199,7 @@ internal class Sweep(private var context: SweepContext) {
 
     fun sweepPoints() {
         for (i in 1 until this.context.points.size) {
-            val point: Point2d = this.context.points.getPoint(i)
+            val point: IPoint = this.context.points.getPoint(i)
             val node: Node = this.pointEvent(point)
             val edgeList = edgeContext.getPointEdgeList(point)
             for (j in 0 until edgeList.size) {
@@ -213,7 +212,7 @@ internal class Sweep(private var context: SweepContext) {
         // Get an Internal triangle to start with
         val next = this.context.front.head.next!!
         var t: PolyTriangle = next.triangle!!
-        val p: Point2d = next.point
+        val p: IPoint = next.point
         while (!t.getConstrainedEdgeCW(p)) t = t.neighborCCW(p)!!
 
         // Collect interior triangles constrained by edges
@@ -225,7 +224,7 @@ internal class Sweep(private var context: SweepContext) {
      * create a triangle. If needed holes and basins
      * will be filled to.
      */
-    fun pointEvent(point: Point2d): Node {
+    fun pointEvent(point: IPoint): Node {
         val node = this.context.locateNode(point)!!
         val newNode = newFrontTriangle(point, node)
 
@@ -256,14 +255,14 @@ internal class Sweep(private var context: SweepContext) {
         this.edgeEventByPoints(edge.p, edge.q, triangle, edge.q)
     }
 
-    fun edgeEventByPoints(ep: Point2d, eq: Point2d, triangle: PolyTriangle, point: Point2d) {
+    fun edgeEventByPoints(ep: IPoint, eq: IPoint, triangle: PolyTriangle, point: IPoint) {
         if (triangle.isEdgeSide(ep, eq)) return
 
-        val p1: Point2d = triangle.pointCCW(point)
+        val p1: IPoint = triangle.pointCCW(point)
         val o1: Orientation = Orientation.orient2d(eq, p1, ep)
         if (o1 == Orientation.COLLINEAR) throw(Error("Sweep.edgeEvent: Collinear not supported!"))
 
-        val p2: Point2d = triangle.pointCW(point)
+        val p2: IPoint = triangle.pointCW(point)
         val o2: Orientation = Orientation.orient2d(eq, p2, ep)
         if (o2 == Orientation.COLLINEAR) throw(Error("Sweep.edgeEvent: Collinear not supported!"))
 
@@ -282,7 +281,7 @@ internal class Sweep(private var context: SweepContext) {
         }
     }
 
-    fun newFrontTriangle(point: Point2d, node: Node): Node {
+    fun newFrontTriangle(point: IPoint, node: Node): Node {
         val triangle = PolyTriangle(point, node.point, node.next!!.point)
 
         triangle.markNeighborTriangle(node.triangle!!)
@@ -366,8 +365,8 @@ internal class Sweep(private var context: SweepContext) {
         for (i in 0 until 3) {
             if (t.delaunay_edge[i]) continue
             val ot: PolyTriangle = t.neighbors[i] ?: continue
-            val p: Point2d = t.point(i)
-            val op: Point2d = ot.oppositePoint(t, p)
+            val p: IPoint = t.point(i)
+            val op: IPoint = ot.oppositePoint(t, p)
             val oi: Int = ot.index(op)
 
             // If this is a Constrained Edge or a Delaunay Edge(only during recursive legalization)
@@ -630,13 +629,13 @@ internal class Sweep(private var context: SweepContext) {
         }
     }
 
-    fun flipEdgeEvent(ep: Point2d, eq: Point2d, t: PolyTriangle, p: Point2d) {
+    fun flipEdgeEvent(ep: IPoint, eq: IPoint, t: PolyTriangle, p: IPoint) {
         var tt = t
         val ot: PolyTriangle = tt.neighborAcross(p) ?: throw Error("[BUG:FIXME] FLIP failed due to missing triangle!")
         // If we want to integrate the fillEdgeEvent do it here
         // With current implementation we should never get here
 
-        val op: Point2d = ot.oppositePoint(tt, p)
+        val op: IPoint = ot.oppositePoint(tt, p)
 
         if (Triangle.inScanArea(p, tt.pointCCW(p), tt.pointCW(p), op)) {
             // Lets rotate shared edge one vertex CW
@@ -660,13 +659,13 @@ internal class Sweep(private var context: SweepContext) {
                 this.flipEdgeEvent(ep, eq, tt, p)
             }
         } else {
-            val newP: Point2d = nextFlipPoint(ep, eq, ot, op)
+            val newP: IPoint = nextFlipPoint(ep, eq, ot, op)
             this.flipScanEdgeEvent(ep, eq, tt, ot, newP)
             this.edgeEventByPoints(ep, eq, tt, p)
         }
     }
 
-    fun nextFlipTriangle(o: Orientation, t: PolyTriangle, ot: PolyTriangle, p: Point2d, op: Point2d): PolyTriangle {
+    fun nextFlipTriangle(o: Orientation, t: PolyTriangle, ot: PolyTriangle, p: IPoint, op: IPoint): PolyTriangle {
         val tt = if (o == Orientation.CCW) ot else t
         // ot is not crossing edge after flip
         tt.delaunay_edge[tt.edgeIndex(p, op)] = true
@@ -676,7 +675,7 @@ internal class Sweep(private var context: SweepContext) {
     }
 
     companion object {
-        fun nextFlipPoint(ep: Point2d, eq: Point2d, ot: Triangle, op: Point2d): Point2d {
+        fun nextFlipPoint(ep: IPoint, eq: IPoint, ot: Triangle, op: IPoint): IPoint {
             return when (Orientation.orient2d(eq, op, ep)) {
                 Orientation.CW -> ot.pointCCW(op) // Right
                 Orientation.CCW -> ot.pointCW(op) // Left
@@ -685,7 +684,7 @@ internal class Sweep(private var context: SweepContext) {
         }
     }
 
-    fun flipScanEdgeEvent(ep: Point2d, eq: Point2d, flip_triangle: Triangle, t: PolyTriangle, p: Point2d) {
+    fun flipScanEdgeEvent(ep: IPoint, eq: IPoint, flip_triangle: Triangle, t: PolyTriangle, p: IPoint) {
         val ot = t.neighborAcross(p)
             ?: throw Error("[BUG:FIXME] FLIP failed due to missing triangle") // If we want to integrate the fillEdgeEvent do it here With current implementation we should never get here
 
@@ -702,7 +701,7 @@ internal class Sweep(private var context: SweepContext) {
             // Turns out at first glance that this is somewhat complicated
             // so it will have to wait.
         } else {
-            val newP: Point2d = nextFlipPoint(ep, eq, ot, op)
+            val newP: IPoint = nextFlipPoint(ep, eq, ot, op)
             this.flipScanEdgeEvent(ep, eq, flip_triangle, ot, newP)
         }
     }
@@ -717,21 +716,21 @@ internal class SweepContext() {
     val set = LinkedHashSet<PolyTriangle>()
 
     lateinit var front: AdvancingFront
-    lateinit var head: Point2d
-    lateinit var tail: Point2d
+    lateinit var head: IPoint
+    lateinit var tail: IPoint
 
     val basin: Basin = Basin()
     var edgeEvent = EdgeEvent()
 
-    constructor(polyline: List<Point2d>) : this() {
+    constructor(polyline: List<IPoint>) : this() {
         this.addPolyline(polyline)
     }
 
-    private fun addPoints(points: List<Point2d>) {
+    private fun addPoints(points: List<IPoint>) {
         for (point in points) this.points.add(point)
     }
 
-    fun addPolyline(polyline: List<Point2d>) {
+    fun addPolyline(polyline: List<IPoint>) {
         this.initEdges(polyline)
         this.addPoints(polyline)
     }
@@ -741,11 +740,11 @@ internal class SweepContext() {
      *
      * @param    polyline
      */
-    fun addHole(polyline: List<Point2d>) {
+    fun addHole(polyline: List<IPoint>) {
         addPolyline(polyline)
     }
 
-    private fun initEdges(polyline: List<Point2d>) {
+    private fun initEdges(polyline: List<IPoint>) {
         for (n in 0 until polyline.size) {
             this.edgeList.add(edgeContext.createEdge(polyline[n], polyline[(n + 1) % polyline.size]))
         }
@@ -781,15 +780,15 @@ internal class SweepContext() {
 
         val dx: Double = kAlpha * (xmax - xmin)
         val dy: Double = kAlpha * (ymax - ymin)
-        this.head = Point2d(xmax + dx, ymin - dy)
-        this.tail = Point2d(xmin - dy, ymin - dy)
+        this.head = IPoint(xmax + dx, ymin - dy)
+        this.tail = IPoint(xmin - dy, ymin - dy)
 
         // Sort points along y-axis
-        Vector2.sortPoints(this.points)
+        this.points.sort()
         //throw(Error("@TODO Implement 'Sort points along y-axis' @see class SweepContext"));
     }
 
-    fun locateNode(point: Point2d): Node? = this.front.locateNode(point.x)
+    fun locateNode(point: IPoint): Node? = this.front.locateNode(point.x)
 
     fun createAdvancingFront() {
         // Initial triangle
@@ -855,32 +854,32 @@ internal class SweepContext() {
 
 internal data class PolyTriangle internal constructor(
     val dummy: Boolean,
-    override var p0: Point2d,
-    override var p1: Point2d,
-    override var p2: Point2d
+    override var p0: IPoint,
+    override var p1: IPoint,
+    override var p2: IPoint
 ) : Triangle {
     val neighbors: ArrayList<PolyTriangle?> = ArrayList<PolyTriangle?>(3).apply { add(null); add(null); add(null) } as ArrayList<PolyTriangle?> // Neighbor list
     var interior: Boolean = false // Has this triangle been marked as an interior triangle?
     val constrained_edge = BooleanArray(3) // Flags to determine if an edge is a Constrained edge
     val delaunay_edge = BooleanArray(3) // Flags to determine if an edge is a Delauney edge
     
-    fun neighborCW(p: Point2d): PolyTriangle? = this.neighbors[getPointIndexOffset(p, CW_OFFSET)]
-    fun neighborCCW(p: Point2d): PolyTriangle? = this.neighbors[getPointIndexOffset(p, CCW_OFFSET)]
+    fun neighborCW(p: IPoint): PolyTriangle? = this.neighbors[getPointIndexOffset(p, CW_OFFSET)]
+    fun neighborCCW(p: IPoint): PolyTriangle? = this.neighbors[getPointIndexOffset(p, CCW_OFFSET)]
 
-    fun getConstrainedEdgeCW(p: Point2d): Boolean = this.constrained_edge[getPointIndexOffset(p, CW_OFFSET)]
-    fun setConstrainedEdgeCW(p: Point2d, ce: Boolean): Boolean =
+    fun getConstrainedEdgeCW(p: IPoint): Boolean = this.constrained_edge[getPointIndexOffset(p, CW_OFFSET)]
+    fun setConstrainedEdgeCW(p: IPoint, ce: Boolean): Boolean =
         ce.also { this.constrained_edge[getPointIndexOffset(p, CW_OFFSET)] = ce }
 
-    fun getConstrainedEdgeCCW(p: Point2d): Boolean = this.constrained_edge[getPointIndexOffset(p, CCW_OFFSET)]
-    fun setConstrainedEdgeCCW(p: Point2d, ce: Boolean): Boolean =
+    fun getConstrainedEdgeCCW(p: IPoint): Boolean = this.constrained_edge[getPointIndexOffset(p, CCW_OFFSET)]
+    fun setConstrainedEdgeCCW(p: IPoint, ce: Boolean): Boolean =
         ce.also { this.constrained_edge[getPointIndexOffset(p, CCW_OFFSET)] = ce }
 
-    fun getDelaunayEdgeCW(p: Point2d): Boolean = this.delaunay_edge[getPointIndexOffset(p, CW_OFFSET)]
-    fun setDelaunayEdgeCW(p: Point2d, e: Boolean): Boolean =
+    fun getDelaunayEdgeCW(p: IPoint): Boolean = this.delaunay_edge[getPointIndexOffset(p, CW_OFFSET)]
+    fun setDelaunayEdgeCW(p: IPoint, e: Boolean): Boolean =
         e.also { this.delaunay_edge[getPointIndexOffset(p, CW_OFFSET)] = e }
 
-    fun getDelaunayEdgeCCW(p: Point2d): Boolean = this.delaunay_edge[getPointIndexOffset(p, CCW_OFFSET)]
-    fun setDelaunayEdgeCCW(p: Point2d, e: Boolean): Boolean =
+    fun getDelaunayEdgeCCW(p: IPoint): Boolean = this.delaunay_edge[getPointIndexOffset(p, CCW_OFFSET)]
+    fun setDelaunayEdgeCCW(p: IPoint, e: Boolean): Boolean =
         e.also { this.delaunay_edge[getPointIndexOffset(p, CCW_OFFSET)] = e }
 
     fun clearNeigbors() {
@@ -901,7 +900,7 @@ internal data class PolyTriangle internal constructor(
      * points(0)) or 2 parameters (then the triangle is rotated around the first
      * parameter).
      */
-    fun legalize(opoint: Point2d, npoint: Point2d? = null) {
+    fun legalize(opoint: IPoint, npoint: IPoint? = null) {
         if (npoint == null) return this.legalize(this.point(0), opoint)
 
         when (opoint) {
@@ -932,7 +931,7 @@ internal data class PolyTriangle internal constructor(
      * @param   p1  Point2d object.
      * @param   p2  Point2d object.
      */
-    fun markNeighbor(t: PolyTriangle, p1: Point2d, p2: Point2d) {
+    fun markNeighbor(t: PolyTriangle, p1: IPoint, p2: IPoint) {
         if ((p1 == (this.point(2)) && p2 == (this.point(1))) || (p1 == (this.point(1)) && p2 == (this.point(2)))) {
             this.neighbors[0] = t
             return
@@ -979,7 +978,7 @@ internal data class PolyTriangle internal constructor(
 
     fun markConstrainedEdgeByEdge(edge: Edge): Unit = this.markConstrainedEdgeByPoints(edge.p, edge.q)
 
-    fun markConstrainedEdgeByPoints(p: Point2d, q: Point2d) {
+    fun markConstrainedEdgeByPoints(p: IPoint, q: IPoint) {
         if ((q == (this.point(0)) && p == (this.point(1))) || (q == (this.point(1)) && p == (this.point(0)))) {
             this.constrained_edge[2] = true
         } else if ((q == (this.point(0)) && p == (this.point(2))) || (q == (this.point(2)) && p == (this.point(0)))) {
@@ -998,7 +997,7 @@ internal data class PolyTriangle internal constructor(
      * @param    eq
      * @return
      */
-    fun isEdgeSide(ep: Point2d, eq: Point2d): Boolean {
+    fun isEdgeSide(ep: IPoint, eq: IPoint): Boolean {
         val index = this.edgeIndex(ep, eq)
         if (index == -1) return false
         this.markConstrainedEdgeByIndex(index)
@@ -1008,7 +1007,7 @@ internal data class PolyTriangle internal constructor(
     /**
      * The neighbor across to given point.
      */
-    fun neighborAcross(p: Point2d): PolyTriangle? = this.neighbors[getPointIndexOffset(p, 0)]
+    fun neighborAcross(p: IPoint): PolyTriangle? = this.neighbors[getPointIndexOffset(p, 0)]
 
     override fun hashCode(): Int = p0.hashCode() + p1.hashCode() * 3 + p2.hashCode() * 5
 
@@ -1035,7 +1034,7 @@ internal data class PolyTriangle internal constructor(
          *       n4                    n4
          * </pre>
          */
-        fun rotateTrianglePair(t: PolyTriangle, p: Point2d, ot: PolyTriangle, op: Point2d) {
+        fun rotateTrianglePair(t: PolyTriangle, p: IPoint, ot: PolyTriangle, op: IPoint) {
             val n1 = t.neighborCCW(p)
             val n2 = t.neighborCW(p)
             val n3 = ot.neighborCCW(op)
@@ -1083,7 +1082,7 @@ internal data class PolyTriangle internal constructor(
     }
 }
 
-internal fun PolyTriangle(p0: Point2d, p1: Point2d, p2: Point2d, fixOrientation: Boolean = false, checkOrientation: Boolean = true): PolyTriangle {
+internal fun PolyTriangle(p0: IPoint, p1: IPoint, p2: IPoint, fixOrientation: Boolean = false, checkOrientation: Boolean = true): PolyTriangle {
     @Suppress("NAME_SHADOWING")
     var p1 = p1
     @Suppress("NAME_SHADOWING")

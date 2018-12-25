@@ -1,6 +1,6 @@
 package com.soywiz.korma.geom.vector
 
-import com.soywiz.korma.*
+import com.soywiz.korma.geom.*
 import kotlin.math.*
 
 interface VectorBuilder {
@@ -22,12 +22,12 @@ fun VectorBuilder.arcTo(ax: Double, ay: Double, cx: Double, cy: Double, r: Doubl
     if (isEmpty()) moveTo(ax, ay)
     val bx = lastX
     val by = lastY
-    val b = Vector2(bx, by)
-    val a = Vector2(ax, ay)
-    val c = Vector2(cx, cy)
+    val b = IPoint(bx, by)
+    val a = IPoint(ax, ay)
+    val c = IPoint(cx, cy)
     val AB = b - a
     val AC = c - a
-    val angle = Vector2.angle(AB, AC) * 0.5
+    val angle = Point.angle(AB, AC) * 0.5
     val x = r * sin((PI / 2.0) - angle) / sin(angle)
     val A = a + AB.unit * x
     val B = a + AC.unit * x
@@ -76,10 +76,10 @@ fun VectorBuilder.arc(x: Double, y: Double, r: Double, start: Double, end: Doubl
     if (remainingAngle == 0.0 && start != end) remainingAngle = PI_TWO
     val sgn = if (startAngle < endAngle) 1 else -1
     var a1 = startAngle
-    val p1 = MVector2()
-    val p2 = MVector2()
-    val p3 = MVector2()
-    val p4 = MVector2()
+    val p1 = Point()
+    val p2 = Point()
+    val p3 = Point()
+    val p4 = Point()
     var index = 0
     while (remainingAngle > EPSILON) {
         val a2 = a1 + sgn * kotlin.math.min(remainingAngle, PI_OVER_TWO)

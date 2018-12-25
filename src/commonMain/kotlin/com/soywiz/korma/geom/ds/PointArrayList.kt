@@ -1,6 +1,7 @@
 package com.soywiz.korma.geom.ds
 
 import com.soywiz.kds.*
+import com.soywiz.korma.algo.*
 import com.soywiz.korma.geom.*
 import kotlin.math.*
 
@@ -20,7 +21,7 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
 
     companion object {
         operator fun invoke(capacity: Int = 7, callback: PointArrayList.() -> Unit): PointArrayList = PointArrayList(capacity).apply(callback)
-        operator fun invoke(points: List<Point2d>): PointArrayList = PointArrayList(points.size) {
+        operator fun invoke(points: List<IPoint>): PointArrayList = PointArrayList(points.size) {
             for (n in points.indices) add(points[n].x, points[n].y)
         }
     }
@@ -32,7 +33,7 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
 
     inline fun add(x: Number, y: Number) = add(x.toDouble(), y.toDouble())
 
-    fun add(p: Point2d) = add(p.x, p.y)
+    fun add(p: IPoint) = add(p.x, p.y)
 
     fun add(other: IPointArrayList) = this.apply {
         for (n in 0 until other.size) add(other.getX(n), other.getY(n))
@@ -64,6 +65,20 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
         xList.swap(indexA, indexB)
         yList.swap(indexA, indexB)
     }
+
+    fun sort() {
+        genericSort(this, 0, this.size - 1, PointSortOpts)
+    }
+
+    object PointSortOpts : SortOps<PointArrayList>() {
+        override fun compare(p: PointArrayList, l: Int, r: Int): Int {
+            return Point.compare(p.getX(l), p.getY(l), p.getX(r), p.getY(r))
+        }
+
+        override fun swap(subject: PointArrayList, indexL: Int, indexR: Int) {
+            subject.swap(indexL, indexR)
+        }
+    }
 }
 
 fun DoubleArrayList.swap(indexA: Int, indexB: Int) {
@@ -72,7 +87,7 @@ fun DoubleArrayList.swap(indexA: Int, indexB: Int) {
     this[indexB] = tmp
 }
 
-fun IPointArrayList.getPoint(index: Int) = Point2d(getX(index), getY(index))
+fun IPointArrayList.getPoint(index: Int) = IPoint(getX(index), getY(index))
 fun IPointArrayList.toPoints() = (0 until size).map { getPoint(it) }
 fun IPointArrayList.contains(x: Double, y: Double): Boolean {
     for (n in 0 until size) if (getX(n) == x && getY(n) == y) return true

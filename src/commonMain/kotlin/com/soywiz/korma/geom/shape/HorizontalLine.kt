@@ -1,6 +1,6 @@
 package com.soywiz.korma.geom.shape
 
-import com.soywiz.korma.MVector2
+import com.soywiz.korma.geom.Point
 import com.soywiz.korma.geom.bezier.Bezier
 import com.soywiz.korma.geom.bezier.SegmentEmitter
 
@@ -15,7 +15,7 @@ object HorizontalLine {
     fun interesectionsWithQuadBezier(
         ax: Double, ay: Double,
         bx0: Double, by0: Double, bx1: Double, by1: Double, bx2: Double, by2: Double,
-        t0: MVector2 = MVector2(), t1: MVector2 = MVector2()
+        t0: Point = Point(), t1: Point = Point()
     ): Int {
         var count = 0
         SegmentEmitter.emit(4, curveGen = { p, t ->
@@ -29,7 +29,7 @@ object HorizontalLine {
     fun intersectionsWithCubicBezier(
         ax: Double, ay: Double,
         bx0: Double, by0: Double, bx1: Double, by1: Double, bx2: Double, by2: Double, bx3: Double, by3: Double,
-        t0: MVector2 = MVector2(), t1: MVector2 = MVector2()
+        t0: Point = Point(), t1: Point = Point()
     ): Int {
         //return intersectsH0LineLine(ax, ay, bx0, by0, bx3, by3)
         var count = 0

@@ -40,11 +40,10 @@
 
 package com.soywiz.korma.geom.shape.ops.internal
 
-import com.soywiz.korma.*
 import com.soywiz.korma.geom.*
 import kotlin.math.*
 
-private fun vector2(v: Vector2) = Vector2(v.x, v.y)
+private fun vector2(v: IPoint) = IPoint(v.x, v.y)
 
 internal interface Clipper {
     enum class ClipType { INTERSECTION, UNION, DIFFERENCE, XOR }
@@ -114,7 +113,7 @@ internal abstract class ClipperBase protected constructor(val isPreserveCollinea
         var isFlat = true
 
         //1. Basic (first) edge initialization ...
-        edges[1].current = MVector2(pg[1])
+        edges[1].current = Point(pg[1])
         rangeTest(pg[0])
         rangeTest(pg[highI])
         initEdge(edges[0], edges[1], edges[highI], pg[0])
@@ -442,13 +441,13 @@ internal abstract class ClipperBase protected constructor(val isPreserveCollinea
         while (lm != null) {
             var e = lm.leftBound
             if (e != null) {
-                e.current = MVector2(e.bot)
+                e.current = Point(e.bot)
                 e.side = Edge.Side.LEFT
                 e.outIdx = Edge.UNASSIGNED
             }
             e = lm.rightBound
             if (e != null) {
-                e.current = MVector2(e.bot)
+                e.current = Point(e.bot)
                 e.side = Edge.Side.RIGHT
                 e.outIdx = Edge.UNASSIGNED
             }
@@ -458,26 +457,26 @@ internal abstract class ClipperBase protected constructor(val isPreserveCollinea
 
     companion object {
 
-        private fun initEdge(e: Edge, eNext: Edge, ePrev: Edge, pt: Vector2) {
+        private fun initEdge(e: Edge, eNext: Edge, ePrev: Edge, pt: IPoint) {
             e.next = eNext
             e.prev = ePrev
-            e.current = MVector2(pt)
+            e.current = Point(pt)
             e.outIdx = Edge.UNASSIGNED
         }
 
         private fun initEdge2(e: Edge, polyType: Clipper.PolyType) {
             if (e.current.y >= e.next!!.current.y) {
-                e.bot = MVector2(e.current)
-                e.top = MVector2(e.next!!.current)
+                e.bot = Point(e.current)
+                e.top = Point(e.next!!.current)
             } else {
-                e.top = MVector2(e.current)
-                e.bot = MVector2(e.next!!.current)
+                e.top = Point(e.current)
+                e.bot = Point(e.next!!.current)
             }
             e.updateDeltaX()
             e.polyTyp = polyType
         }
 
-        private fun rangeTest(Pt: Vector2) {
+        private fun rangeTest(Pt: IPoint) {
             if (Pt.x > LOW_RANGE || Pt.y > LOW_RANGE || -Pt.x > LOW_RANGE || -Pt.y > LOW_RANGE) {
                 if (Pt.x > HI_RANGE || Pt.y > HI_RANGE || -Pt.x > HI_RANGE || -Pt.y > HI_RANGE) {
                     throw IllegalStateException("Coordinate outside allowed range")
@@ -507,7 +506,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
     private var srcPoly: Path? = null
     private var destPoly: Path? = null
 
-    private val normals: MutableList<Vector2> = ArrayList()
+    private val normals: MutableList<IPoint> = ArrayList()
     private var delta: Double = 0.0
     private var inA: Double = 0.0
     private var sin: Double = 0.0
@@ -515,7 +514,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
 
     private var miterLim: Double = 0.0
     private var stepsPerRad: Double = 0.0
-    private var lowest = MVector2(-1.0, 0.0)
+    private var lowest = Point(-1.0, 0.0)
 
     private val polyNodes: PolyNode = PolyNode()
 
@@ -559,11 +558,11 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
             return
         }
         if (lowest.x < 0) {
-            lowest = MVector2((polyNodes.childCount - 1), k)
+            lowest = Point((polyNodes.childCount - 1), k)
         } else {
             val ip = polyNodes.getChildren()[lowest.x.toInt()].polygon[lowest.y.toInt()]
             if (newNode.polygon[k].y > ip.y || newNode.polygon[k].y == ip.y && newNode.polygon[k].x < ip.x) {
-                lowest = MVector2((polyNodes.childCount - 1), k)
+                lowest = Point((polyNodes.childCount - 1), k)
             }
         }
     }
@@ -583,7 +582,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
     private fun doMiter(j: Int, k: Int, r: Double) {
         val q = delta / r
         destPoly!!.add(
-            Vector2(
+            IPoint(
                 round(srcPoly!![j].x + (normals[k].x + normals[j].x) * q).toInt(),
                 round(srcPoly!![j].y + (normals[k].y + normals[j].y) * q).toInt()
             )
@@ -641,7 +640,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
                     var j = 1
                     while (j <= steps) {
                         destPoly!!.add(
-                            Vector2(
+                            IPoint(
                                 round(srcPoly!![0].x + x * delta).toInt(),
                                 round(srcPoly!![0].y + y * delta).toInt()
                             )
@@ -656,7 +655,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
                     @Suppress("NAME_SHADOWING") var y = -1.0
                     for (j in 0..3) {
                         destPoly!!.add(
-                            Vector2(
+                            IPoint(
                                 round(srcPoly!![0].x + x * delta).toInt(),
                                 round(srcPoly!![0].y + y * delta).toInt()
                             )
@@ -701,9 +700,9 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
                     //re-build m_normals ...
                     val n = normals[len - 1]
                     for (j in len - 1 downTo 1) {
-                        normals[j] = Vector2(-normals[j - 1].x, -normals[j - 1].y)
+                        normals[j] = IPoint(-normals[j - 1].x, -normals[j - 1].y)
                     }
-                    normals[0] = Vector2(-n.x, -n.y)
+                    normals[0] = IPoint(-n.x, -n.y)
                     k[0] = 0
                     for (j in len - 1 downTo 0) {
                         offsetPoint(j, k, node.joinType!!)
@@ -716,15 +715,15 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
                         offsetPoint(j, k, node.joinType!!)
                     }
 
-                    var pt1: Vector2
+                    var pt1: IPoint
                     if (node.endType == Clipper.EndType.OPEN_BUTT) {
                         val j = len - 1
-                        pt1 = Vector2(
+                        pt1 = IPoint(
                             round(srcPoly!![j].x + normals[j].x * delta).toInt(),
                             round(srcPoly!![j].y + normals[j].y * delta).toInt()
                         )
                         destPoly!!.add(pt1)
-                        pt1 = Vector2(
+                        pt1 = IPoint(
                             round(srcPoly!![j].x - normals[j].x * delta).toInt(),
                             round(srcPoly!![j].y - normals[j].y * delta).toInt()
                         )
@@ -733,7 +732,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
                         val j = len - 1
                         k[0] = len - 2
                         inA = 0.0
-                        normals[j] = Vector2(-normals[j].x, -normals[j].y)
+                        normals[j] = IPoint(-normals[j].x, -normals[j].y)
                         if (node.endType == Clipper.EndType.OPEN_SQUARE) {
                             doSquare(j, k[0])
                         } else {
@@ -743,21 +742,21 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
 
                     //re-build m_normals ...
                     for (j in len - 1 downTo 1) {
-                        normals[j] = Vector2(-normals[j - 1].x, -normals[j - 1].y)
+                        normals[j] = IPoint(-normals[j - 1].x, -normals[j - 1].y)
                     }
 
-                    normals[0] = Vector2(-normals[1].x, -normals[1].y)
+                    normals[0] = IPoint(-normals[1].x, -normals[1].y)
 
                     k[0] = len - 1
                     for (j in k[0] - 1 downTo 1) offsetPoint(j, k, node.joinType!!)
 
                     if (node.endType == Clipper.EndType.OPEN_BUTT) {
-                        pt1 = Vector2(
+                        pt1 = IPoint(
                             round(srcPoly!![0].x - normals[0].x * delta).toInt(),
                             round(srcPoly!![0].y - normals[0].y * delta).toInt()
                         )
                         destPoly!!.add(pt1)
-                        pt1 = Vector2(
+                        pt1 = IPoint(
                             round(srcPoly!![0].x + normals[0].x * delta).toInt(),
                             round(srcPoly!![0].y + normals[0].y * delta).toInt()
                         )
@@ -786,7 +785,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
         var x2: Double
         for (i in 0 until steps) {
             destPoly!!.add(
-                Vector2(
+                IPoint(
                     round(srcPoly!![j].x + x * delta).toInt(),
                     round(srcPoly!![j].y + y * delta).toInt()
                 )
@@ -796,7 +795,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
             y = x2 * sin + y * cos
         }
         destPoly!!.add(
-            Vector2(
+            IPoint(
                 round(srcPoly!![j].x + normals[j].x * delta).toInt(),
                 round(srcPoly!![j].y + normals[j].y * delta).toInt()
             )
@@ -812,13 +811,13 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
         val sjy = srcPoly!![j].y
         val dx = tan(atan2(inA, nkx * njx + nky * njy) / 4)
         destPoly!!.add(
-            Vector2(
+            IPoint(
                 round(sjx + delta * (nkx - nky * dx)).toInt(),
                 round(sjy + delta * (nky + nkx * dx)).toInt()
             )
         )
         destPoly!!.add(
-            Vector2(
+            IPoint(
                 round(sjx + delta * (njx + njy * dx)).toInt(),
                 round(sjy + delta * (njy - njx * dx)).toInt()
             )
@@ -844,10 +843,10 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
             val r = destPolys!!.bounds
             val outer = Path(4)
 
-            outer.add(Vector2(r.left - 10, r.bottom + 10))
-            outer.add(Vector2(r.right + 10, r.bottom + 10))
-            outer.add(Vector2(r.right + 10, r.top - 10))
-            outer.add(Vector2(r.left - 10, r.top - 10))
+            outer.add(IPoint(r.left - 10, r.bottom + 10))
+            outer.add(IPoint(r.right + 10, r.bottom + 10))
+            outer.add(IPoint(r.right + 10, r.top - 10))
+            outer.add(IPoint(r.left - 10, r.top - 10))
 
             clpr.addPath(outer, Clipper.PolyType.SUBJECT, true)
 
@@ -883,10 +882,10 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
             val r = destPolys!!.bounds
             val outer = Path(4)
 
-            outer.add(Vector2(r.left - 10, r.bottom + 10))
-            outer.add(Vector2(r.right + 10, r.bottom + 10))
-            outer.add(Vector2(r.right + 10, r.top - 10))
-            outer.add(Vector2(r.left - 10, r.top - 10))
+            outer.add(IPoint(r.left - 10, r.bottom + 10))
+            outer.add(IPoint(r.right + 10, r.bottom + 10))
+            outer.add(IPoint(r.right + 10, r.top - 10))
+            outer.add(IPoint(r.left - 10, r.top - 10))
 
             clpr.addPath(outer, Clipper.PolyType.SUBJECT, true)
 
@@ -949,7 +948,7 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
             if (cosA > 0)
             // angle ==> 0 degrees
             {
-                destPoly!!.add(Vector2(round(sjx + nkx * delta).toInt(), round(sjy + nky * delta).toInt()))
+                destPoly!!.add(IPoint(round(sjx + nkx * delta).toInt(), round(sjy + nky * delta).toInt()))
                 return
             }
             //else angle ==> 180 degrees
@@ -960,9 +959,9 @@ internal class ClipperOffset(private val miterLimit: Double = 2.0, private val a
         }
 
         if (inA * delta < 0) {
-            destPoly!!.add(Vector2(round(sjx + nkx * delta).toInt(), round(sjy + nky * delta).toInt()))
+            destPoly!!.add(IPoint(round(sjx + nkx * delta).toInt(), round(sjy + nky * delta).toInt()))
             destPoly!!.add(srcPoly!![j])
-            destPoly!!.add(Vector2(round(sjx + njx * delta).toInt(), round(sjy + njy * delta).toInt()))
+            destPoly!!.add(IPoint(round(sjx + njx * delta).toInt(), round(sjy + njy * delta).toInt()))
         } else {
             when (jointype) {
                 Clipper.JoinType.MITER -> {
@@ -999,7 +998,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
     private inner class IntersectNode {
         var edge1: Edge? = null
         var edge2: Edge? = null
-        var pt: Vector2? = null
+        var pt: IPoint? = null
 
     }
 
@@ -1058,7 +1057,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
         }
     }
 
-    private fun addGhostJoin(Op: Path.OutPt, OffPt: Vector2) {
+    private fun addGhostJoin(Op: Path.OutPt, OffPt: IPoint) {
         val j = Path.Join()
         j.outPt1 = Op
         j.offPt = vector2(OffPt)
@@ -1067,7 +1066,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
 
     //------------------------------------------------------------------------------
 
-    private fun addJoin(Op1: Path.OutPt, Op2: Path.OutPt, OffPt: Vector2) {
+    private fun addJoin(Op1: Path.OutPt, Op2: Path.OutPt, OffPt: IPoint) {
         val j = Path.Join()
         j.outPt1 = Op1
         j.outPt2 = Op2
@@ -1077,7 +1076,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
 
     //------------------------------------------------------------------------------
 
-    private fun addLocalMaxPoly(e1: Edge, e2: Edge, pt: Vector2) {
+    private fun addLocalMaxPoly(e1: Edge, e2: Edge, pt: IPoint) {
         addOutPt(e1, pt)
         if (e2.windDelta == 0) {
             addOutPt(e2, pt)
@@ -1094,7 +1093,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
 
     //------------------------------------------------------------------------------
 
-    private fun addLocalMinPoly(e1: Edge, e2: Edge, pt: Vector2): Path.OutPt {
+    private fun addLocalMinPoly(e1: Edge, e2: Edge, pt: IPoint): Path.OutPt {
         val result: Path.OutPt
         val e: Edge
         val prevE: Edge?
@@ -1128,7 +1127,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
         return result
     }
 
-    private fun addOutPt(e: Edge, pt: Vector2): Path.OutPt {
+    private fun addOutPt(e: Edge, pt: IPoint): Path.OutPt {
         val toFront = e.side == Edge.Side.LEFT
         if (e.outIdx < 0) {
             val outRec = createOutRec()
@@ -1269,7 +1268,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
             e = sortedEdges
             while (e!!.nextInSEL != null) {
                 val eNext = e.nextInSEL
-                val pt = Array(1) { MVector2() }
+                val pt = Array(1) { Point() }
                 if (e.current.x > eNext!!.current.x) {
                     intersectPoint(e, eNext, pt)
                     val newNode = IntersectNode()
@@ -1442,7 +1441,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
         while (eNext != null && eNext !== eMaxPair) {
             val tmp = vector2(e.top)
             intersectEdges(e, eNext, tmp)
-            e.top = MVector2(tmp)
+            e.top = Point(tmp)
             swapPositionsInAEL(e, eNext)
             eNext = e.nextInAEL
         }
@@ -1915,7 +1914,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
 
     //------------------------------------------------------------------------------
 
-    private fun intersectEdges(e1: Edge, e2: Edge, pt: Vector2) {
+    private fun intersectEdges(e1: Edge, e2: Edge, pt: IPoint) {
         //e1 will be to the left of e2 BELOW the intersection. Therefore e1 is before
         //e2 in AEL except when e1 is being inserted at the intersection point ...
 
@@ -2071,8 +2070,8 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
         }
     }
 
-    private fun intersectPoint(edge1: Edge, edge2: Edge, ipV: Array<MVector2>) {
-        ipV[0] = MVector2()
+    private fun intersectPoint(edge1: Edge, edge2: Edge, ipV: Array<Point>) {
+        ipV[0] = Point()
         val ip = ipV[0]
 
         val b1: Double
@@ -2404,11 +2403,11 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                             return
                         }
                         dir[0] == Clipper.Direction.LEFT_TO_RIGHT -> {
-                            val pt = Vector2(e.current.x, horzEdge.current.y)
+                            val pt = IPoint(e.current.x, horzEdge.current.y)
                             intersectEdges(horzEdge, e, pt)
                         }
                         else -> {
-                            val pt = Vector2(e.current.x, horzEdge.current.y)
+                            val pt = IPoint(e.current.x, horzEdge.current.y)
                             intersectEdges(e, horzEdge, pt)
                         }
                     }
@@ -2550,7 +2549,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun setZ(pt: Vector2, e1: Edge, e2: Edge) {
+    private fun setZ(pt: IPoint, e1: Edge, e2: Edge) {
         //if (pt.z != 0L || zFillFunction == null) {
         //	return
         //} else if (pt == e1.bot) {
@@ -2708,7 +2707,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
         e.nextInLML!!.windCnt2 = e.windCnt2
         e = e.nextInLML!!
         eV[0] = e
-        e.current = MVector2(e.bot)
+        e.current = Point(e.bot)
         e.prevInAEL = aelPrev
         e.nextInAEL = aelNext
         if (!e.isHorizontal) {
@@ -2862,7 +2861,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
             return false
         }
 
-        private fun isPointInPolygon(pt: Vector2, opp: Path.OutPt): Int {
+        private fun isPointInPolygon(pt: IPoint, opp: Path.OutPt): Int {
             var op = opp
             //returns 0 if false, +1 if true, -1 if pt ON polygon boundary
             //See "The Point in Polygon Problem for Arbitrary Polygons" by Hormann & Agathos
@@ -2911,7 +2910,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
             op_1b: Path.OutPt,
             op_2: Path.OutPt,
             op_2b: Path.OutPt,
-            Pt: Vector2,
+            Pt: IPoint,
             DiscardLeft: Boolean
         ): Boolean {
             var op1 = op_1
@@ -3059,7 +3058,7 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
                 //DiscardLeftSide: when overlapping edges are joined, a spike will created
                 //which needs to be cleaned up. However, we don't want Op1 or Op2 caught up
                 //on the discard Side as either may still be needed for other joins ...
-                val pt: Vector2
+                val pt: IPoint
                 val discardLeftSide: Boolean
                 when {
                     op1.pt.x in left..right -> {
@@ -3139,13 +3138,13 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
             if (IsSum) {
                 for (i in 0 until pathCnt) {
                     val p = Path(polyCnt)
-                    for (ip in pattern) p.add(Vector2(path[i].x + ip.x, path[i].y + ip.y))
+                    for (ip in pattern) p.add(IPoint(path[i].x + ip.x, path[i].y + ip.y))
                     result.add(p)
                 }
             } else {
                 for (i in 0 until pathCnt) {
                     val p = Path(polyCnt)
-                    for (ip in pattern) p.add(Vector2(path[i].x - ip.x, path[i].y - ip.y))
+                    for (ip in pattern) p.add(IPoint(path[i].x - ip.x, path[i].y - ip.y))
                     result.add(p)
                 }
             }
@@ -3247,11 +3246,11 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
 internal class Edge {
     enum class Side { LEFT, RIGHT }
 
-    var bot: MVector2 = MVector2(); set(v) = run { field.copyFrom(v) }
-    var current: MVector2 = MVector2(); set(v) = run { field.copyFrom(v) }
-    var top: MVector2 = MVector2(); set(v) = run { field.copyFrom(v) }
+    var bot: Point = Point(); set(v) = run { field.copyFrom(v) }
+    var current: Point = Point(); set(v) = run { field.copyFrom(v) }
+    var top: Point = Point(); set(v) = run { field.copyFrom(v) }
 
-    val delta: MVector2 = MVector2()
+    val delta: Point = Point()
     var deltaX: Double = 0.0
 
     var polyTyp: Clipper.PolyType? = null
@@ -3448,18 +3447,18 @@ internal class Edge {
  * @author Tobias Mahlmann
 </IntPoint> */
 @Suppress("unused")
-internal class Path private constructor(private val al: ArrayList<Vector2>) : MutableList<Vector2> by al, RandomAccess {
-    constructor(initialCapacity: Int = 0) : this(ArrayList<Vector2>(initialCapacity))
+internal class Path private constructor(private val al: ArrayList<IPoint>) : MutableList<IPoint> by al, RandomAccess {
+    constructor(initialCapacity: Int = 0) : this(ArrayList<IPoint>(initialCapacity))
 
-    constructor(vararg points: Vector2) : this(points.size) {
+    constructor(vararg points: IPoint) : this(points.size) {
         addAll(points)
     }
 
-    constructor(points: List<Vector2>) : this(points.size) {
+    constructor(points: List<IPoint>) : this(points.size) {
         addAll(points)
     }
 
-    constructor(points: Iterable<Vector2>) : this() {
+    constructor(points: Iterable<IPoint>) : this() {
         addAll(points)
     }
 
@@ -3468,14 +3467,14 @@ internal class Path private constructor(private val al: ArrayList<Vector2>) : Mu
     class Join(
         var outPt1: OutPt? = null,
         var outPt2: OutPt? = null,
-        var offPt: Vector2? = null
+        var offPt: IPoint? = null
     )
 
-    fun addPoint(x: Double, y: Double) = add(Vector2(x, y))
+    fun addPoint(x: Double, y: Double) = add(IPoint(x, y))
 
     class OutPt {
         var idx: Int = 0
-        var pt: Vector2 = Vector2(0, 0)
+        var pt: IPoint = IPoint(0, 0)
         var next: OutPt? = null
         var prev: OutPt? = null
 
@@ -3701,7 +3700,7 @@ internal class Path private constructor(private val al: ArrayList<Vector2>) : Mu
         return result
     }
 
-    fun isPointInPolygon(pt: Vector2): Int {
+    fun isPointInPolygon(pt: IPoint): Int {
         //returns 0 if false, +1 if true, -1 if pt ON polygon boundary
         //See "The Point in Polygon Problem for Arbitrary Polygons" by Hormann & Agathos
         //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.88.5498&rep=rep1&type=pdf
@@ -3744,9 +3743,9 @@ internal class Path private constructor(private val al: ArrayList<Vector2>) : Mu
 
     fun orientation(): Boolean = area() >= 0
 
-    fun translatePath(delta: Vector2): Path {
+    fun translatePath(delta: IPoint): Path {
         val outPath = Path(size)
-        for (i in this) outPath.add(Vector2(i.x + delta.x, i.y + delta.y))
+        for (i in this) outPath.add(IPoint(i.x + delta.x, i.y + delta.y))
         return outPath
     }
 
@@ -3854,14 +3853,14 @@ internal class Paths private constructor(private val al: ArrayList<Path>) : Muta
 }
 
 internal object Points {
-    fun arePointsClose(pt1: Vector2, pt2: Vector2, distSqrd: Double): Boolean {
+    fun arePointsClose(pt1: IPoint, pt2: IPoint, distSqrd: Double): Boolean {
         val dx = pt1.x - pt2.x
         val dy = pt1.y - pt2.y
         return dx * dx + dy * dy <= distSqrd
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun distanceFromLineSqrd(pt: Vector2, ln1: Vector2, ln2: Vector2): Double {
+    fun distanceFromLineSqrd(pt: IPoint, ln1: IPoint, ln2: IPoint): Double {
         //The equation of a line in general form (Ax + By + C = 0)
         //given 2 points (x�,y�) & (x�,y�) is ...
         //(y� - y�)x + (x� - x�)y + (y� - y�)x� - (x� - x�)y� = 0
@@ -3875,31 +3874,31 @@ internal object Points {
         return c * c / (a * a + b * b)
     }
 
-    fun getDeltaX(pt1: Vector2, pt2: Vector2): Double =
+    fun getDeltaX(pt1: IPoint, pt2: IPoint): Double =
         if (pt1.y == pt2.y) Edge.HORIZONTAL else (pt2.x - pt1.x) / (pt2.y - pt1.y)
 
-    fun getUnitNormal(pt1: Vector2, pt2: Vector2): Vector2 {
+    fun getUnitNormal(pt1: IPoint, pt2: IPoint): IPoint {
         val dx = (pt2.x - pt1.x)
         val dy = (pt2.y - pt1.y)
-        if (dx == 0.0 && dy == 0.0) return Vector2(0.0, 0.0)
+        if (dx == 0.0 && dy == 0.0) return IPoint(0.0, 0.0)
         val f = 1 * 1.0 / sqrt(dx * dx + dy * dy)
-        return Vector2(dy * f, -dx * f)
+        return IPoint(dy * f, -dx * f)
     }
 
-    fun isPt2BetweenPt1AndPt3(pt1: Vector2, pt2: Vector2, pt3: Vector2): Boolean = when {
+    fun isPt2BetweenPt1AndPt3(pt1: IPoint, pt2: IPoint, pt3: IPoint): Boolean = when {
         (pt1 == pt3 || pt1 == pt2 || pt3 == pt2) -> false
         (pt1.x != pt3.x) -> (pt2.x > pt1.x == pt2.x < pt3.x)
         else -> (pt2.y > pt1.y == pt2.y < pt3.y)
     }
 
-    fun slopesEqual(pt1: Vector2, pt2: Vector2, pt3: Vector2): Boolean =
+    fun slopesEqual(pt1: IPoint, pt2: IPoint, pt3: IPoint): Boolean =
         (pt1.y - pt2.y) * (pt2.x - pt3.x) - (pt1.x - pt2.x) * (pt2.y - pt3.y) == 0.0
 
     @Suppress("unused")
-    fun slopesEqual(pt1: Vector2, pt2: Vector2, pt3: Vector2, pt4: Vector2): Boolean =
+    fun slopesEqual(pt1: IPoint, pt2: IPoint, pt3: IPoint, pt4: IPoint): Boolean =
         (pt1.y - pt2.y) * (pt3.x - pt4.x) - (pt1.x - pt2.x) * (pt3.y - pt4.y) == 0.0
 
-    fun slopesNearCollinear(pt1: Vector2, pt2: Vector2, pt3: Vector2, distSqrd: Double): Boolean {
+    fun slopesNearCollinear(pt1: IPoint, pt2: IPoint, pt3: IPoint, distSqrd: Double): Boolean {
         //this function is more accurate when the point that's GEOMETRICALLY
         //between the other 2 points is the one that's tested for distance.
         //nb: with 'spikes', either pt1 or pt3 is geometrically between the other pts
@@ -3940,7 +3939,7 @@ internal open class PolyNode {
 
     val childCount: Int get() = childs.size
     fun getChildren(): List<PolyNode> = childs.toList()
-    val contour: List<Vector2> get() = polygon
+    val contour: List<IPoint> get() = polygon
 
     val next: PolyNode get() = if (!childs.isEmpty()) childs[0] else nextSiblingUp!!
     private val nextSiblingUp: PolyNode? get() = if (parent == null) null else if (index == parent!!.childs.size - 1) parent!!.nextSiblingUp else parent!!.childs[index + 1]

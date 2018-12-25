@@ -3,7 +3,6 @@ package com.soywiz.korma.geom.shape
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.bezier.*
 import com.soywiz.korma.geom.ds.*
-import com.soywiz.korma.geom.triangle.*
 import com.soywiz.korma.geom.vector.*
 import com.soywiz.korma.internal.*
 import kotlin.math.*
@@ -162,7 +161,7 @@ fun VectorPath.toPathList(): List<IPointArrayList> {
 fun Shape2d.getAllPoints(out: PointArrayList = PointArrayList()): PointArrayList = out.apply { for (path in this@getAllPoints.paths) add(path) }
 fun Shape2d.toPolygon(): Shape2d.Polygon = if (this is Shape2d.Polygon) this else Shape2d.Polygon(this.getAllPoints())
 
-fun List<Point2d>.containsPoint(x: Double, y: Double): Boolean {
+fun List<IPoint>.containsPoint(x: Double, y: Double): Boolean {
     var intersections = 0
     for (n in 0 until this.size - 1) {
         val p1 = this[n + 0]

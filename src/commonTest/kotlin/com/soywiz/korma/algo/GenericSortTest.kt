@@ -1,6 +1,6 @@
 package com.soywiz.korma.algo
 
-import com.soywiz.korma.*
+import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.ds.*
 import kotlin.test.*
 
@@ -35,7 +35,7 @@ class GenericSortTest {
     fun test2() {
         val points = PointArrayList { add(100, 100).add(400, 400).add(200, 100).add(0, 500).add(-100, 300).add(300, 100) }
         assertEquals("[(100, 100), (400, 400), (200, 100), (0, 500), (-100, 300), (300, 100)]", points.toString())
-        Vector2.sortPoints(points)
+        points.sort()
         assertEquals("[(100, 100), (200, 100), (300, 100), (-100, 300), (400, 400), (0, 500)]", points.toString())
     }
 }

@@ -6,7 +6,7 @@ enum class Orientation(val value: Int) {
     companion object {
         private const val EPSILON: Double = 1e-12
 
-        fun orient2d(pa: Point2d, pb: Point2d, pc: Point2d): Orientation {
+        fun orient2d(pa: IPoint, pb: IPoint, pc: IPoint): Orientation {
             val detleft: Double = (pa.x - pc.x) * (pb.y - pc.y)
             val detright: Double = (pa.y - pc.y) * (pb.x - pc.x)
             val `val`: Double = detleft - detright

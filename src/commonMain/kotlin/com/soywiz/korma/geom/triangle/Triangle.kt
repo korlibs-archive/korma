@@ -42,20 +42,20 @@ entities.
 package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.geom.Orientation
-import com.soywiz.korma.geom.Point2d
+import com.soywiz.korma.geom.IPoint
 import kotlin.math.abs
 
 interface Triangle {
-    val p0: Point2d
-    val p1: Point2d
-    val p2: Point2d
+    val p0: IPoint
+    val p1: IPoint
+    val p2: IPoint
 
-    data class Base(override val p0: Point2d, override val p1: Point2d, override val p2: Point2d) : Triangle
+    data class Base(override val p0: IPoint, override val p1: IPoint, override val p2: IPoint) : Triangle
 
     companion object {
         private const val EPSILON: Double = 1e-12
 
-        fun area(p1: Point2d, p2: Point2d, p3: Point2d): Double = area(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
+        fun area(p1: IPoint, p2: IPoint, p3: IPoint): Double = area(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
 
         fun area(ax: Double, ay: Double, bx: Double, by: Double, cx: Double, cy: Double): Double {
             val a = bx - ax
@@ -84,16 +84,16 @@ interface Triangle {
             return index
         }
 
-        fun getNotCommonVertex(t1: Triangle, t2: Triangle): Point2d = t1.point(getNotCommonVertexIndex(t1, t2))
+        fun getNotCommonVertex(t1: Triangle, t2: Triangle): IPoint = t1.point(getNotCommonVertexIndex(t1, t2))
 
         fun getUniquePointsFromTriangles(triangles: List<Triangle>) = triangles.flatMap { listOf(it.p0, it.p1, it.p2) }.distinct()
 
         fun traceList(triangles: List<Triangle>) {
             val pointsList = getUniquePointsFromTriangles(triangles)
-            val pointsMap = hashMapOf<Point2d, Int>()
+            val pointsMap = hashMapOf<IPoint, Int>()
             var points_length = 0
             for (point in pointsList) pointsMap[point] = ++points_length
-            fun getPointName(point: Point2d): String = "p" + pointsMap[point]
+            fun getPointName(point: IPoint): String = "p" + pointsMap[point]
             println("Points:")
             for (point in pointsList) println("  " + getPointName(point) + " = " + point)
             println("Triangles:")
@@ -129,7 +129,7 @@ interface Triangle {
          * @param pd - point opposite a
          * @return true if d is inside circle, false if on circle edge
          */
-        fun insideIncircle(pa: Point2d, pb: Point2d, pc: Point2d, pd: Point2d): Boolean {
+        fun insideIncircle(pa: IPoint, pb: IPoint, pc: IPoint, pd: IPoint): Boolean {
             val adx: Double = pa.x - pd.x
             val ady: Double = pa.y - pd.y
             val bdx: Double = pb.x - pd.x
@@ -161,7 +161,7 @@ interface Triangle {
             return det > 0
         }
 
-        fun inScanArea(pa: Point2d, pb: Point2d, pc: Point2d, pd: Point2d): Boolean {
+        fun inScanArea(pa: IPoint, pb: IPoint, pc: IPoint, pd: IPoint): Boolean {
             val pdx: Double = pd.x
             val pdy: Double = pd.y
             val adx: Double = pa.x - pdx
@@ -201,7 +201,7 @@ fun Triangle.point(index: Int) = when (index) {
  * @return <code>True</code> if the Point2d objects are of the Triangle's vertices,
  *         <code>false</code> otherwise.
  */
-fun Triangle.containsPoint(point: Point2d): Boolean = (point == p0) || (point == p1) || (point == p2)
+fun Triangle.containsPoint(point: IPoint): Boolean = (point == p0) || (point == p1) || (point == p2)
 /**
  * Test if this Triangle contains the Edge object given as parameters as its bounding edges.
  * @return <code>True</code> if the Edge objects are of the Triangle's bounding
@@ -211,19 +211,19 @@ fun Triangle.containsPoint(point: Point2d): Boolean = (point == p0) || (point ==
 fun Triangle.containsEdge(edge: Edge): Boolean = containsEdgePoints(edge.p, edge.q)
 
 // In a triangle to check if contains and edge is enough to check if it contains the two vertices.
-fun Triangle.containsEdgePoints(p1: Point2d, p2: Point2d): Boolean = containsPoint(p1) && containsPoint(p2)
+fun Triangle.containsEdgePoints(p1: IPoint, p2: IPoint): Boolean = containsPoint(p1) && containsPoint(p2)
 
-private fun _product(p1: Point2d, p2: Point2d, p3: Point2d): Double =
+private fun _product(p1: IPoint, p2: IPoint, p3: IPoint): Double =
     (p1.x - p3.x) * (p2.y - p3.y) - (p1.y - p3.y) * (p2.x - p3.x)
 
-fun Triangle.pointInsideTriangle(pp: Point2d): Boolean = if (_product(p0, p1, p2) >= 0) {
+fun Triangle.pointInsideTriangle(pp: IPoint): Boolean = if (_product(p0, p1, p2) >= 0) {
     (_product(p0, p1, pp) >= 0) && (_product(p1, p2, pp)) >= 0 && (_product(p2, p0, pp) >= 0)
 } else {
     (_product(p0, p1, pp) <= 0) && (_product(p1, p2, pp)) <= 0 && (_product(p2, p0, pp) <= 0)
 }
 
 // Optimized?
-fun Triangle.getPointIndexOffsetNoThrow(p: Point2d, offset: Int = 0, notFound: Int = Int.MIN_VALUE): Int {
+fun Triangle.getPointIndexOffsetNoThrow(p: IPoint, offset: Int = 0, notFound: Int = Int.MIN_VALUE): Int {
     var no: Int = offset
     for (n in 0 until 3) {
         while (no < 0) no += 3
@@ -234,17 +234,17 @@ fun Triangle.getPointIndexOffsetNoThrow(p: Point2d, offset: Int = 0, notFound: I
     return notFound
 }
 
-fun Triangle.getPointIndexOffset(p: Point2d, offset: Int = 0): Int {
+fun Triangle.getPointIndexOffset(p: IPoint, offset: Int = 0): Int {
     val v = getPointIndexOffsetNoThrow(p, offset, Int.MIN_VALUE)
     if (v == Int.MIN_VALUE) throw Error("Point2d not in triangle")
     return v
 }
 
-fun Triangle.pointCW(p: Point2d): Point2d = this.point(getPointIndexOffset(p, -1))
-fun Triangle.pointCCW(p: Point2d): Point2d = this.point(getPointIndexOffset(p, +1))
-fun Triangle.oppositePoint(t: Triangle, p: Point2d): Point2d = this.pointCW(t.pointCW(p))
+fun Triangle.pointCW(p: IPoint): IPoint = this.point(getPointIndexOffset(p, -1))
+fun Triangle.pointCCW(p: IPoint): IPoint = this.point(getPointIndexOffset(p, +1))
+fun Triangle.oppositePoint(t: Triangle, p: IPoint): IPoint = this.pointCW(t.pointCW(p))
 
-fun Triangle(p0: Point2d, p1: Point2d, p2: Point2d, fixOrientation: Boolean = false, checkOrientation: Boolean = true): Triangle {
+fun Triangle(p0: IPoint, p1: IPoint, p2: IPoint, fixOrientation: Boolean = false, checkOrientation: Boolean = true): Triangle {
     @Suppress("NAME_SHADOWING")
     var p1 = p1
     @Suppress("NAME_SHADOWING")
@@ -268,16 +268,16 @@ fun Triangle(p0: Point2d, p1: Point2d, p2: Point2d, fixOrientation: Boolean = fa
 
 
 /** Alias for containsPoint */
-fun Triangle.isPointAVertex(p: Point2d): Boolean = containsPoint(p)
+fun Triangle.isPointAVertex(p: IPoint): Boolean = containsPoint(p)
 //for (var n:uint = 0; n < 3; n++) if (p == [this.points[n]]) return true;
 //return false;
 
 val Triangle.area: Double get() = Triangle.area(p0, p1, p2)
 
 /** Alias for getPointIndexOffset */
-fun Triangle.index(p: Point2d): Int = this.getPointIndexOffsetNoThrow(p, 0, -1)
+fun Triangle.index(p: IPoint): Int = this.getPointIndexOffsetNoThrow(p, 0, -1)
 
-fun Triangle.edgeIndex(p1: Point2d, p2: Point2d): Int {
+fun Triangle.edgeIndex(p1: IPoint, p2: IPoint): Int {
     when (p1) {
         this.point(0) -> {
             if (p2 == this.point(1)) return 2

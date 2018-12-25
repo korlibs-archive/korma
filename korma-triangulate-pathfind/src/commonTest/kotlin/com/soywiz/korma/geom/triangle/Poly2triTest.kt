@@ -7,8 +7,8 @@ import kotlin.math.*
 import kotlin.test.*
 
 class EdgeTest {
-    private var p1: Point2d = Point2d(0, 0)
-    private var p2: Point2d = Point2d(-1, 0)
+    private var p1: IPoint = IPoint(0, 0)
+    private var p2: IPoint = IPoint(-1, 0)
     private val edgeContext = EdgeContext()
     private var e1: Edge = edgeContext.createEdge(p1, p2)
 
@@ -37,12 +37,12 @@ class FunnelTest {
     fun testStringPull() {
         val channel = SpatialMeshFind.Channel.Funnel()
 
-        channel.push(Point2d(1, 0))
-        channel.push(Point2d(0, 4), Point2d(4, 3))
-        channel.push(Point2d(4, 7), Point2d(4, 3))
-        channel.push(Point2d(16, 0), Point2d(10, 1))
-        channel.push(Point2d(16, 0), Point2d(9, -5))
-        channel.push(Point2d(12, -11))
+        channel.push(IPoint(1, 0))
+        channel.push(IPoint(0, 4), IPoint(4, 3))
+        channel.push(IPoint(4, 7), IPoint(4, 3))
+        channel.push(IPoint(16, 0), IPoint(10, 1))
+        channel.push(IPoint(16, 0), IPoint(9, -5))
+        channel.push(IPoint(12, -11))
         channel.stringPull()
 
         assertEquals("[(1, 0), (4, 3), (10, 1), (12, -11)]", channel.path.toString())
@@ -52,24 +52,24 @@ class FunnelTest {
 class OrientationTest {
     @Test
     fun testOrientationCollinear() {
-        assertEquals(Orientation.orient2d(Point2d(0, 0), Point2d(1, 1), Point2d(2, 2)), Orientation.COLLINEAR)
+        assertEquals(Orientation.orient2d(IPoint(0, 0), IPoint(1, 1), IPoint(2, 2)), Orientation.COLLINEAR)
         assertFalse(
             Orientation.orient2d(
-                Point2d(-1, 0),
-                Point2d(0, 0),
-                Point2d(+1, 0)
+                IPoint(-1, 0),
+                IPoint(0, 0),
+                IPoint(+1, 0)
             ) != Orientation.COLLINEAR
         )
     }
 
     @Test
     fun testOrientationCW() {
-        assertEquals(Orientation.orient2d(Point2d(0, 0), Point2d(1, 1), Point2d(2, 0)), Orientation.CW)
+        assertEquals(Orientation.orient2d(IPoint(0, 0), IPoint(1, 1), IPoint(2, 0)), Orientation.CW)
     }
 
     @Test
     fun testOrientationCCW() {
-        assertEquals(Orientation.orient2d(Point2d(0, 0), Point2d(-1, 1), Point2d(-2, 0)), Orientation.CCW)
+        assertEquals(Orientation.orient2d(IPoint(0, 0), IPoint(-1, 1), IPoint(-2, 0)), Orientation.CCW)
     }
 }
 
@@ -185,20 +185,20 @@ class PointTest {
         private const val DELTA_FLOAT: Double = 0.0001
     }
 
-    private var p1: MPoint2d
-    private var p2: MPoint2d
-    private var p3: MPoint2d
+    private var p1: Point
+    private var p2: Point
+    private var p3: Point
 
     init {
-        p1 = MPoint2d(P1X, P1Y)
-        p2 = MPoint2d(P2X, P2Y)
-        p3 = MPoint2d(P3X, P3Y)
+        p1 = Point(P1X, P1Y)
+        p2 = Point(P2X, P2Y)
+        p3 = Point(P3X, P3Y)
     }
 
     @Test
     fun testInstantiated() {
         @Suppress("USELESS_IS_CHECK")
-        assertTrue(p1 is Point2d)
+        assertTrue(p1 is IPoint)
     }
 
     @Test
@@ -251,25 +251,25 @@ class PointTest {
     @Test
     fun testEquals() {
         assertTrue(p1 == p1)
-        assertTrue(p1 == Point2d(P1X, P1Y))
+        assertTrue(p1 == IPoint(P1X, P1Y))
         assertFalse(p1 == p2)
     }
 
     @Test
     fun testToString() {
-        assertEquals(Point2d(P2X, P2Y), p2)
+        assertEquals(IPoint(P2X, P2Y), p2)
     }
 }
 
 @Suppress("unused")
 class SpatialMeshTest {
-    val p1 = Point2d(1, 0)
-    val p2 = Point2d(2, 3)
-    val p3 = Point2d(3, 1)
-    val p4 = Point2d(4, 3)
-    val p5 = Point2d(2, -1)
-    val p6 = Point2d(4, 4)
-    val p7 = Point2d(0, 2)
+    val p1 = IPoint(1, 0)
+    val p2 = IPoint(2, 3)
+    val p3 = IPoint(3, 1)
+    val p4 = IPoint(4, 3)
+    val p5 = IPoint(2, -1)
+    val p6 = IPoint(4, 4)
+    val p7 = IPoint(0, 2)
 
     val t1 = Triangle(p1, p2, p3, true)
     val t2 = Triangle(p2, p3, p4, true)
@@ -287,8 +287,8 @@ class SpatialMeshTest {
 }
 
 class SweepContextTest {
-    private var initialPoints = arrayListOf(Point2d(0, 0), Point2d(0, 100), Point2d(100, 100), Point2d(100, 0))
-    private var holePoints = arrayListOf(Point2d(10, 10), Point2d(10, 90), Point2d(90, 90), Point2d(90, 10))
+    private var initialPoints = arrayListOf(IPoint(0, 0), IPoint(0, 100), IPoint(100, 100), IPoint(100, 0))
+    private var holePoints = arrayListOf(IPoint(10, 10), IPoint(10, 90), IPoint(90, 90), IPoint(90, 10))
     private var sweepContext = SweepContext(initialPoints).apply { addHole(holePoints) }
 
     @Test
@@ -306,12 +306,12 @@ class SweepContextTest {
 }
 
 class SweepTest {
-    private var initialPoints = arrayListOf(Point2d(0, 0), Point2d(100, 0), Point2d(100, 100), Point2d(0, 100))
+    private var initialPoints = arrayListOf(IPoint(0, 0), IPoint(100, 0), IPoint(100, 100), IPoint(0, 100))
     private var holePoints = arrayListOf(
-        Point2d(10, 10),
-        Point2d(10, 90),
-        Point2d(90, 90),
-        Point2d(90, 10)
+        IPoint(10, 10),
+        IPoint(10, 90),
+        IPoint(90, 90),
+        IPoint(90, 10)
     )
     private var sweepContext: SweepContext = SweepContext(initialPoints)
     private var sweep: Sweep = Sweep(this.sweepContext)
@@ -352,14 +352,14 @@ class TriangleTest {
      * p1      p2
      *
      */
-    private val p1 = Point2d(-1, 0)
-    private val p2 = Point2d(+1, 0)
-    private val p3 = Point2d(0, +1)
-    private val p4 = Point2d(+1, +1)
-    private val p5 = Point2d(0, +2)
-    private val p6 = Point2d(+2, +1)
-    private val pInside = Point2d(0.3, 0.3)
-    private val pOutside = Point2d(+1, +1)
+    private val p1 = IPoint(-1, 0)
+    private val p2 = IPoint(+1, 0)
+    private val p3 = IPoint(0, +1)
+    private val p4 = IPoint(+1, +1)
+    private val p5 = IPoint(0, +2)
+    private val p6 = IPoint(+2, +1)
+    private val pInside = IPoint(0.3, 0.3)
+    private val pOutside = IPoint(+1, +1)
     private val ec = EdgeContext()
     private val t1 = PolyTriangle(p1, p2, p3, true) // CCW
     private val t2 = PolyTriangle(p3, p4, p2, true) // CW
@@ -368,7 +368,7 @@ class TriangleTest {
 
     @Test
     fun testArea() {
-        val triangle = Triangle(Point2d(0, 0), Point2d(0, -10), Point2d(+10, 0))
+        val triangle = Triangle(IPoint(0, 0), IPoint(0, -10), IPoint(+10, 0))
         assertEqualsDouble(50.0, triangle.area, 0.0001)
     }
 
@@ -485,11 +485,11 @@ class TriangleTest {
 }
 
 class UtilsTest {
-    val p1 = Point2d(0, +1)
-    val p2 = Point2d(-1, 0)
-    val p3 = Point2d(+1, 0)
-    val p4 = Point2d(0.0, -0.01)
-    val p5 = Point2d(0, -1)
+    val p1 = IPoint(0, +1)
+    val p2 = IPoint(-1, 0)
+    val p3 = IPoint(+1, 0)
+    val p4 = IPoint(0.0, -0.01)
+    val p5 = IPoint(0, -1)
 
     @Test
     fun testInsideCircleTrue() {

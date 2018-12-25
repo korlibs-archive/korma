@@ -1,6 +1,5 @@
 package com.soywiz.korma.random
 
-import com.soywiz.korma.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.interpolation.*
 import com.soywiz.korma.math.*
@@ -25,7 +24,7 @@ operator fun Random.get(range: IntRange): Int = range.start + this.nextInt(range
 operator fun Random.get(range: LongRange): Long = range.start + this.nextLong() % (range.endInclusive - range.start + 1)
 operator fun <T : Interpolable<T>> Random.get(l: T, r: T): T = (this.nextInt(0x10001).toDouble() / 0x10000.toDouble()).interpolate(l, r)
 operator fun <T> Random.get(list: List<T>): T = list[this[list.indices]]
-operator fun Random.get(rectangle: Rectangle): Point2d = Vector2(this[rectangle.left, rectangle.right], this[rectangle.top, rectangle.bottom])
+operator fun Random.get(rectangle: Rectangle): IPoint = IPoint(this[rectangle.left, rectangle.right], this[rectangle.top, rectangle.bottom])
 fun <T : MutableInterpolable<T>> T.setToRandom(min: T, max: T, random: Random = Random) = run { this.setToInterpolated(min, max, random.nextDouble()) }
 operator fun <T : Comparable<T>> Random.get(range: ClosedRange<T>): T = interpolateAny(range.start, range.endInclusive, (this.nextInt(0x10001).toDouble() / 0x10000.toDouble()))
 

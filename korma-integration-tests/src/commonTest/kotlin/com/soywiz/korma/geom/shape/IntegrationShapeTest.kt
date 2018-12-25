@@ -1,6 +1,5 @@
 package com.soywiz.korma.geom.shape
 
-import com.soywiz.korma.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.shape.ops.*
 import com.soywiz.korma.geom.vector.*
@@ -37,13 +36,13 @@ class IntegrationShapeTest {
     fun pathFind() {
         assertEquals(
             "[(10, 10), (90, 90)]",
-            Rectangle(0, 0, 100, 100).toShape().pathFind(Vector2(10, 10), Vector2(90, 90)).toString()
+            Rectangle(0, 0, 100, 100).toShape().pathFind(IPoint(10, 10), IPoint(90, 90)).toString()
         )
         assertEquals(
             "[(10, 10), (100, 50), (120, 52)]",
             (Rectangle(0, 0, 100, 100).toShape() + Rectangle(100, 50, 50, 50).toShape()).pathFind(
-                Vector2(10, 10),
-                Vector2(120, 52)
+                IPoint(10, 10),
+                IPoint(120, 52)
             ).toString()
         )
     }

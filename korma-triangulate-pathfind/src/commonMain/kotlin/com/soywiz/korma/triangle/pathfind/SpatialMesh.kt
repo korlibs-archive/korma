@@ -28,14 +28,14 @@ class SpatialMesh {
         }
     }
 
-    fun spatialNodeFromPoint(point: Point2d): Node {
+    fun spatialNodeFromPoint(point: IPoint): Node {
         for (node in nodes) {
             if (node.triangle!!.pointInsideTriangle(point)) return node
         }
         throw Error("Point2d not inside triangles")
     }
 
-    fun getNodeAt(point: Point2d): Node? {
+    fun getNodeAt(point: IPoint): Node? {
         for (node in nodes) if (node.triangle!!.containsPoint(point)) return node
         return null
     }
@@ -60,7 +60,7 @@ class SpatialMesh {
         return mapTriangleToSpatialNode[triangle]
     }
 
-    fun getNodeEdge(p0: Point2d, p1: Point2d): NodeEdge {
+    fun getNodeEdge(p0: IPoint, p1: IPoint): NodeEdge {
         val edge = Edge(p0, p1)
         return nodeEdges.getOrPut(edge) { NodeEdge(edge) }
     }

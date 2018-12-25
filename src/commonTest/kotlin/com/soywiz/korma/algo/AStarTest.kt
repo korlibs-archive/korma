@@ -63,7 +63,7 @@ class AStarTest {
     }
 
 
-    data class Result(val map: Array2<Boolean>, val start: PointInt, val end: PointInt)
+    data class Result(val map: Array2<Boolean>, val start: IPointInt, val end: IPointInt)
 
     fun map(str: String): Result {
         var start = PointInt(0, 0)

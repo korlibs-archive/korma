@@ -1,6 +1,7 @@
-package com.soywiz.korma
+package com.soywiz.korma.geom
 
 import com.soywiz.korma.internal.*
+import kotlin.math.*
 
 interface IVector3D {
     val x: Double
@@ -11,7 +12,12 @@ interface IVector3D {
 
 inline fun IVector3D(x: Number, y: Number, z: Number, w: Number): Vector3D = Vector3D(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
 
+val IVector3D.length get() = sqrt((x * x) + (y * y) + (z * z) + (w * w))
+
 data class Vector3D(override var x: Double, override var y: Double, override var z: Double, override var w: Double = 0.0) : IVector3D {
+    companion object {
+        inline operator fun invoke(x: Number, y: Number, z: Number, w: Number): Vector3D = Vector3D(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
+    }
     override fun toString(): String = "(${x.niceStr}, ${y.niceStr}, ${z.niceStr}, ${w.niceStr})"
 }
 

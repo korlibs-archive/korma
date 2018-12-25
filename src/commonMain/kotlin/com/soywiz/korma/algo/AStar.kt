@@ -10,11 +10,11 @@ class AStar(val width: Int, val height: Int, val isBlocking: (x: Int, y: Int) ->
         fun find(
             board: Array2<Boolean>, x0: Int, y0: Int, x1: Int, y1: Int, findClosest: Boolean = false,
             diagonals: Boolean = false
-        ): List<PointInt> = AStar(board.width, board.height) { x, y -> board[x, y] }.find(x0, y0, x1, y1, findClosest, diagonals)
+        ): List<IPointInt> = AStar(board.width, board.height) { x, y -> board[x, y] }.find(x0, y0, x1, y1, findClosest, diagonals)
     }
 
-    fun find(x0: Int, y0: Int, x1: Int, y1: Int, findClosest: Boolean = false, diagonals: Boolean = false): List<PointInt> {
-        val out = arrayListOf<PointInt>()
+    fun find(x0: Int, y0: Int, x1: Int, y1: Int, findClosest: Boolean = false, diagonals: Boolean = false): List<IPointInt> {
+        val out = arrayListOf<IPointInt>()
         find(x0, y0, x1, y1, findClosest, diagonals) { x, y -> out += PointInt(x, y) }
         out.reverse()
         return out

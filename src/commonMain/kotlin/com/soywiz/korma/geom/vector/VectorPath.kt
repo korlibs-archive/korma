@@ -1,7 +1,6 @@
 package com.soywiz.korma.geom.vector
 
 import com.soywiz.kds.*
-import com.soywiz.korma.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.bezier.*
 import com.soywiz.korma.geom.shape.*
@@ -220,20 +219,20 @@ open class VectorPath(
         return bb.getBounds(out)
     }
 
-    fun getPoints(): List<Point2d> {
-        val points = arrayListOf<Point2d>()
+    fun getPoints(): List<IPoint> {
+        val points = arrayListOf<IPoint>()
         this.visitCmds(
-            moveTo = { x, y -> points += Point2d(x, y) },
-            lineTo = { x, y -> points += Point2d(x, y) },
-            quadTo = { x1, y1, x2, y2 -> points += Point2d(x2, y2) },
-            cubicTo = { x1, y1, x2, y2, x3, y3 -> points += Point2d(x3, y3) },
+            moveTo = { x, y -> points += IPoint(x, y) },
+            lineTo = { x, y -> points += IPoint(x, y) },
+            quadTo = { x1, y1, x2, y2 -> points += IPoint(x2, y2) },
+            cubicTo = { x1, y1, x2, y2, x3, y3 -> points += IPoint(x3, y3) },
             close = { }
         )
         return points
     }
 
-    private val p1 = MVector2()
-    private val p2 = MVector2()
+    private val p1 = Point()
+    private val p2 = Point()
 
     // http://erich.realtimerendering.com/ptinpoly/
     // http://stackoverflow.com/questions/217578/how-can-i-determine-whether-a-2d-point-is-within-a-polygon/2922778#2922778
