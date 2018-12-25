@@ -27,8 +27,8 @@ operator fun Random.get(range: LongRange): Long = range.start + this.nextLong() 
 operator fun <T : Interpolable<T>> Random.get(l: T, r: T): T = (this.nextInt(0x10001).toDouble() / 0x10000.toDouble()).interpolate(l, r)
 operator fun <T> Random.get(list: List<T>): T = list[this[list.indices]]
 operator fun Random.get(rectangle: Rectangle): IPoint = IPoint(this[rectangle.left, rectangle.right], this[rectangle.top, rectangle.bottom])
-fun <T : MutableInterpolable<T>> T.setToRandom(min: T, max: T, random: Random = Random) = run { this.setToInterpolated(min, max, random.nextFloat()) }
-operator fun <T : Comparable<T>> Random.get(range: ClosedRange<T>): T = (this.nextInt(0x10001).toFloat() / 0x10000.toFloat()).interpolateAny(range.start, range.endInclusive)
+fun <T : MutableInterpolable<T>> T.setToRandom(min: T, max: T, random: Random = Random) = run { this.setToInterpolated(random.nextDouble(), min, max) }
+operator fun <T : Comparable<T>> Random.get(range: ClosedRange<T>): T = (this.nextInt(0x10001).toDouble() / 0x10000.toDouble()).interpolateAny(range.start, range.endInclusive)
 
 fun <T> Random.weighted(weights: Map<T, Double>): T = shuffledWeighted(weights).first()
 fun <T> Random.weighted(weights: RandomWeights<T>): T = shuffledWeighted(weights).first()

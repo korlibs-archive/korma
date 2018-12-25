@@ -53,7 +53,7 @@ internal class AdvancingFront(var head: Node, @Suppress("unused") var tail: Node
         return this.search_node;
     }*/
 
-    fun locateNode(x: Float): Node? {
+    fun locateNode(x: Double): Node? {
         var node: Node = this.searchNode
 
         if (x < node.value) {
@@ -77,10 +77,10 @@ internal class AdvancingFront(var head: Node, @Suppress("unused") var tail: Node
     }
 
     fun locatePoint(point: IPoint): Node? {
-        val px: Float = point.x
+        val px: Double = point.x
         //var node:* = this.FindSearchNode(px);
         var node: Node? = this.searchNode
-        val nx: Float = node!!.point.x
+        val nx: Double = node!!.point.x
 
         when {
             px == nx -> {
@@ -119,7 +119,7 @@ internal class Basin {
     var leftNode: Node? = null
     var bottomNode: Node? = null
     var rightNode: Node? = null
-    var width: Float = 0f
+    var width: Double = 0.0
     var leftHighest: Boolean = false
 
     @Suppress("unused")
@@ -127,7 +127,7 @@ internal class Basin {
         this.leftNode = null
         this.bottomNode = null
         this.rightNode = null
-        this.width = 0f
+        this.width = 0.0
         this.leftHighest = false
     }
 }
@@ -140,13 +140,13 @@ internal class EdgeEvent {
 internal class Node(var point: IPoint, var triangle: PolyTriangle? = null) {
     var prev: Node? = null
     var next: Node? = null
-    var value: Float = this.point.x
+    var value: Double = this.point.x
 
     /**
      *
      * @return the angle between 3 front nodes
      */
-    val holeAngle: Float
+    val holeAngle: Double
         get() {
             /* Complex plane
              * ab = cosA +i*sinA
@@ -158,17 +158,17 @@ internal class Node(var point: IPoint, var triangle: PolyTriangle? = null) {
              */
             val prev = this.prev ?: throw IllegalStateException("Not enough vertices")
             val next = this.next ?: throw IllegalStateException("Not enough vertices")
-            val ax: Float = next.point.x - this.point.x
-            val ay: Float = next.point.y - this.point.y
-            val bx: Float = prev.point.x - this.point.x
-            val by: Float = prev.point.y - this.point.y
+            val ax: Double = next.point.x - this.point.x
+            val ay: Double = next.point.y - this.point.y
+            val bx: Double = prev.point.x - this.point.x
+            val by: Double = prev.point.y - this.point.y
             return atan2(
                 ax * by - ay * bx,
                 ax * bx + ay * by
             )
         }
 
-    val basinAngle: Float
+    val basinAngle: Double
         get() {
             val nextNext = this.next?.next ?: throw IllegalStateException("Not enough vertices")
             return atan2(
@@ -328,7 +328,7 @@ internal class Sweep(private var context: SweepContext) {
      */
     fun fillAdvancingFront(n: Node) {
         var node: Node
-        var angle: Float
+        var angle: Double
 
         // Fill right holes
         node = n.next!!
@@ -485,7 +485,7 @@ internal class Sweep(private var context: SweepContext) {
     }
 
     fun isShallow(node: Node): Boolean {
-        val height: Float = if (this.context.basin.leftHighest) {
+        val height: Double = if (this.context.basin.leftHighest) {
             this.context.basin.leftNode!!.point.y - node.point.y
         } else {
             this.context.basin.rightNode!!.point.y - node.point.y
@@ -758,14 +758,14 @@ internal class SweepContext() {
 		 * Inital triangle factor, seed triangle will extend 30% of
 		 * PointSet width to both left and right.
 		 */
-        private const val kAlpha: Float = .3f
+        private const val kAlpha: Double = 0.3
     }
 
     fun initTriangulation() {
-        var xmin: Float = this.points.getX(0)
-        var xmax: Float = this.points.getX(0)
-        var ymin: Float = this.points.getY(0)
-        var ymax: Float = this.points.getY(0)
+        var xmin: Double = this.points.getX(0)
+        var xmax: Double = this.points.getX(0)
+        var ymin: Double = this.points.getY(0)
+        var ymax: Double = this.points.getY(0)
 
         // Calculate bounds
         for (n in 0 until this.points.size) {
@@ -777,8 +777,8 @@ internal class SweepContext() {
             if (py < ymin) ymin = py
         }
 
-        val dx: Float = kAlpha * (xmax - xmin)
-        val dy: Float = kAlpha * (ymax - ymin)
+        val dx: Double = kAlpha * (xmax - xmin)
+        val dy: Double = kAlpha * (ymax - ymin)
         this.head = IPoint(xmax + dx, ymin - dy)
         this.tail = IPoint(xmin - dy, ymin - dy)
 

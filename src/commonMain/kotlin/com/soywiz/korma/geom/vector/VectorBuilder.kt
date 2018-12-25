@@ -5,20 +5,20 @@ import kotlin.math.*
 
 interface VectorBuilder {
     val totalPoints: Int
-    val lastX: Float
-    val lastY: Float
-    fun moveTo(x: Float, y: Float)
-    fun lineTo(x: Float, y: Float)
-    fun quadTo(cx: Float, cy: Float, ax: Float, ay: Float)
-    fun cubicTo(cx1: Float, cy1: Float, cx2: Float, cy2: Float, ax: Float, ay: Float)
+    val lastX: Double
+    val lastY: Double
+    fun moveTo(x: Double, y: Double)
+    fun lineTo(x: Double, y: Double)
+    fun quadTo(cx: Double, cy: Double, ax: Double, ay: Double)
+    fun cubicTo(cx1: Double, cy1: Double, cx2: Double, cy2: Double, ax: Double, ay: Double)
     fun close()
 }
 
 fun VectorBuilder.isEmpty() = totalPoints == 0
 fun VectorBuilder.isNotEmpty() = totalPoints != 0
 
-//fun arcTo(b: Point2d, a: Point2d, c: Point2d, r: Float) {
-fun VectorBuilder.arcTo(ax: Float, ay: Float, cx: Float, cy: Float, r: Float) {
+//fun arcTo(b: Point2d, a: Point2d, c: Point2d, r: Double) {
+fun VectorBuilder.arcTo(ax: Double, ay: Double, cx: Double, cy: Double, r: Double) {
     if (isEmpty()) moveTo(ax, ay)
     val bx = lastX
     val by = lastY
@@ -35,7 +35,7 @@ fun VectorBuilder.arcTo(ax: Float, ay: Float, cx: Float, cy: Float, r: Float) {
     quadTo(a.x, a.y, B.x, B.y)
 }
 
-fun VectorBuilder.rect(x: Float, y: Float, width: Float, height: Float) {
+fun VectorBuilder.rect(x: Double, y: Double, width: Double, height: Double) {
     moveTo(x, y)
     lineTo(x + width, y)
     lineTo(x + width, y + height)
@@ -43,7 +43,7 @@ fun VectorBuilder.rect(x: Float, y: Float, width: Float, height: Float) {
     close()
 }
 
-fun VectorBuilder.rectHole(x: Float, y: Float, width: Float, height: Float) {
+fun VectorBuilder.rectHole(x: Double, y: Double, width: Double, height: Double) {
     moveTo(x, y)
     lineTo(x, y + height)
     lineTo(x + width, y + height)
@@ -51,8 +51,8 @@ fun VectorBuilder.rectHole(x: Float, y: Float, width: Float, height: Float) {
     close()
 }
 
-fun VectorBuilder.roundRect(x: Float, y: Float, w: Float, h: Float, rx: Float, ry: Float = rx) {
-    if (rx == 0f && ry == 0f) {
+fun VectorBuilder.roundRect(x: Double, y: Double, w: Double, h: Double, rx: Double, ry: Double = rx) {
+    if (rx == 0.0 && ry == 0.0) {
         rect(x, y, w, h)
     } else {
         val r = if (w < 2 * rx) w / 2f else if (h < 2 * rx) h / 2f else rx
@@ -64,16 +64,16 @@ fun VectorBuilder.roundRect(x: Float, y: Float, w: Float, h: Float, rx: Float, r
     }
 }
 
-fun VectorBuilder.arc(x: Float, y: Float, r: Float, start: Float, end: Float) {
+fun VectorBuilder.arc(x: Double, y: Double, r: Double, start: Double, end: Double) {
     // http://hansmuller-flex.blogspot.com.es/2011/04/approximating-circular-arc-with-cubic.html
-    val EPSILON = 0.00001f
-    val PI_TWO = PI.toFloat() * 2f
-    val PI_OVER_TWO = PI.toFloat() / 2f
+    val EPSILON = 0.00001
+    val PI_TWO = PI * 2.0
+    val PI_OVER_TWO = PI / 2.0
 
     val startAngle = start % PI_TWO
     val endAngle = end % PI_TWO
     var remainingAngle = kotlin.math.min(PI_TWO, abs(endAngle - startAngle))
-    if (remainingAngle == 0f && start != end) remainingAngle = PI_TWO
+    if (remainingAngle == 0.0 && start != end) remainingAngle = PI_TWO
     val sgn = if (startAngle < endAngle) +1 else -1
     var a1 = startAngle
     val p1 = Point()
@@ -115,9 +115,9 @@ fun VectorBuilder.arc(x: Float, y: Float, r: Float, start: Float, end: Float) {
     }
 }
 
-fun VectorBuilder.circle(x: Float, y: Float, radius: Float) = arc(x, y, radius, 0f, PI.toFloat() * 2f)
+fun VectorBuilder.circle(x: Double, y: Double, radius: Double) = arc(x, y, radius, 0.0, PI.toDouble() * 2f)
 
-fun VectorBuilder.ellipse(x: Float, y: Float, rw: Float, rh: Float) {
+fun VectorBuilder.ellipse(x: Double, y: Double, rw: Double, rh: Double) {
     val k = .5522848
     val ox = (rw / 2) * k
     val oy = (rh / 2) * k
@@ -132,38 +132,38 @@ fun VectorBuilder.ellipse(x: Float, y: Float, rw: Float, rh: Float) {
     cubicTo(xm - ox, ye, x, ym + oy, x, ym)
 }
 
-inline fun VectorBuilder.moveTo(x: Number, y: Number) = moveTo(x.toFloat(), y.toFloat())
-inline fun VectorBuilder.lineTo(x: Number, y: Number) = lineTo(x.toFloat(), y.toFloat())
-inline fun VectorBuilder.quadTo(controlX: Number, controlY: Number, anchorX: Number, anchorY: Number) = quadTo(controlX.toFloat(), controlY.toFloat(), anchorX.toFloat(), anchorY.toFloat())
-inline fun VectorBuilder.cubicTo(cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number) = cubicTo(cx1.toFloat(), cy1.toFloat(), cx2.toFloat(), cy2.toFloat(), ax.toFloat(), ay.toFloat())
+inline fun VectorBuilder.moveTo(x: Number, y: Number) = moveTo(x.toDouble(), y.toDouble())
+inline fun VectorBuilder.lineTo(x: Number, y: Number) = lineTo(x.toDouble(), y.toDouble())
+inline fun VectorBuilder.quadTo(controlX: Number, controlY: Number, anchorX: Number, anchorY: Number) = quadTo(controlX.toDouble(), controlY.toDouble(), anchorX.toDouble(), anchorY.toDouble())
+inline fun VectorBuilder.cubicTo(cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number) = cubicTo(cx1.toDouble(), cy1.toDouble(), cx2.toDouble(), cy2.toDouble(), ax.toDouble(), ay.toDouble())
 
 inline fun VectorBuilder.moveToH(x: Number) = moveTo(x, lastY)
-inline fun VectorBuilder.rMoveToH(x: Number) = moveTo(lastX + x.toFloat(), lastY)
+inline fun VectorBuilder.rMoveToH(x: Number) = moveTo(lastX + x.toDouble(), lastY)
 
 inline fun VectorBuilder.moveToV(y: Number) = moveTo(lastX, y)
-inline fun VectorBuilder.rMoveToV(y: Number) = moveTo(lastX, lastY + y.toFloat())
+inline fun VectorBuilder.rMoveToV(y: Number) = moveTo(lastX, lastY + y.toDouble())
 
 inline fun VectorBuilder.lineToH(x: Number) = lineTo(x, lastY)
-inline fun VectorBuilder.rLineToH(x: Number) = lineTo(lastX + x.toFloat(), lastY)
+inline fun VectorBuilder.rLineToH(x: Number) = lineTo(lastX + x.toDouble(), lastY)
 
 inline fun VectorBuilder.lineToV(y: Number) = lineTo(lastX, y)
-inline fun VectorBuilder.rLineToV(y: Number) = lineTo(lastX, lastY + y.toFloat())
+inline fun VectorBuilder.rLineToV(y: Number) = lineTo(lastX, lastY + y.toDouble())
 
-inline fun VectorBuilder.rMoveTo(x: Number, y: Number) = moveTo(this.lastX + x.toFloat(), this.lastY + y.toFloat())
-inline fun VectorBuilder.rLineTo(x: Number, y: Number) = lineTo(this.lastX + x.toFloat(), this.lastY + y.toFloat())
+inline fun VectorBuilder.rMoveTo(x: Number, y: Number) = moveTo(this.lastX + x.toDouble(), this.lastY + y.toDouble())
+inline fun VectorBuilder.rLineTo(x: Number, y: Number) = lineTo(this.lastX + x.toDouble(), this.lastY + y.toDouble())
 
-inline fun VectorBuilder.rQuadTo(cx: Number, cy: Number, ax: Number, ay: Number) = quadTo(this.lastX + cx.toFloat(), this.lastY + cy.toFloat(), this.lastX + ax.toFloat(), this.lastY + ay.toFloat())
+inline fun VectorBuilder.rQuadTo(cx: Number, cy: Number, ax: Number, ay: Number) = quadTo(this.lastX + cx.toDouble(), this.lastY + cy.toDouble(), this.lastX + ax.toDouble(), this.lastY + ay.toDouble())
 
 inline fun VectorBuilder.rCubicTo(cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number) = cubicTo(
-    this.lastX + cx1.toFloat(), this.lastY + cy1.toFloat(),
-    this.lastX + cx2.toFloat(), this.lastY + cy2.toFloat(),
-    this.lastX + ax.toFloat(), this.lastY + ay.toFloat()
+    this.lastX + cx1.toDouble(), this.lastY + cy1.toDouble(),
+    this.lastX + cx2.toDouble(), this.lastY + cy2.toDouble(),
+    this.lastX + ax.toDouble(), this.lastY + ay.toDouble()
 )
 
-inline fun VectorBuilder.arcTo(ax: Number, ay: Number, cx: Number, cy: Number, r: Number) = arcTo(ax.toFloat(), ay.toFloat(), cx.toFloat(), cy.toFloat(), r.toFloat())
-inline fun VectorBuilder.rect(x: Number, y: Number, width: Number, height: Number) = rect(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
-inline fun VectorBuilder.rectHole(x: Number, y: Number, width: Number, height: Number) = rectHole(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
-inline fun VectorBuilder.roundRect(x: Number, y: Number, w: Number, h: Number, rx: Number, ry: Number = rx) = roundRect(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), rx.toFloat(), ry.toFloat())
-inline fun VectorBuilder.arc(x: Number, y: Number, r: Number, start: Number, end: Number) = arc(x.toFloat(), y.toFloat(), r.toFloat(), start.toFloat(), end.toFloat())
-inline fun VectorBuilder.circle(x: Number, y: Number, radius: Number) = circle(x.toFloat(), y.toFloat(), radius.toFloat())
-inline fun VectorBuilder.ellipse(x: Number, y: Number, rw: Number, rh: Number) = ellipse(x.toFloat(), y.toFloat(), rw.toFloat(), rh.toFloat())
+inline fun VectorBuilder.arcTo(ax: Number, ay: Number, cx: Number, cy: Number, r: Number) = arcTo(ax.toDouble(), ay.toDouble(), cx.toDouble(), cy.toDouble(), r.toDouble())
+inline fun VectorBuilder.rect(x: Number, y: Number, width: Number, height: Number) = rect(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+inline fun VectorBuilder.rectHole(x: Number, y: Number, width: Number, height: Number) = rectHole(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+inline fun VectorBuilder.roundRect(x: Number, y: Number, w: Number, h: Number, rx: Number, ry: Number = rx) = roundRect(x.toDouble(), y.toDouble(), w.toDouble(), h.toDouble(), rx.toDouble(), ry.toDouble())
+inline fun VectorBuilder.arc(x: Number, y: Number, r: Number, start: Number, end: Number) = arc(x.toDouble(), y.toDouble(), r.toDouble(), start.toDouble(), end.toDouble())
+inline fun VectorBuilder.circle(x: Number, y: Number, radius: Number) = circle(x.toDouble(), y.toDouble(), radius.toDouble())
+inline fun VectorBuilder.ellipse(x: Number, y: Number, rw: Number, rh: Number) = ellipse(x.toDouble(), y.toDouble(), rw.toDouble(), rh.toDouble())

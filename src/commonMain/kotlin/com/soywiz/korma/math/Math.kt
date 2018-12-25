@@ -8,6 +8,7 @@ fun Int.clamp(min: Int, max: Int): Int = if (this < min) min else if (this > max
 fun Double.clamp(min: Double, max: Double): Double = if (this < min) min else if (this > max) max else this
 fun Double.clampSpecial(min: Double, max: Double): Double = if (max >= min) this.clamp(min, max) else this
 fun Float.clamp(min: Float, max: Float): Float = if (this < min) min else if (this > max) max else this
+
 fun Int.clampInt(min: Int, max: Int): Int = if (this < min) min else if (this > max) max else this
 fun Double.clampf255(): Int = if (this < 0.0) 0 else if (this > 1.0) 255 else (this * 255).toInt()
 fun Double.clampf01(): Double = if (this < 0.0) 0.0 else if (this > 1.0) 1.0 else this
@@ -50,10 +51,10 @@ fun log10(v: Int): Int = log(v.toDouble(), base = 10.0).toInt()
 fun signNonZeroM1(x: Double): Int = if (x <= 0) -1 else +1
 fun signNonZeroP1(x: Double): Int = if (x >= 0) +1 else -1
 
-private fun Float.isAlmostZero(): Boolean = kotlin.math.abs(this) <= 1e-19
-private fun Float.isNanOrInfinite() = this.isNaN() || this.isInfinite()
+private fun Double.isAlmostZero(): Boolean = kotlin.math.abs(this) <= 1e-19
+private fun Double.isNanOrInfinite() = this.isNaN() || this.isInfinite()
 
-private fun handleCastInfinite(value: Float): Int = if (value < 0) -2147483648 else 2147483647
+private fun handleCastInfinite(value: Double): Int = if (value < 0) -2147483648 else 2147483647
 
 fun rintDouble(value: Double): Double {
     val twoToThe52 = 2.0.pow(52) // 2^52
@@ -63,32 +64,32 @@ fun rintDouble(value: Double): Double {
     return sign * rvalue // restore original sign
 }
 
-fun rintChecked(value: Float): Int {
+fun rintChecked(value: Double): Int {
     if (value.isNanOrInfinite()) return handleCastInfinite(value)
     return rintDouble(value.toDouble()).toInt()
 }
 
-fun castChecked(value: Float): Int {
+fun castChecked(value: Double): Int {
     if (value.isNanOrInfinite()) return handleCastInfinite(value)
     return if (value < 0) kotlin.math.ceil(value).toInt() else kotlin.math.floor(value).toInt()
 }
 
-fun truncChecked(value: Float): Int {
+fun truncChecked(value: Double): Int {
     if (value.isNanOrInfinite()) return handleCastInfinite(value)
     return if (value < 0) kotlin.math.ceil(value).toInt() else kotlin.math.floor(value).toInt()
 }
 
-fun roundChecked(value: Float): Int {
+fun roundChecked(value: Double): Int {
     if (value.isNanOrInfinite()) return handleCastInfinite(value)
     return kotlin.math.round(value).toInt()
 }
 
-fun floorChecked(value: Float): Int {
+fun floorChecked(value: Double): Int {
     if (value.isNanOrInfinite()) return handleCastInfinite(value)
     return kotlin.math.floor(value).toInt()
 }
 
-fun ceilChecked(value: Float): Int {
+fun ceilChecked(value: Double): Int {
     if (value.isNanOrInfinite()) return handleCastInfinite(value)
     return kotlin.math.ceil(value).toInt()
 }

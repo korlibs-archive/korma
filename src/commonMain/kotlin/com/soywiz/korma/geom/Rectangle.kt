@@ -4,10 +4,10 @@ import com.soywiz.korma.internal.*
 import com.soywiz.korma.interpolation.*
 
 interface IRectangle {
-    val x: Float
-    val y: Float
-    val width: Float
-    val height: Float
+    val x: Double
+    val y: Double
+    val width: Double
+    val height: Double
 
     companion object {
         inline operator fun invoke(x: Number, y: Number, width: Number, height: Number): IRectangle = Rectangle(x, y, width, height)
@@ -20,27 +20,27 @@ val IRectangle.right get() = x + width
 val IRectangle.bottom get() = y + height
 
 data class Rectangle(
-    override var x: Float, override var y: Float,
-    override var width: Float, override var height: Float
+    override var x: Double, override var y: Double,
+    override var width: Double, override var height: Double
 ) : MutableInterpolable<Rectangle>, Interpolable<Rectangle>, IRectangle, Sizeable {
     companion object {
-        inline operator fun invoke(): Rectangle = Rectangle(0f, 0f, 0f, 0f)
-        inline operator fun invoke(x: Number, y: Number, width: Number, height: Number): Rectangle = Rectangle(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+        inline operator fun invoke(): Rectangle = Rectangle(0.0, 0.0, 0.0, 0.0)
+        inline operator fun invoke(x: Number, y: Number, width: Number, height: Number): Rectangle = Rectangle(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
         inline fun fromBounds(left: Number, top: Number, right: Number, bottom: Number): Rectangle = Rectangle().setBounds(left, top, right, bottom)
         fun isContainedIn(a: Rectangle, b: Rectangle): Boolean = a.x >= b.x && a.y >= b.y && a.x + a.width <= b.x + b.width && a.y + a.height <= b.y + b.height
     }
 
-    val isEmpty: Boolean get() = area == 0f
-    val isNotEmpty: Boolean get() = area != 0f
-    val area: Float get() = width * height
-    var left: Float; get() = x; set(value) = run { x = value }
-    var top: Float; get() = y; set(value) = run { y = value }
-    var right: Float; get() = x + width; set(value) = run { width = value - x }
-    var bottom: Float; get() = y + height; set(value) = run { height = value - y }
+    val isEmpty: Boolean get() = area == 0.0
+    val isNotEmpty: Boolean get() = area != 0.0
+    val area: Double get() = width * height
+    var left: Double; get() = x; set(value) = run { x = value }
+    var top: Double; get() = y; set(value) = run { y = value }
+    var right: Double; get() = x + width; set(value) = run { width = value - x }
+    var bottom: Double; get() = y + height; set(value) = run { height = value - y }
 
     override val size: Size get() = Size(width, height)
 
-    fun setTo(x: Float, y: Float, width: Float, height: Float) = this.apply {
+    fun setTo(x: Double, y: Double, width: Double, height: Double) = this.apply {
         this.x = x
         this.y = y
         this.width = width
@@ -49,14 +49,14 @@ data class Rectangle(
 
     fun copyFrom(that: Rectangle) = setTo(that.x, that.y, that.width, that.height)
 
-    fun setBounds(left: Float, top: Float, right: Float, bottom: Float) = setTo(left, top, right - left, bottom - top)
+    fun setBounds(left: Double, top: Double, right: Double, bottom: Double) = setTo(left, top, right - left, bottom - top)
 
-    operator fun times(scale: Float) = Rectangle(x * scale, y * scale, width * scale, height * scale)
-    operator fun div(scale: Float) = Rectangle(x / scale, y / scale, width / scale, height / scale)
+    operator fun times(scale: Double) = Rectangle(x * scale, y * scale, width * scale, height * scale)
+    operator fun div(scale: Double) = Rectangle(x / scale, y / scale, width / scale, height / scale)
 
     operator fun contains(that: Rectangle) = isContainedIn(that, this)
     operator fun contains(that: IPoint) = contains(that.x, that.y)
-    fun contains(x: Float, y: Float) = (x >= left && x < right) && (y >= top && y < bottom)
+    fun contains(x: Double, y: Double) = (x >= left && x < right) && (y >= top && y < bottom)
 
     infix fun intersects(that: Rectangle): Boolean = intersectsX(that) && intersectsY(that)
 
@@ -72,10 +72,10 @@ data class Rectangle(
         kotlin.math.min(this.right, that.right), kotlin.math.min(this.bottom, that.bottom)
     ) else null
 
-    fun displaced(dx: Float, dy: Float) = Rectangle(this.x + dx, this.y + dy, width, height)
-    fun displace(dx: Float, dy: Float) = setTo(this.x + dx, this.y + dy, this.width, this.height)
+    fun displaced(dx: Double, dy: Double) = Rectangle(this.x + dx, this.y + dy, width, height)
+    fun displace(dx: Double, dy: Double) = setTo(this.x + dx, this.y + dy, this.width, this.height)
 
-    fun inflate(dx: Float, dy: Float) {
+    fun inflate(dx: Double, dy: Double) {
         x -= dx; width += 2 * dx
         y -= dy; height += 2 * dy
     }
@@ -96,10 +96,10 @@ data class Rectangle(
     fun toStringBounds(): String =
         "Rectangle([${left.niceStr},${top.niceStr}]-[${right.niceStr},${bottom.niceStr}])"
 
-    override fun interpolateWith(other: Rectangle, ratio: Float): Rectangle =
-        Rectangle().setToInterpolated(this, other, ratio)
+    override fun interpolateWith(ratio: Double, other: Rectangle): Rectangle =
+        Rectangle().setToInterpolated(ratio, this, other)
 
-    override fun setToInterpolated(l: Rectangle, r: Rectangle, ratio: Float): Rectangle = this.setTo(
+    override fun setToInterpolated(ratio: Double, l: Rectangle, r: Rectangle): Rectangle = this.setTo(
         ratio.interpolate(l.x, r.x),
         ratio.interpolate(l.y, r.y),
         ratio.interpolate(l.width, r.width),
@@ -113,16 +113,16 @@ data class Rectangle(
 }
 
 inline fun Rectangle.setTo(x: Number, y: Number, width: Number, height: Number) =
-    this.setTo(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat())
+    this.setTo(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 
-inline fun Rectangle.setBounds(left: Number, top: Number, right: Number, bottom: Number) = setBounds(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())
-inline operator fun Rectangle.times(scale: Number) = times(scale.toFloat())
-inline operator fun Rectangle.div(scale: Number) = div(scale.toFloat())
-inline fun Rectangle.contains(x: Number, y: Number) = contains(x.toFloat(), y.toFloat())
+inline fun Rectangle.setBounds(left: Number, top: Number, right: Number, bottom: Number) = setBounds(left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble())
+inline operator fun Rectangle.times(scale: Number) = times(scale.toDouble())
+inline operator fun Rectangle.div(scale: Number) = div(scale.toDouble())
+inline fun Rectangle.contains(x: Number, y: Number) = contains(x.toDouble(), y.toDouble())
 
-inline fun Rectangle.displaced(dx: Number, dy: Number) = displaced(dx.toFloat(), dy.toFloat())
-inline fun Rectangle.displace(dx: Number, dy: Number) = displace(dx.toFloat(), dy.toFloat())
-inline fun Rectangle.inflate(dx: Number, dy: Number) = inflate(dx.toFloat(), dy.toFloat())
+inline fun Rectangle.displaced(dx: Number, dy: Number) = displaced(dx.toDouble(), dy.toDouble())
+inline fun Rectangle.displace(dx: Number, dy: Number) = displace(dx.toDouble(), dy.toDouble())
+inline fun Rectangle.inflate(dx: Number, dy: Number) = inflate(dx.toDouble(), dy.toDouble())
 
 //////////// INT
 
@@ -144,35 +144,35 @@ val IRectangleInt.bottom get() = y + height
 
 inline class RectangleInt(val rect: Rectangle) : IRectangleInt {
     override var x: Int
-        set(value) = run { rect.x = value.toFloat() }
+        set(value) = run { rect.x = value.toDouble() }
         get() = rect.x.toInt()
 
     override var y: Int
-        set(value) = run { rect.y = value.toFloat() }
+        set(value) = run { rect.y = value.toDouble() }
         get() = rect.y.toInt()
 
     override var width: Int
-        set(value) = run { rect.width = value.toFloat() }
+        set(value) = run { rect.width = value.toDouble() }
         get() = rect.width.toInt()
 
     override var height: Int
-        set(value) = run { rect.height = value.toFloat() }
+        set(value) = run { rect.height = value.toDouble() }
         get() = rect.height.toInt()
 
     var left: Int
-        set(value) = run { rect.left = value.toFloat() }
+        set(value) = run { rect.left = value.toDouble() }
         get() = rect.left.toInt()
 
     var top: Int
-        set(value) = run { rect.top = value.toFloat() }
+        set(value) = run { rect.top = value.toDouble() }
         get() = rect.top.toInt()
 
     var right: Int
-        set(value) = run { rect.right = value.toFloat() }
+        set(value) = run { rect.right = value.toDouble() }
         get() = rect.right.toInt()
 
     var bottom: Int
-        set(value) = run { rect.bottom = value.toFloat() }
+        set(value) = run { rect.bottom = value.toDouble() }
         get() = rect.bottom.toInt()
 
     companion object {
@@ -225,10 +225,10 @@ fun RectangleInt.asFloat() = this.rect
 val IRectangle.int get() = RectangleInt(x, y, width, height)
 val IRectangleInt.float get() = Rectangle(x, y, width, height)
 
-fun IRectangleInt.anchor(ax: Float, ay: Float): IPointInt =
+fun IRectangleInt.anchor(ax: Double, ay: Double): IPointInt =
     PointInt((x + width * ax).toInt(), (y + height * ay).toInt())
 
-inline fun IRectangleInt.anchor(ax: Number, ay: Number): IPointInt = anchor(ax.toFloat(), ay.toFloat())
+inline fun IRectangleInt.anchor(ax: Number, ay: Number): IPointInt = anchor(ax.toDouble(), ay.toDouble())
 
 val IRectangleInt.center get() = anchor(0.5, 0.5)
 
@@ -236,10 +236,10 @@ val IRectangleInt.center get() = anchor(0.5, 0.5)
 
 fun Iterable<Rectangle>.bounds(target: Rectangle = Rectangle()): Rectangle {
     var first = true
-    var left = 0f
-    var right = 0f
-    var top = 0f
-    var bottom = 0f
+    var left = 0.0
+    var right = 0.0
+    var top = 0.0
+    var bottom = 0.0
     for (r in this) {
         if (first) {
             left = r.left

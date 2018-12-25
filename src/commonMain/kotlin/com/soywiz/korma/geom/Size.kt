@@ -4,30 +4,30 @@ import com.soywiz.korma.internal.*
 import com.soywiz.korma.interpolation.*
 
 interface ISize {
-    val width: Float
-    val height: Float
+    val width: Double
+    val height: Double
 }
 
 inline class Size(val p: Point) : MutableInterpolable<Size>, Interpolable<Size>, ISize, Sizeable {
     override val size: Size get() = this
 
-    override var width: Float
+    override var width: Double
         set(value) = run { p.x = value }
         get() = p.x
-    override var height: Float
+    override var height: Double
         set(value) = run { p.y = value }
         get() = p.y
 
-    fun setTo(width: Float, height: Float) = this.apply {
+    fun setTo(width: Double, height: Double) = this.apply {
         this.width = width
         this.height = height
     }
 
     fun clone() = Size(width, height)
 
-    override fun interpolateWith(other: Size, ratio: Float): Size = Size(0, 0).setToInterpolated(this, other, ratio)
+    override fun interpolateWith(ratio: Double, other: Size): Size = Size(0, 0).setToInterpolated(ratio, this, other)
 
-    override fun setToInterpolated(l: Size, r: Size, ratio: Float): Size = this.setTo(
+    override fun setToInterpolated(ratio: Double, l: Size, r: Size): Size = this.setTo(
         ratio.interpolate(l.width, r.width),
         ratio.interpolate(l.height, r.height)
     )
@@ -35,12 +35,12 @@ inline class Size(val p: Point) : MutableInterpolable<Size>, Interpolable<Size>,
     override fun toString(): String = "Size(width=${width.niceStr}, height=${height.niceStr})"
 }
 
-inline fun Size.setTo(width: Number, height: Number) = setTo(width.toFloat(), height.toFloat())
+inline fun Size.setTo(width: Number, height: Number) = setTo(width.toDouble(), height.toDouble())
 
-val ISize.area: Float get() = width * height
-val ISize.perimeter: Float get() = width * 2 + height * 2
-val ISize.min: Float get() = kotlin.math.min(width, height)
-val ISize.max: Float get() = kotlin.math.max(width, height)
+val ISize.area: Double get() = width * height
+val ISize.perimeter: Double get() = width * 2 + height * 2
+val ISize.min: Double get() = kotlin.math.min(width, height)
+val ISize.max: Double get() = kotlin.math.max(width, height)
 
 inline fun Size(width: Number, height: Number): Size = Size(Point(width, height))
 inline fun ISize(width: Number, height: Number): ISize = Size(Point(width, height))
@@ -57,13 +57,14 @@ inline class SizeInt(val size: Size) : ISizeInt {
     }
 
     override var width: Int
-        set(value) = run { size.width = value.toFloat() }
+        set(value) = run { size.width = value.toDouble() }
         get() = size.width.toInt()
     override var height: Int
-        set(value) = run { size.height = value.toFloat() }
+        set(value) = run { size.height = value.toDouble() }
         get() = size.height.toInt()
 
-    override fun toString(): String = "SizeInt($width, $height)"
+    //override fun toString(): String = "SizeInt($width, $height)"
+    override fun toString(): String = "SizeInt(width=$width, height=$height)"
 }
 
 fun SizeInt.setTo(width: Int, height: Int) = this.apply {
@@ -79,8 +80,8 @@ fun SizeInt.applyScaleMode(container: SizeInt, mode: ScaleMode, out: SizeInt = S
 fun SizeInt.fitTo(container: SizeInt, out: SizeInt = SizeInt(0, 0)): SizeInt =
     applyScaleMode(container, ScaleMode.SHOW_ALL, out)
 
-fun SizeInt.setToScaled(sx: Float, sy: Float) = setTo((this.width * sx).toInt(), (this.height * sy).toInt())
-inline fun SizeInt.setToScaled(sx: Number, sy: Number = sx) = setToScaled(sx.toFloat(), sy.toFloat())
+fun SizeInt.setToScaled(sx: Double, sy: Double) = setTo((this.width * sx).toInt(), (this.height * sy).toInt())
+inline fun SizeInt.setToScaled(sx: Number, sy: Number = sx) = setToScaled(sx.toDouble(), sy.toDouble())
 
 fun SizeInt.anchoredIn(container: RectangleInt, anchor: Anchor, out: RectangleInt = RectangleInt()): RectangleInt {
     return out.setTo(
@@ -92,8 +93,8 @@ fun SizeInt.anchoredIn(container: RectangleInt, anchor: Anchor, out: RectangleIn
 }
 
 operator fun SizeInt.contains(v: SizeInt): Boolean = (v.width <= width) && (v.height <= height)
-operator fun SizeInt.times(v: Float) = SizeInt(Size((width * v).toInt(), (height * v).toInt()))
-inline operator fun SizeInt.times(v: Number) = times(v.toFloat())
+operator fun SizeInt.times(v: Double) = SizeInt(Size((width * v).toInt(), (height * v).toInt()))
+inline operator fun SizeInt.times(v: Number) = times(v.toDouble())
 
 fun SizeInt.getAnchorPosition(anchor: Anchor, out: PointInt = PointInt(0, 0)): PointInt =
     out.setTo((width * anchor.sx).toInt(), (height * anchor.sy).toInt())

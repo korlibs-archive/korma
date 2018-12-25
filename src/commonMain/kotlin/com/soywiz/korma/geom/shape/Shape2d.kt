@@ -9,48 +9,48 @@ import kotlin.math.*
 abstract class Shape2d {
     abstract val paths: List<IPointArrayList>
     abstract val closed: Boolean
-    open fun containsPoint(x: Float, y: Float) = false
+    open fun containsPoint(x: Double, y: Double) = false
 
     interface WithArea {
-        val area: Float
+        val area: Double
     }
 
     object Empty : Shape2d(), WithArea {
         override val paths: List<PointArrayList> = listOf(PointArrayList(0))
         override val closed: Boolean = false
-        override val area: Float = 0f
-        override fun containsPoint(x: Float, y: Float) = false
+        override val area: Double = 0.0
+        override fun containsPoint(x: Double, y: Double) = false
     }
 
-    data class Line(val x0: Float, val y0: Float, val x1: Float, val y1: Float) : Shape2d(), WithArea {
+    data class Line(val x0: Double, val y0: Double, val x1: Double, val y1: Double) : Shape2d(), WithArea {
         companion object {
-            inline operator fun invoke(x0: Number, y0: Number, x1: Number, y1: Number) = Line(x0.toFloat(), y0.toFloat(), x1.toFloat(), y1.toFloat())
+            inline operator fun invoke(x0: Number, y0: Number, x1: Number, y1: Number) = Line(x0.toDouble(), y0.toDouble(), x1.toDouble(), y1.toDouble())
         }
 
         override val paths get() = listOf(PointArrayList(2).apply { add(x0, y0).add(x1, y1) })
         override val closed: Boolean = false
-        override val area: Float get() = 0f
-        override fun containsPoint(x: Float, y: Float) = false
+        override val area: Double get() = 0.0
+        override fun containsPoint(x: Double, y: Double) = false
     }
 
-    data class Circle(val x: Float, val y: Float, val radius: Float, val totalPoints: Int = 32) : Shape2d(), WithArea {
+    data class Circle(val x: Double, val y: Double, val radius: Double, val totalPoints: Int = 32) : Shape2d(), WithArea {
         companion object {
-        	inline operator fun invoke(x: Number, y: Number, radius: Number, totalPoints: Int = 32) = Circle(x.toFloat(), y.toFloat(), radius.toFloat(), totalPoints)
+        	inline operator fun invoke(x: Number, y: Number, radius: Number, totalPoints: Int = 32) = Circle(x.toDouble(), y.toDouble(), radius.toDouble(), totalPoints)
         }
 
         override val paths by lazy {
             listOf(PointArrayList(totalPoints) {
                 for (it in 0 until totalPoints) {
                     add(
-                        x + Angle.cos01(it.toFloat() / totalPoints.toFloat()) * radius,
-                        y + Angle.sin01(it.toFloat() / totalPoints.toFloat()) * radius
+                        x + Angle.cos01(it.toDouble() / totalPoints.toDouble()) * radius,
+                        y + Angle.sin01(it.toDouble() / totalPoints.toDouble()) * radius
                     )
                 }
             })
         }
         override val closed: Boolean = true
-        override val area: Float get() = PI.toFloat() * radius * radius
-        override fun containsPoint(x: Float, y: Float) = hypot(this.x - x, this.y - y) < radius
+        override val area: Double get() = PI.toDouble() * radius * radius
+        override fun containsPoint(x: Double, y: Double) = hypot(this.x - x, this.y - y) < radius
     }
 
     data class Rectangle(val rect: com.soywiz.korma.geom.Rectangle) : Shape2d(), WithArea, IRectangle by rect {
@@ -60,8 +60,8 @@ abstract class Shape2d {
 
         override val paths = listOf(PointArrayList(4) { add(x, y).add(x + width, y).add(x + width, y + height).add(x, y + height) })
         override val closed: Boolean = true
-        override val area: Float get() = width * height
-        override fun containsPoint(x: Float, y: Float) = (x in this.left..this.right) && (y in this.top..this.bottom)
+        override val area: Double get() = width * height
+        override fun containsPoint(x: Double, y: Double) = (x in this.left..this.right) && (y in this.top..this.bottom)
         override fun toString(): String =
             "Rectangle(x=${x.niceStr}, y=${y.niceStr}, width=${width.niceStr}, height=${height.niceStr})"
     }
@@ -69,20 +69,20 @@ abstract class Shape2d {
     data class Polygon(val points: IPointArrayList) : Shape2d() {
         override val paths = listOf(points)
         override val closed: Boolean = true
-        override fun containsPoint(x: Float, y: Float): Boolean = this.points.contains(x, y)
+        override fun containsPoint(x: Double, y: Double): Boolean = this.points.contains(x, y)
     }
 
     data class Poyline(val points: IPointArrayList) : Shape2d(), WithArea {
         override val paths = listOf(points)
         override val closed: Boolean = false
-        override val area: Float get() = 0f
-        override fun containsPoint(x: Float, y: Float) = false
+        override val area: Double get() = 0.0
+        override fun containsPoint(x: Double, y: Double) = false
     }
 
     data class Complex(val items: List<Shape2d>) : Shape2d() {
         override val paths by lazy { items.flatMap { it.paths } }
         override val closed: Boolean = false
-        override fun containsPoint(x: Float, y: Float): Boolean = this.getAllPoints().contains(x, y)
+        override fun containsPoint(x: Double, y: Double): Boolean = this.getAllPoints().contains(x, y)
     }
 }
 
@@ -97,9 +97,9 @@ val Shape2d.bounds: Rectangle get() = BoundsBuilder().apply { add(this@bounds) }
 fun Rectangle.toShape() = Shape2d.Rectangle(x, y, width, height)
 
 // @TODO: Instead of use curveSteps, let's determine the maximum distance between points for the curve, or the maximum angle (so we have a quality factor instead)
-inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Float, y: Float) -> Unit, curveSteps: Int = 20) {
-    var lx = 0f
-    var ly = 0f
+inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Double, y: Double) -> Unit, curveSteps: Int = 20) {
+    var lx = 0.0
+    var ly = 0.0
     flush()
     this.visitCmds(
         moveTo = { x, y ->
@@ -116,7 +116,7 @@ inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Float, y: Float) -
         },
         quadTo = { x0, y0, x1, y1 ->
             //kotlin.io.println("quadTo")
-            val dt = 1f / curveSteps
+            val dt = 1.0 / curveSteps
             for (n in 1 until curveSteps) {
                 Bezier.quadCalc(lx, ly, x0, y0, x1, y1, n * dt, emit)
             }
@@ -125,7 +125,7 @@ inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Float, y: Float) -
         },
         cubicTo = { x0, y0, x1, y1, x2, y2 ->
             //kotlin.io.println("cubicTo")
-            val dt = 1f / curveSteps
+            val dt = 1.0 / curveSteps
             for (n in 1 until curveSteps) {
                 Bezier.cubicCalc(lx, ly, x0, y0, x1, y1, x2, y2, n * dt, emit)
             }
@@ -156,7 +156,7 @@ fun VectorPath.toPathList(): List<IPointArrayList> {
 fun Shape2d.getAllPoints(out: PointArrayList = PointArrayList()): PointArrayList = out.apply { for (path in this@getAllPoints.paths) add(path) }
 fun Shape2d.toPolygon(): Shape2d.Polygon = if (this is Shape2d.Polygon) this else Shape2d.Polygon(this.getAllPoints())
 
-fun List<IPoint>.containsPoint(x: Float, y: Float): Boolean {
+fun List<IPoint>.containsPoint(x: Double, y: Double): Boolean {
     var intersections = 0
     for (n in 0 until this.size - 1) {
         val p1 = this[n + 0]

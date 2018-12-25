@@ -155,7 +155,7 @@ class SpatialMeshFind(val spatialMesh: SpatialMesh) {
             var path = arrayListOf<IPoint>()
 
             companion object {
-                private fun triarea2(a: IPoint, b: IPoint, c: IPoint): Float {
+                private fun triarea2(a: IPoint, b: IPoint, c: IPoint): Double {
                     val ax = b.x - a.x
                     val ay = b.y - a.y
                     val bx = c.x - a.x
@@ -163,7 +163,7 @@ class SpatialMeshFind(val spatialMesh: SpatialMesh) {
                     return bx * ay - ax * by
                 }
 
-                private fun vdistsqr(a: IPoint, b: IPoint): Float = hypot(b.x - a.x, b.y - a.y)
+                private fun vdistsqr(a: IPoint, b: IPoint): Double = hypot(b.x - a.x, b.y - a.y)
 
                 private fun vequal(a: IPoint, b: IPoint): Boolean = vdistsqr(a, b) < (0.001 * 0.001)
             }

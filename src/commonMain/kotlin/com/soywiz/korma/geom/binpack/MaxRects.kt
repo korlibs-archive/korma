@@ -3,18 +3,18 @@ package com.soywiz.korma.geom.binpack
 import com.soywiz.korma.geom.Rectangle
 
 class MaxRects(
-    maxWidth: Float,
-    maxHeight: Float
+    maxWidth: Double,
+    maxHeight: Double
 ) : BinPacker.Algo {
     var freeRectangles = arrayListOf(Rectangle(0.0, 0.0, maxWidth, maxHeight))
 
-    override fun add(width: Float, height: Float): Rectangle? = quickInsert(width, height)
+    override fun add(width: Double, height: Double): Rectangle? = quickInsert(width, height)
 
-    fun quickInsert(width: Float, height: Float): Rectangle? {
+    fun quickInsert(width: Double, height: Double): Rectangle? {
         if (width <= 0.0 && height <= 0.0) return Rectangle(0, 0, 0, 0)
         val newNode = quickFindPositionForNewNodeBestAreaFit(width, height)
 
-        if (newNode.height == 0f) return null
+        if (newNode.height == 0.0) return null
 
         var numRectanglesToProcess = freeRectangles.size
         var i = 0
@@ -31,9 +31,9 @@ class MaxRects(
         return newNode
     }
 
-    private fun quickFindPositionForNewNodeBestAreaFit(width: Float, height: Float): Rectangle {
-        var score = Float.MAX_VALUE
-        var areaFit: Float
+    private fun quickFindPositionForNewNodeBestAreaFit(width: Double, height: Double): Rectangle {
+        var score = Double.MAX_VALUE
+        var areaFit: Double
         val bestNode = Rectangle()
 
         for (r in freeRectangles) {
