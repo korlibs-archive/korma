@@ -8,14 +8,16 @@ interface IRectangle {
     val y: Float
     val width: Float
     val height: Float
+
+    companion object {
+        inline operator fun invoke(x: Number, y: Number, width: Number, height: Number): IRectangle = Rectangle(x, y, width, height)
+    }
 }
 
 val IRectangle.left get() = x
 val IRectangle.top get() = y
 val IRectangle.right get() = x + width
 val IRectangle.bottom get() = y + height
-
-inline fun IRectangle(x: Number, y: Number, width: Number, height: Number): IRectangle = Rectangle(x, y, width, height)
 
 data class Rectangle(
     override var x: Float, override var y: Float,
@@ -129,14 +131,16 @@ interface IRectangleInt {
     val y: Int
     val width: Int
     val height: Int
+
+    companion object {
+        inline operator fun invoke(x: Number, y: Number, width: Number, height: Number): IRectangleInt = RectangleInt(x.toInt(), y.toInt(), width.toInt(), height.toInt())
+    }
 }
 
 val IRectangleInt.left get() = x
 val IRectangleInt.top get() = y
 val IRectangleInt.right get() = x + width
 val IRectangleInt.bottom get() = y + height
-
-inline fun IRectangleInt(x: Number, y: Number, width: Number, height: Number): IRectangleInt = RectangleInt(x.toInt(), y.toInt(), width.toInt(), height.toInt())
 
 inline class RectangleInt(val rect: Rectangle) : IRectangleInt {
     override var x: Int

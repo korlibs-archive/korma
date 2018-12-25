@@ -9,20 +9,24 @@ import kotlin.math.*
 interface IPoint {
     val x: Float
     val y: Float
+
+    companion object {
+        inline operator fun invoke(x: Number, y: Number): IPoint = Point(x.toFloat(), y.toFloat())
+    }
 }
 
 data class Point(override var x: Float, override var y: Float) : MutableInterpolable<Point>, Interpolable<Point>, IPoint {
     companion object {
-        val Zero = IPoint(0, 0)
-        val One = IPoint(1, 1)
+        val Zero: IPoint = Point(0f, 0f)
+        val One: IPoint = Point(1f, 1f)
 
-        val Up = IPoint(0, +1)
-        val Down = IPoint(0, -1)
-        val Left = IPoint(-1, 0)
-        val Right = IPoint(+1, 0)
+        val Up: IPoint = Point(0f, +1f)
+        val Down: IPoint = Point(0f, -1f)
+        val Left: IPoint = Point(-1f, 0f)
+        val Right: IPoint = Point(+1f, 0f)
 
-        inline operator fun invoke(x: Number, y: Number): Point = Point(x.toDouble(), y.toDouble())
-        inline operator fun invoke(xy: Number): Point = Point(xy.toDouble(), xy.toDouble())
+        inline operator fun invoke(x: Number, y: Number): Point = Point(x.toFloat(), y.toFloat())
+        inline operator fun invoke(xy: Number): Point = Point(xy.toFloat(), xy.toFloat())
         inline operator fun invoke(v: IPoint): Point = Point(v.x, v.y)
         inline operator fun invoke(): Point = Point(0.0, 0.0)
 
@@ -30,8 +34,8 @@ data class Point(override var x: Float, override var y: Float) : MutableInterpol
 
         fun angle(a: IPoint, b: IPoint): Angle = Angle.fromRadians(acos((a.dot(b)) / (a.length * b.length)))
 
-        fun angle(ax: Double, ay: Double, bx: Double, by: Double): Double =
-            acos(((ax * bx) + (ay * by)) / (hypot(ax, ay) * hypot(bx, by)))
+        fun angle(ax: Float, ay: Float, bx: Float, by: Float): Angle = Angle.between(ax, ay, bx, by)
+            //acos(((ax * bx) + (ay * by)) / (hypot(ax, ay) * hypot(bx, by)))
 
         fun compare(lx: Float, ly: Float, rx: Float, ry: Float): Int {
             val ret = ly.compareTo(ry)
@@ -40,17 +44,15 @@ data class Point(override var x: Float, override var y: Float) : MutableInterpol
 
         fun compare(l: IPoint, r: IPoint): Int = compare(l.x, l.y, r.x, r.y)
 
-        fun angle(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double): Double {
-            val ax = x1 - x2
-            val ay = y1 - y2
-            val al = hypot(ax, ay)
+        fun angle(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float): Angle = Angle.between(x1 - x2, y1 - y2, x1 - x3, y1 - y3)
 
-            val bx = x1 - x3
-            val by = y1 - y3
-            val bl = hypot(bx, by)
-
-            return acos((ax * bx + ay * by) / (al * bl))
-        }
+        //val ax = x1 - x2
+        //val ay = y1 - y2
+        //val al = hypot(ax, ay)
+        //val bx = x1 - x3
+        //val by = y1 - y3
+        //val bl = hypot(bx, by)
+        //return acos((ax * bx + ay * by) / (al * bl))
     }
 
     fun setTo(x: Float, y: Float): Point {
@@ -103,17 +105,12 @@ data class Point(override var x: Float, override var y: Float) : MutableInterpol
 
 inline fun Point.mul(s: Number) = mul(s.toFloat())
 
-inline fun Point(x: Number, y: Number): Point = Point(x.toFloat(), y.toFloat())
-inline fun IPoint(x: Number, y: Number): IPoint = Point(x.toFloat(), y.toFloat())
-
 val Point.unit: IPoint get() = this / length
 
 inline fun Point.setTo(x: Number, y: Number): Point = setTo(x.toFloat(), y.toFloat())
 
 // @TODO: mul instead of dot
 operator fun IPoint.plus(that: IPoint): IPoint = IPoint(x + that.x, y + that.y)
-
-
 operator fun IPoint.minus(that: IPoint): IPoint = IPoint(x - that.x, y - that.y)
 operator fun IPoint.times(that: IPoint): IPoint = IPoint(x * that.x, y * that.y)
 operator fun IPoint.div(that: IPoint): IPoint = IPoint(x / that.x, y / that.y)
@@ -183,10 +180,10 @@ fun Point.asInt(): PointInt = PointInt(this)
 fun PointInt.asFloat(): Point = this.p
 
 val IPoint.int get() = PointInt(x.toInt(), y.toInt())
-val IPointInt.double get() = IPoint(x.toDouble(), y.toDouble())
+val IPointInt.float get() = IPoint(x.toFloat(), y.toFloat())
 
-fun Iterable<IPoint>.getPolylineLength(): Double {
-    var out = 0.0
+fun Iterable<IPoint>.getPolylineLength(): Float {
+    var out = 0f
     var prev: IPoint? = null
     for (cur in this) {
         if (prev != null) out += prev.distanceTo(cur)

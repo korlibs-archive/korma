@@ -1553,31 +1553,27 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
         clipFillType: Clipper.PolyFillType
     ): Boolean {
 
-        return synchronized2(this) {
-
-            if (hasOpenPaths) {
-                throw IllegalStateException("Error: PolyTree struct is need for open path clipping.")
-            }
-
-            solution.clear()
-            this.subjFillType = subjFillType
-            this.clipFillType = clipFillType
-            this.clipType = clipType
-            usingPolyTree = false
-            val succeeded: Boolean
-            try {
-                succeeded = executeInternal()
-                //build the return polygons ...
-                if (succeeded) {
-                    buildResult(solution)
-                }
-                return@synchronized2 succeeded
-            } finally {
-                polyOuts.clear()
-
-            }
+        if (hasOpenPaths) {
+            throw IllegalStateException("Error: PolyTree struct is need for open path clipping.")
         }
 
+        solution.clear()
+        this.subjFillType = subjFillType
+        this.clipFillType = clipFillType
+        this.clipType = clipType
+        usingPolyTree = false
+        val succeeded: Boolean
+        try {
+            succeeded = executeInternal()
+            //build the return polygons ...
+            if (succeeded) {
+                buildResult(solution)
+            }
+            return succeeded
+        } finally {
+            polyOuts.clear()
+
+        }
     }
 
     override fun execute(clipType: Clipper.ClipType, polytree: PolyTree): Boolean {
@@ -1590,23 +1586,21 @@ internal class DefaultClipper(initOptions: Int = 0) : ClipperBase(Clipper.PRESER
         subjFillType: Clipper.PolyFillType,
         clipFillType: Clipper.PolyFillType
     ): Boolean {
-        return synchronized2(this) {
-            this.subjFillType = subjFillType
-            this.clipFillType = clipFillType
-            this.clipType = clipType
-            usingPolyTree = true
-            val succeeded: Boolean
-            try {
-                succeeded = executeInternal()
-                //build the return polygons ...
-                if (succeeded) {
-                    buildResult2(polytree)
-                }
-            } finally {
-                polyOuts.clear()
+        this.subjFillType = subjFillType
+        this.clipFillType = clipFillType
+        this.clipType = clipType
+        usingPolyTree = true
+        val succeeded: Boolean
+        try {
+            succeeded = executeInternal()
+            //build the return polygons ...
+            if (succeeded) {
+                buildResult2(polytree)
             }
-            return@synchronized2 succeeded
+        } finally {
+            polyOuts.clear()
         }
+        return succeeded
     }
 
     //------------------------------------------------------------------------------
@@ -3977,6 +3971,3 @@ internal class PolyTree : PolyNode() {
             return if (result > 0 && childs[0] !== allPolys[0]) result - 1 else result
         }
 }
-
-@Suppress("UNUSED_PARAMETER")
-private inline fun <T> synchronized2(obj: Any, callback: () -> T): T = callback()

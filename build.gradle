@@ -12,7 +12,7 @@ allprojects {
         mavenLocal()
         jcenter()
         maven { url "https://dl.bintray.com/soywiz/soywiz" }
-        //maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
+        maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }
     }
 
     kotlin {
