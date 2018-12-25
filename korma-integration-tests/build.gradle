@@ -1,0 +1,5 @@
+dependencies {
+    commonMainApi rootProject
+    commonMainApi project(":korma-shape-ops")
+    commonMainApi project(":korma-triangulate-pathfind")
+}

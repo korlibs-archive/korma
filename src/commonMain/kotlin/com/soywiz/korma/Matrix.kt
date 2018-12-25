@@ -177,30 +177,28 @@ data class Matrix(
 
     override fun toString(): String = "Matrix(a=$a, b=$b, c=$c, d=$d, tx=$tx, ty=$ty)"
 
-    fun setToIdentity() = setTo(1f, 0f, 0f, 1f, 0f, 0f)
+    fun identity() = setTo(1f, 0f, 0f, 1f, 0f, 0f)
 
-    fun setToInverse(matrixToInvert: IMatrix = this): Matrix {
-        val m = matrixToInvert
-        val norm = m.a * m.d - m.b * m.c
+    fun invert(matrixToInvert: IMatrix = this): Matrix {
+        val src = matrixToInvert
+        val dst = this
+        val norm = src.a * src.d - src.b * src.c
 
         if (norm == 0f) {
-            setTo(0f, 0f, 0f, 0f, -m.tx, -m.ty)
+            dst.setTo(0f, 0f, 0f, 0f, -src.tx, -src.ty)
         } else {
             val inorm = 1f / norm
-            d = m.a * inorm
-            a = m.d * inorm
-            b = m.b * -inorm
-            c = m.c * -inorm
-            ty = -b * m.tx - d * m.ty
-            tx = -a * m.tx - c * m.ty
+            val d = src.a * inorm
+            val a = src.d * inorm
+            val b = src.b * -inorm
+            val c = src.c * -inorm
+            dst.setTo(a, b, c, d, -a * src.tx - c * src.ty, -b * src.tx - d * src.ty)
         }
 
         return this
     }
 
-    fun inverted(out: Matrix = Matrix()) = out.setToInverse(this)
-
-    fun identity() = setTo(1f, 0f, 0f, 1f, 0f, 0f)
+    fun inverted(out: Matrix = Matrix()) = out.invert(this)
 
     fun setTransform(
         x: Float,
@@ -220,7 +218,7 @@ data class Matrix(
                 this.setTo(cos * scaleX, sin * scaleY, -sin * scaleX, cos * scaleY, x, y)
             }
         } else {
-            identity()
+            this.identity()
             scale(scaleX, scaleY)
             skew(skewX, skewY)
             rotate(rotation)

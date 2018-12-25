@@ -43,7 +43,6 @@ package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.geom.Orientation
 import com.soywiz.korma.geom.Point2d
-import com.soywiz.korma.geom.internal.*
 import kotlin.math.abs
 
 interface Triangle {
@@ -54,6 +53,8 @@ interface Triangle {
     data class Base(override val p0: Point2d, override val p1: Point2d, override val p2: Point2d) : Triangle
 
     companion object {
+        private const val EPSILON: Double = 1e-12
+
         fun area(p1: Point2d, p2: Point2d, p3: Point2d): Double = area(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
 
         fun area(ax: Double, ay: Double, bx: Double, by: Double, cx: Double, cy: Double): Double {
@@ -172,7 +173,7 @@ interface Triangle {
             val bdxady: Double = bdx * ady
             val oabd: Double = adxbdy - bdxady
 
-            if (oabd <= Constants.EPSILON) return false
+            if (oabd <= EPSILON) return false
 
             val cdx: Double = pc.x - pdx
             val cdy: Double = pc.y - pdy
@@ -181,7 +182,7 @@ interface Triangle {
             val adxcdy: Double = adx * cdy
             val ocad: Double = cdxady - adxcdy
 
-            if (ocad <= Constants.EPSILON) return false
+            if (ocad <= EPSILON) return false
 
             return true
         }

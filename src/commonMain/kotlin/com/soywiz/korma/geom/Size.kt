@@ -19,11 +19,6 @@ data class Size(override var width: Double, override var height: Double) : Mutab
         this.height = height
     }
 
-    val area: Double get() = width * height
-    val perimeter: Double get() = width * 2 + height * 2
-    val min: Double get() = kotlin.math.min(width, height)
-    val max: Double get() = kotlin.math.max(width, height)
-
     fun clone() = Size(width, height)
 
     override fun interpolateWith(other: Size, ratio: Double): Size = Size(0, 0).setToInterpolated(this, other, ratio)
@@ -35,6 +30,11 @@ data class Size(override var width: Double, override var height: Double) : Mutab
 
     override fun toString(): String = "Size(width=${width.niceStr}, height=${height.niceStr})"
 }
+
+val ISize.area: Double get() = width * height
+val ISize.perimeter: Double get() = width * 2 + height * 2
+val ISize.min: Double get() = kotlin.math.min(width, height)
+val ISize.max: Double get() = kotlin.math.max(width, height)
 
 inline fun Size(width: Number, height: Number) = Size(width.toDouble(), height.toDouble())
 inline fun ISize(width: Number, height: Number) = Size.Immutable(width.toDouble(), height.toDouble())

@@ -10,7 +10,7 @@ object SegmentEmitter {
         crossinline gen: (p0: MPoint2d, p1: MPoint2d) -> Unit,
         p1: MPoint2d = MPoint2d(),
         p2: MPoint2d = MPoint2d()
-    ) = synchronized2(this) {
+    ) {
         val dt = 1.0 / segments
         for (n in 0 until segments) {
             p1.copyFrom(p2)

@@ -1,10 +1,10 @@
 package com.soywiz.korma
 
-fun Matrix.toMatrix4(out: Matrix4 = Matrix4()): Matrix4 = out.setTo(
-    a.toFloat(), b.toFloat(), tx.toFloat(), 0f,
-    c.toFloat(), d.toFloat(), ty.toFloat(), 0f,
+fun Matrix.toMatrix3D(out: Matrix3D = Matrix3D()): Matrix3D = out.copyFrom(this)
+
+fun Matrix3D.copyFrom(that: Matrix): Matrix3D = setTo(
+    that.a, that.b, that.tx, 0f,
+    that.c, that.d, that.ty, 0f,
     0f, 0f, 1f, 0f,
     0f, 0f, 0f, 1f
 )
-
-fun Matrix4.copyFrom(that: Matrix): Matrix4 = that.toMatrix4(this)

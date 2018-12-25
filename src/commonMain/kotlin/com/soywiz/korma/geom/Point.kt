@@ -16,6 +16,9 @@ typealias IPointInt = PointInt
 typealias PointInt = Vector2Int
 typealias MPointInt = MVector2Int
 
+typealias PositionInt = PointInt
+typealias MPositionInt = MPointInt
+
 fun IPointInt(x: Int, y: Int): Vector2Int = Vector2Int(x, y)
 fun PointInt(x: Int, y: Int): Vector2Int = Vector2Int(x, y)
 
