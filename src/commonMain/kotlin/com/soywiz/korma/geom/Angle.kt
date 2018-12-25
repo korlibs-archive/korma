@@ -5,64 +5,61 @@ import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.atan2
 
-inline class Angle(val radians: Double) {
+inline class Angle(val radians: Float) {
     override fun toString(): String = "Angle($degrees)"
 
     companion object {
-        fun fromRadians(rad: Double): Angle = Angle(rad)
-        fun fromDegrees(deg: Double): Angle = Angle(deg2rad(deg))
+        fun fromRadians(rad: Float): Angle = Angle(rad)
+        fun fromDegrees(deg: Float): Angle = Angle(deg2rad(deg))
 
-        inline fun fromRadians(rad: Number) = fromRadians(rad.toDouble())
-        inline fun fromDegrees(deg: Number) = fromDegrees(deg.toDouble())
+        inline fun fromRadians(rad: Number) = fromRadians(rad.toFloat())
+        inline fun fromDegrees(deg: Number) = fromDegrees(deg.toFloat())
 
+        const val PI = kotlin.math.PI.toFloat()
         const val PI2 = PI * 2
 
-        const val DEG2RAD = PI / 180.0
-        const val RAD2DEG = 180.0 / PI
+        const val DEG2RAD = PI / 180f
+        const val RAD2DEG = 180f / PI
 
-        const val MAX_DEGREES = 360.0
+        const val MAX_DEGREES = 360f
         const val MAX_RADIANS = PI2
 
-        const val HALF_DEGREES = MAX_DEGREES / 2
-        const val HALF_RADIANS = MAX_RADIANS / 2
+        const val HALF_DEGREES = MAX_DEGREES / 2f
+        const val HALF_RADIANS = MAX_RADIANS / 2f
 
-        fun cos01(ratio: Double) = kotlin.math.cos(PI * 2.0 * ratio)
-        fun sin01(ratio: Double) = kotlin.math.sin(PI * 2.0 * ratio)
-        fun deg2rad(deg: Double) = deg * DEG2RAD
-        fun rad2deg(rad: Double) = rad * RAD2DEG
+        fun cos01(ratio: Float) = kotlin.math.cos(PI2 * ratio)
+        fun sin01(ratio: Float) = kotlin.math.sin(PI2 * ratio)
+        fun deg2rad(deg: Float) = deg * DEG2RAD
+        fun rad2deg(rad: Float) = rad * RAD2DEG
 
-        fun degreesToRadians(deg: Double) = deg * DEG2RAD
-        fun radiansToDegrees(rad: Double) = rad * RAD2DEG
+        fun degreesToRadians(deg: Float): Float = deg * DEG2RAD
+        fun radiansToDegrees(rad: Float): Float = rad * RAD2DEG
 
-        fun degreesToRadians(deg: Float): Float = (deg * DEG2RAD).toFloat()
-        fun radiansToDegrees(rad: Float): Float = (rad * RAD2DEG).toFloat()
+        fun degreesToRadians(deg: Double): Double = deg * DEG2RAD
+        fun radiansToDegrees(rad: Double): Double = rad * RAD2DEG
+
+        fun toRadians(v: Float): Float = v / 180f * PI
+        fun toDegrees(v: Float): Float = v * 180f / PI
 
         fun toRadians(v: Double): Double = v / 180.0 * kotlin.math.PI
         fun toDegrees(v: Double): Double = v * 180.0 / kotlin.math.PI
 
-        fun shortRadDistanceTo(fromRad: Double, toRad: Double): Double {
+        fun shortRadDistanceTo(fromRad: Float, toRad: Float): Float {
             val r0 = fromRad umod MAX_RADIANS
             val r1 = toRad umod MAX_RADIANS
-            //if (abs(r0 - r1) > HALF_RADIANS) {
-//
-            //} else {
-//
-            //}
-
             val diff = (r1 - r0 + HALF_RADIANS) % MAX_RADIANS - HALF_RADIANS
             return if (diff < -HALF_RADIANS) diff + MAX_RADIANS else diff
         }
 
-        fun betweenRad(x0: Double, y0: Double, x1: Double, y1: Double): Double {
-            //val angle = atan2(other.y, other.x) - atan2(this.y, this.x);
+        fun betweenRad(x0: Float, y0: Float, x1: Float, y1: Float): Float {
             val angle = atan2(y1 - y0, x1 - x0)
-            return if (angle < 0) angle + 2 * PI else angle
+            return if (angle < 0) angle + PI2 else angle
         }
 
-        fun between(x0: Double, y0: Double, x1: Double, y1: Double): Angle =
+        fun between(x0: Float, y0: Float, x1: Float, y1: Float): Angle =
             Angle.fromRadians(betweenRad(x0, y0, x1, y1))
 
-        fun betweenRad(p0: IPoint, p1: IPoint): Double = betweenRad(p0.x, p0.y, p1.x, p1.y)
+        fun betweenRad(p0: IPoint, p1: IPoint): Float = betweenRad(p0.x, p0.y, p1.x, p1.y)
         fun between(p0: IPoint, p1: IPoint): Angle = Angle.fromRadians(betweenRad(p0, p1))
     }
 }
@@ -74,8 +71,8 @@ val Angle.degrees get() = Angle.rad2deg(radians)
 val Angle.absoluteValue: Angle get() = Angle.fromRadians(radians.absoluteValue)
 
 fun Angle.shortDistanceTo(other: Angle): Angle = Angle(Angle.shortRadDistanceTo(this.radians, other.radians))
-inline operator fun Angle.times(scale: Number): Angle = Angle(this.radians * scale.toDouble())
-inline operator fun Angle.div(scale: Number): Angle = Angle(this.radians / scale.toDouble())
+inline operator fun Angle.times(scale: Number): Angle = Angle(this.radians * scale.toFloat())
+inline operator fun Angle.div(scale: Number): Angle = Angle(this.radians / scale.toFloat())
 inline operator fun Angle.plus(other: Angle): Angle = Angle(this.radians + other.radians)
 inline operator fun Angle.minus(other: Angle): Angle = shortDistanceTo(other)
 inline operator fun Angle.unaryMinus(): Angle = Angle(-radians)

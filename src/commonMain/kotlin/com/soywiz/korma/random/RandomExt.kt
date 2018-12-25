@@ -10,6 +10,7 @@ fun Random.ints(from: Int, until: Int): Sequence<Int> = sequence { while (true) 
 fun Random.ints(range: IntRange): Sequence<Int> = ints(range.start, range.endInclusive + 1)
 
 fun Random.doubles(): Sequence<Double> = sequence { while (true) yield(nextDouble()) }
+fun Random.floats(): Sequence<Float> = sequence { while (true) yield(nextFloat()) }
 
 fun <T> List<T>.random(random: Random = Random): T {
     if (this.isEmpty()) throw IllegalArgumentException("Empty list")
@@ -19,14 +20,15 @@ fun <T> List<T>.random(random: Random = Random): T {
 fun <T> List<T>.randomWithWeights(weights: List<Double>, random: Random = Random): T = random.weighted(this.zip(weights).toMap())
 
 operator fun Random.get(min: Double, max: Double): Double = min + nextDouble() * (max - min)
+operator fun Random.get(min: Float, max: Float): Float = min + nextFloat() * (max - min)
 operator fun Random.get(min: Int, max: Int): Int = min + nextInt(max - min)
 operator fun Random.get(range: IntRange): Int = range.start + this.nextInt(range.endInclusive - range.start + 1)
 operator fun Random.get(range: LongRange): Long = range.start + this.nextLong() % (range.endInclusive - range.start + 1)
 operator fun <T : Interpolable<T>> Random.get(l: T, r: T): T = (this.nextInt(0x10001).toDouble() / 0x10000.toDouble()).interpolate(l, r)
 operator fun <T> Random.get(list: List<T>): T = list[this[list.indices]]
 operator fun Random.get(rectangle: Rectangle): IPoint = IPoint(this[rectangle.left, rectangle.right], this[rectangle.top, rectangle.bottom])
-fun <T : MutableInterpolable<T>> T.setToRandom(min: T, max: T, random: Random = Random) = run { this.setToInterpolated(min, max, random.nextDouble()) }
-operator fun <T : Comparable<T>> Random.get(range: ClosedRange<T>): T = interpolateAny(range.start, range.endInclusive, (this.nextInt(0x10001).toDouble() / 0x10000.toDouble()))
+fun <T : MutableInterpolable<T>> T.setToRandom(min: T, max: T, random: Random = Random) = run { this.setToInterpolated(min, max, random.nextFloat()) }
+operator fun <T : Comparable<T>> Random.get(range: ClosedRange<T>): T = interpolateAny(range.start, range.endInclusive, (this.nextInt(0x10001).toFloat() / 0x10000.toFloat()))
 
 fun <T> Random.weighted(weights: Map<T, Double>): T = shuffledWeighted(weights).first()
 fun <T> Random.weighted(weights: RandomWeights<T>): T = shuffledWeighted(weights).first()

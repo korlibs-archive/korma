@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 class BinPackTest {
     @Test
     fun name() {
-        val factory = BinPacker(100.0, 100.0)
+        val factory = BinPacker(100, 100)
         val result = factory.addBatch(listOf(Size(20, 10), Size(10, 30), Size(100, 20), Size(20, 80)))
         //result.filterNotNull().render().showImageAndWaitExt()
         assertEquals(

@@ -55,14 +55,14 @@ interface Triangle {
     companion object {
         private const val EPSILON: Double = 1e-12
 
-        fun area(p1: IPoint, p2: IPoint, p3: IPoint): Double = area(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
+        fun area(p1: IPoint, p2: IPoint, p3: IPoint): Float = area(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
 
-        fun area(ax: Double, ay: Double, bx: Double, by: Double, cx: Double, cy: Double): Double {
+        fun area(ax: Float, ay: Float, bx: Float, by: Float, cx: Float, cy: Float): Float {
             val a = bx - ax
             val b = by - ay
             val c = cx - ax
             val d = cy - ay
-            return abs(a * d - c * b) / 2.0
+            return abs(a * d - c * b) / 2f
         }
 
         fun getNotCommonVertexIndex(t1: Triangle, t2: Triangle): Int {
@@ -130,57 +130,57 @@ interface Triangle {
          * @return true if d is inside circle, false if on circle edge
          */
         fun insideIncircle(pa: IPoint, pb: IPoint, pc: IPoint, pd: IPoint): Boolean {
-            val adx: Double = pa.x - pd.x
-            val ady: Double = pa.y - pd.y
-            val bdx: Double = pb.x - pd.x
-            val bdy: Double = pb.y - pd.y
+            val adx = pa.x - pd.x
+            val ady = pa.y - pd.y
+            val bdx = pb.x - pd.x
+            val bdy = pb.y - pd.y
 
-            val adxbdy: Double = adx * bdy
-            val bdxady: Double = bdx * ady
-            val oabd: Double = adxbdy - bdxady
+            val adxbdy = adx * bdy
+            val bdxady = bdx * ady
+            val oabd = adxbdy - bdxady
 
             if (oabd <= 0) return false
 
-            val cdx: Double = pc.x - pd.x
-            val cdy: Double = pc.y - pd.y
+            val cdx = pc.x - pd.x
+            val cdy = pc.y - pd.y
 
-            val cdxady: Double = cdx * ady
-            val adxcdy: Double = adx * cdy
-            val ocad: Double = cdxady - adxcdy
+            val cdxady = cdx * ady
+            val adxcdy = adx * cdy
+            val ocad = cdxady - adxcdy
 
             if (ocad <= 0) return false
 
-            val bdxcdy: Double = bdx * cdy
-            val cdxbdy: Double = cdx * bdy
+            val bdxcdy = bdx * cdy
+            val cdxbdy = cdx * bdy
 
-            val alift: Double = adx * adx + ady * ady
-            val blift: Double = bdx * bdx + bdy * bdy
-            val clift: Double = cdx * cdx + cdy * cdy
+            val alift = adx * adx + ady * ady
+            val blift = bdx * bdx + bdy * bdy
+            val clift = cdx * cdx + cdy * cdy
 
-            val det: Double = alift * (bdxcdy - cdxbdy) + blift * ocad + clift * oabd
+            val det = alift * (bdxcdy - cdxbdy) + blift * ocad + clift * oabd
             return det > 0
         }
 
         fun inScanArea(pa: IPoint, pb: IPoint, pc: IPoint, pd: IPoint): Boolean {
-            val pdx: Double = pd.x
-            val pdy: Double = pd.y
-            val adx: Double = pa.x - pdx
-            val ady: Double = pa.y - pdy
-            val bdx: Double = pb.x - pdx
-            val bdy: Double = pb.y - pdy
+            val pdx = pd.x
+            val pdy = pd.y
+            val adx = pa.x - pdx
+            val ady = pa.y - pdy
+            val bdx = pb.x - pdx
+            val bdy = pb.y - pdy
 
-            val adxbdy: Double = adx * bdy
-            val bdxady: Double = bdx * ady
-            val oabd: Double = adxbdy - bdxady
+            val adxbdy = adx * bdy
+            val bdxady = bdx * ady
+            val oabd = adxbdy - bdxady
 
             if (oabd <= EPSILON) return false
 
-            val cdx: Double = pc.x - pdx
-            val cdy: Double = pc.y - pdy
+            val cdx = pc.x - pdx
+            val cdy = pc.y - pdy
 
-            val cdxady: Double = cdx * ady
-            val adxcdy: Double = adx * cdy
-            val ocad: Double = cdxady - adxcdy
+            val cdxady = cdx * ady
+            val adxcdy = adx * cdy
+            val ocad = cdxady - adxcdy
 
             if (ocad <= EPSILON) return false
 
@@ -213,8 +213,7 @@ fun Triangle.containsEdge(edge: Edge): Boolean = containsEdgePoints(edge.p, edge
 // In a triangle to check if contains and edge is enough to check if it contains the two vertices.
 fun Triangle.containsEdgePoints(p1: IPoint, p2: IPoint): Boolean = containsPoint(p1) && containsPoint(p2)
 
-private fun _product(p1: IPoint, p2: IPoint, p3: IPoint): Double =
-    (p1.x - p3.x) * (p2.y - p3.y) - (p1.y - p3.y) * (p2.x - p3.x)
+private fun _product(p1: IPoint, p2: IPoint, p3: IPoint): Float = (p1.x - p3.x) * (p2.y - p3.y) - (p1.y - p3.y) * (p2.x - p3.x)
 
 fun Triangle.pointInsideTriangle(pp: IPoint): Boolean = if (_product(p0, p1, p2) >= 0) {
     (_product(p0, p1, pp) >= 0) && (_product(p1, p2, pp)) >= 0 && (_product(p2, p0, pp) >= 0)
@@ -272,7 +271,7 @@ fun Triangle.isPointAVertex(p: IPoint): Boolean = containsPoint(p)
 //for (var n:uint = 0; n < 3; n++) if (p == [this.points[n]]) return true;
 //return false;
 
-val Triangle.area: Double get() = Triangle.area(p0, p1, p2)
+val Triangle.area: Float get() = Triangle.area(p0, p1, p2)
 
 /** Alias for getPointIndexOffset */
 fun Triangle.index(p: IPoint): Int = this.getPointIndexOffsetNoThrow(p, 0, -1)

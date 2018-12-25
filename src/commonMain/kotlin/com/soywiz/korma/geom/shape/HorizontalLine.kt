@@ -6,15 +6,15 @@ import com.soywiz.korma.geom.bezier.SegmentEmitter
 
 object HorizontalLine {
     fun intersectionsWithLine(
-        ax: Double, ay: Double,
-        bx0: Double, by0: Double, bx1: Double, by1: Double
+        ax: Float, ay: Float,
+        bx0: Float, by0: Float, bx1: Float, by1: Float
     ): Int {
         return if (((by1 > ay) != (by0 > ay)) && (ax < (bx0 - bx1) * (ay - by1) / (by0 - by1) + bx1)) 1 else 0
     }
 
     fun interesectionsWithQuadBezier(
-        ax: Double, ay: Double,
-        bx0: Double, by0: Double, bx1: Double, by1: Double, bx2: Double, by2: Double,
+        ax: Float, ay: Float,
+        bx0: Float, by0: Float, bx1: Float, by1: Float, bx2: Float, by2: Float,
         t0: Point = Point(), t1: Point = Point()
     ): Int {
         var count = 0
@@ -27,8 +27,8 @@ object HorizontalLine {
     }
 
     fun intersectionsWithCubicBezier(
-        ax: Double, ay: Double,
-        bx0: Double, by0: Double, bx1: Double, by1: Double, bx2: Double, by2: Double, bx3: Double, by3: Double,
+        ax: Float, ay: Float,
+        bx0: Float, by0: Float, bx1: Float, by1: Float, bx2: Float, by2: Float, bx3: Float, by3: Float,
         t0: Point = Point(), t1: Point = Point()
     ): Int {
         //return intersectsH0LineLine(ax, ay, bx0, by0, bx3, by3)

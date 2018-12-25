@@ -7,24 +7,24 @@ import com.soywiz.korma.geom.shape.*
 
 open class VectorPath(
     val commands: IntArrayList = IntArrayList(),
-    val data: DoubleArrayList = DoubleArrayList(),
+    val data: FloatArrayList = FloatArrayList(),
     val winding: Winding = Winding.EVEN_ODD
 ) : VectorBuilder {
-    open fun clone(): VectorPath = VectorPath(IntArrayList(commands), DoubleArrayList(data), winding)
+    open fun clone(): VectorPath = VectorPath(IntArrayList(commands), FloatArrayList(data), winding)
 
     interface Visitor {
         fun close()
-        fun moveTo(x: Double, y: Double)
-        fun lineTo(x: Double, y: Double)
-        fun quadTo(cx: Double, cy: Double, ax: Double, ay: Double)
-        fun cubicTo(cx1: Double, cy1: Double, cx2: Double, cy2: Double, ax: Double, ay: Double)
+        fun moveTo(x: Float, y: Float)
+        fun lineTo(x: Float, y: Float)
+        fun quadTo(cx: Float, cy: Float, ax: Float, ay: Float)
+        fun cubicTo(cx1: Float, cy1: Float, cx2: Float, cy2: Float, ax: Float, ay: Float)
     }
 
     inline fun visitCmds(
-        moveTo: (x: Double, y: Double) -> Unit,
-        lineTo: (x: Double, y: Double) -> Unit,
-        quadTo: (x1: Double, y1: Double, x2: Double, y2: Double) -> Unit,
-        cubicTo: (x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) -> Unit,
+        moveTo: (x: Float, y: Float) -> Unit,
+        lineTo: (x: Float, y: Float) -> Unit,
+        quadTo: (x1: Float, y1: Float, x2: Float, y2: Float) -> Unit,
+        cubicTo: (x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Unit,
         close: () -> Unit
     ) {
         var n = 0
@@ -64,15 +64,15 @@ open class VectorPath(
     }
 
     inline fun visitEdges(
-        line: (x0: Double, y0: Double, x1: Double, y1: Double) -> Unit,
-        quad: (x0: Double, y0: Double, x1: Double, y1: Double, x2: Double, y2: Double) -> Unit,
-        cubic: (x0: Double, y0: Double, x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) -> Unit,
+        line: (x0: Float, y0: Float, x1: Float, y1: Float) -> Unit,
+        quad: (x0: Float, y0: Float, x1: Float, y1: Float, x2: Float, y2: Float) -> Unit,
+        cubic: (x0: Float, y0: Float, x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> Unit,
         close: () -> Unit
     ) {
-        var mx = 0.0
-        var my = 0.0
-        var lx = 0.0
-        var ly = 0.0
+        var mx = 0f
+        var my = 0f
+        var lx = 0f
+        var ly = 0f
         visitCmds(
             moveTo = { x, y ->
                 mx = x; my = y
@@ -126,10 +126,10 @@ open class VectorPath(
         this.lastY = other.lastY
     }
 
-    override var lastX = 0.0
-    override var lastY = 0.0
+    override var lastX = 0f
+    override var lastY = 0f
 
-    override fun moveTo(x: Double, y: Double) {
+    override fun moveTo(x: Float, y: Float) {
         commands += Command.MOVE_TO
         data += x
         data += y
@@ -137,7 +137,7 @@ open class VectorPath(
         lastY = y
     }
 
-    override fun lineTo(x: Double, y: Double) {
+    override fun lineTo(x: Float, y: Float) {
         ensureMoveTo(x, y)
         commands += Command.LINE_TO
         data += x
@@ -146,18 +146,18 @@ open class VectorPath(
         lastY = y
     }
 
-    override fun quadTo(controlX: Double, controlY: Double, anchorX: Double, anchorY: Double) {
-        ensureMoveTo(controlX, controlY)
+    override fun quadTo(cx: Float, cy: Float, ax: Float, ay: Float) {
+        ensureMoveTo(cx, cy)
         commands += Command.QUAD_TO
-        data += controlX
-        data += controlY
-        data += anchorX
-        data += anchorY
-        lastX = anchorX
-        lastY = anchorY
+        data += cx
+        data += cy
+        data += ax
+        data += ay
+        lastX = ax
+        lastY = ay
     }
 
-    override fun cubicTo(cx1: Double, cy1: Double, cx2: Double, cy2: Double, ax: Double, ay: Double) {
+    override fun cubicTo(cx1: Float, cy1: Float, cx2: Float, cy2: Float, ax: Float, ay: Float) {
         ensureMoveTo(cx1, cy1)
         commands += Command.CUBIC_TO
         data += cx1
@@ -176,7 +176,7 @@ open class VectorPath(
 
     override val totalPoints: Int get() = data.size / 2
 
-    private fun ensureMoveTo(x: Double, y: Double) {
+    private fun ensureMoveTo(x: Float, y: Float) {
         if (isEmpty()) moveTo(x, y)
     }
 
@@ -209,7 +209,9 @@ open class VectorPath(
     // https://www.particleincell.com/2013/cubic-line-intersection/
     // I run a semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
     // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
-    fun containsPoint(x: Double, y: Double): Boolean {
+    fun containsPoint(x: Float, y: Float): Boolean = (numberOfIntersections(x, y) % 2) != 0
+
+    fun numberOfIntersections(x: Float, y: Float): Int {
         val testx = x
         val testy = y
 
@@ -221,17 +223,34 @@ open class VectorPath(
             cubic = { x0, y0, x1, y1, x2, y2, x3, y3 -> intersections += HorizontalLine.intersectionsWithCubicBezier(testx, testy, x0, y0, x1, y1, x2, y2, x3, y3, p1, p2) },
             close = {}
         )
-        return (intersections % 2) != 0
+        return intersections
     }
 
-    inline fun containsPoint(x: Number, y: Number): Boolean = containsPoint(x.toDouble(), y.toDouble())
+    class Stats {
+        val stats = IntArray(5)
+        val moveTo get() = stats[Command.MOVE_TO]
+        val lineTo get() = stats[Command.LINE_TO]
+        val quadTo get() = stats[Command.QUAD_TO]
+        val cubicTo get() = stats[Command.CUBIC_TO]
+        val close get() = stats[Command.CLOSE]
+        fun reset() {
+            for (n in stats.indices) stats[n] = 0
+        }
+        override fun toString(): String = "Stats(moveTo=$moveTo, lineTo=$lineTo, quadTo=$quadTo, cubicTo=$cubicTo, close=$close)"
+    }
+
+    fun readStats(out: Stats = Stats()): Stats {
+        out.reset()
+        for (cmd in commands) out.stats[cmd]++
+        return out
+    }
 
     object Command {
-        const val MOVE_TO = 1
-        const val LINE_TO = 2
-        const val QUAD_TO = 3
-        const val CUBIC_TO = 4
-        const val CLOSE = 5
+        const val MOVE_TO = 0
+        const val LINE_TO = 1
+        const val QUAD_TO = 2
+        const val CUBIC_TO = 3
+        const val CLOSE = 4
     }
 
     enum class Winding(val str: String) {
@@ -249,10 +268,13 @@ open class VectorPath(
     }
 }
 
+inline fun VectorPath.containsPoint(x: Number, y: Number): Boolean = containsPoint(x.toFloat(), y.toFloat())
+inline fun VectorPath.numberOfIntersections(x: Number, y: Number): Int = numberOfIntersections(x.toFloat(), y.toFloat())
+
 fun BoundsBuilder.add(path: VectorPath) {
     val bb = this
-    var lx = 0.0
-    var ly = 0.0
+    var lx = 0f
+    var ly = 0f
 
     path.visitCmds(
         moveTo = { x, y ->

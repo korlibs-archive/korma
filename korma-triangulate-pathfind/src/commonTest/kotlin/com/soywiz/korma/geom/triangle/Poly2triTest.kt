@@ -175,14 +175,14 @@ class OrientationTest {
 
 class PointTest {
     companion object {
-        private const val P1X: Double = 1.0
-        private const val P1Y: Double = 3.0
-        private const val P2X: Double = 7.0
-        private const val P2Y: Double = 2.0
-        private const val P3X: Double = 5.0
-        private const val P3Y: Double = 5.0
-        private const val SCALAR: Double = 3.0
-        private const val DELTA_FLOAT: Double = 0.0001
+        private const val P1X: Float = 1.0f
+        private const val P1Y: Float = 3.0f
+        private const val P2X: Float = 7.0f
+        private const val P2Y: Float = 2.0f
+        private const val P3X: Float = 5.0f
+        private const val P3Y: Float = 5.0f
+        private const val SCALAR: Float = 3.0f
+        private const val DELTA_FLOAT: Float = 0.0001f
     }
 
     private var p1: Point
@@ -242,10 +242,10 @@ class PointTest {
 
     @Test
     fun testNormalize() {
-        assertNotEquals(p3.length, 1.0)
-        p3.normalize(); assertEqualsDouble(p3.length, 1.0, DELTA_FLOAT)
-        p1.normalize(); assertEqualsDouble(p1.length, 1.0, DELTA_FLOAT)
-        p2.normalize(); assertEqualsDouble(p2.length, 1.0, DELTA_FLOAT)
+        assertNotEquals(p3.length, 1f)
+        p3.normalize(); assertEqualsDouble(p3.length, 1f, DELTA_FLOAT)
+        p1.normalize(); assertEqualsDouble(p1.length, 1f, DELTA_FLOAT)
+        p2.normalize(); assertEqualsDouble(p2.length, 1f, DELTA_FLOAT)
     }
 
     @Test
@@ -369,7 +369,7 @@ class TriangleTest {
     @Test
     fun testArea() {
         val triangle = Triangle(IPoint(0, 0), IPoint(0, -10), IPoint(+10, 0))
-        assertEqualsDouble(50.0, triangle.area, 0.0001)
+        assertEqualsDouble(50f, triangle.area, 0.0001f)
     }
 
     @Test

@@ -1,7 +1,6 @@
 package com.soywiz.korma.algo
 
 import com.soywiz.korma.geom.*
-import com.soywiz.korma.geom.ds.*
 import kotlin.test.*
 
 class GenericSortTest {

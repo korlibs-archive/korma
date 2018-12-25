@@ -1,7 +1,6 @@
 package com.soywiz.korma.geom.shape.ops.internal
 
 import com.soywiz.korma.geom.*
-import com.soywiz.korma.geom.ds.*
 import com.soywiz.korma.geom.shape.*
 import com.soywiz.korma.geom.vector.*
 

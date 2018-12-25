@@ -6,11 +6,11 @@ import kotlin.math.*
 //(x0,y0) is start point; (x1,y1),(x2,y2) is control points; (x3,y3) is end point.
 interface Bezier {
     fun getBounds(target: Rectangle = Rectangle()): Rectangle
-    fun calc(t: Double, target: Point = Point()): Point
+    fun calc(t: Float, target: Point = Point()): Point
 
     class Quad(val p0: IPoint, val p1: IPoint, val p2: IPoint) : Bezier {
         override fun getBounds(target: Rectangle): Rectangle = quadBounds(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, target)
-        override fun calc(t: Double, target: Point): Point = quadCalc(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, t, target)
+        override fun calc(t: Float, target: Point): Point = quadCalc(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, t, target)
 
         // http://fontforge.github.io/bezier.html
         fun toCubic(): Cubic = Cubic(p0, p0 + (p1 - p0) * (2.0 / 3.0), p2 + (p1 - p2) * (2.0 / 3.0), p2)
@@ -20,13 +20,13 @@ interface Bezier {
         private val temp = Temp()
 
         override fun getBounds(target: Rectangle): Rectangle = cubicBounds(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, target, temp)
-        override fun calc(t: Double, target: Point): Point = cubicCalc(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t, target)
+        override fun calc(t: Float, target: Point): Point = cubicCalc(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t, target)
     }
 
     class Temp {
-        val tvalues = DoubleArray(6)
-        val xvalues = DoubleArray(8)
-        val yvalues = DoubleArray(8)
+        val tvalues = FloatArray(6)
+        val xvalues = FloatArray(8)
+        val yvalues = FloatArray(8)
     }
 
     companion object {
@@ -42,8 +42,8 @@ interface Bezier {
         //CP1 = QP0 + 2/3 *(QP1-QP0)
         //CP2 = QP2 + 2/3 *(QP1-QP2)
         inline fun <T> quadToCubic(
-            x0: Double, y0: Double, xc: Double, yc: Double, x1: Double, y1: Double,
-            bezier: (x0: Double, y0: Double, x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double) -> T
+            x0: Float, y0: Float, xc: Float, yc: Float, x1: Float, y1: Float,
+            bezier: (x0: Float, y0: Float, x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) -> T
         ): T {
             return bezier(
                 x0, y0,
@@ -54,9 +54,9 @@ interface Bezier {
         }
 
         fun quadBounds(
-            x0: Double, y0: Double,
-            xc: Double, yc: Double,
-            x1: Double, y1: Double,
+            x0: Float, y0: Float,
+            xc: Float, yc: Float,
+            x1: Float, y1: Float,
             target: Rectangle = Rectangle(),
             temp: Temp = Temp()
             // @TODO: Make an optimized version!
@@ -65,11 +65,11 @@ interface Bezier {
         }
 
         inline fun <T> quadCalc(
-            x0: Double, y0: Double,
-            xc: Double, yc: Double,
-            x1: Double, y1: Double,
-            t: Double,
-            emit: (x: Double, y: Double) -> T
+            x0: Float, y0: Float,
+            xc: Float, yc: Float,
+            x1: Float, y1: Float,
+            t: Float,
+            emit: (x: Float, y: Float) -> T
         ): T {
             //return quadToCubic(x0, y0, xc, yc, x1, y1) { x0, y0, x1, y1, x2, y2, x3, y3 -> cubicCalc(x0, y0, x1, y1, x2, y2, x3, y3, t, emit) }
             val t1 = (1 - t)
@@ -83,25 +83,25 @@ interface Bezier {
         }
 
         fun quadCalc(
-            x0: Double, y0: Double,
-            xc: Double, yc: Double,
-            x1: Double, y1: Double,
-            t: Double,
+            x0: Float, y0: Float,
+            xc: Float, yc: Float,
+            x1: Float, y1: Float,
+            t: Float,
             target: Point = Point()
         ): Point = quadCalc(x0, y0, xc, yc, x1, y1, t) { x, y -> target.setTo(x, y) }
 
         fun cubicBounds(
-            x0: Double, y0: Double, x1: Double, y1: Double,
-            x2: Double, y2: Double, x3: Double, y3: Double,
+            x0: Float, y0: Float, x1: Float, y1: Float,
+            x2: Float, y2: Float, x3: Float, y3: Float,
             target: Rectangle = Rectangle(),
             temp: Temp = Temp()
         ): Rectangle {
             var j = 0
-            var a: Double
-            var b: Double
-            var c: Double
-            var b2ac: Double
-            var sqrtb2ac: Double
+            var a: Float
+            var b: Float
+            var c: Float
+            var b2ac: Float
+            var sqrtb2ac: Float
             for (i in 0 until 2) {
                 if (i == 0) {
                     b = 6 * x0 - 12 * x1 + 6 * x2
@@ -121,9 +121,9 @@ interface Bezier {
                     b2ac = b * b - 4 * c * a
                     if (b2ac < 0) continue
                     sqrtb2ac = sqrt(b2ac)
-                    val t1 = (-b + sqrtb2ac) / (2 * a)
+                    val t1 = (-b + sqrtb2ac) / (2f * a)
                     if (0 < t1 && t1 < 1) temp.tvalues[j++] = t1
-                    val t2 = (-b - sqrtb2ac) / (2 * a)
+                    val t2 = (-b - sqrtb2ac) / (2f * a)
                     if (0 < t2 && t2 < 1) temp.tvalues[j++] = t2
                 }
             }
@@ -143,25 +143,25 @@ interface Bezier {
             temp.yvalues[temp.tvalues.size + 1] = y3
 
             return target.setBounds(
-                temp.xvalues.min() ?: 0.0,
-                temp.yvalues.min() ?: 0.0,
-                temp.xvalues.max() ?: 0.0,
-                temp.yvalues.max() ?: 0.0
+                temp.xvalues.min() ?: 0f,
+                temp.yvalues.min() ?: 0f,
+                temp.xvalues.max() ?: 0f,
+                temp.yvalues.max() ?: 0f
             )
         }
 
         inline fun <T> cubicCalc(
-            x0: Double, y0: Double, x1: Double, y1: Double,
-            x2: Double, y2: Double, x3: Double, y3: Double,
-            t: Double,
-            emit: (x: Double, y: Double) -> T
+            x0: Float, y0: Float, x1: Float, y1: Float,
+            x2: Float, y2: Float, x3: Float, y3: Float,
+            t: Float,
+            emit: (x: Float, y: Float) -> T
         ): T {
-            val cx = 3.0 * (x1 - x0)
-            val bx = 3.0 * (x2 - x1) - cx
+            val cx = 3f * (x1 - x0)
+            val bx = 3f * (x2 - x1) - cx
             val ax = x3 - x0 - cx - bx
 
-            val cy = 3.0 * (y1 - y0)
-            val by = 3.0 * (y2 - y1) - cy
+            val cy = 3f * (y1 - y0)
+            val by = 3f * (y2 - y1) - cy
             val ay = y3 - y0 - cy - by
 
             val tSquared = t * t
@@ -175,18 +175,18 @@ interface Bezier {
 
         // http://stackoverflow.com/questions/7348009/y-coordinate-for-a-given-x-cubic-bezier
         fun cubicCalc(
-            x0: Double, y0: Double, x1: Double, y1: Double,
-            x2: Double, y2: Double, x3: Double, y3: Double,
-            t: Double, target: Point = Point()
+            x0: Float, y0: Float, x1: Float, y1: Float,
+            x2: Float, y2: Float, x3: Float, y3: Float,
+            t: Float, target: Point = Point()
         ): Point = cubicCalc(x0, y0, x1, y1, x2, y2, x3, y3, t) { x, y -> target.setTo(x, y) }
     }
 }
 
-fun Bezier.length(steps: Int = 100, temp: Point = Point()): Double {
-    val dt = 1.0 / steps.toDouble()
-    var oldX = 0.0
-    var oldY = 0.0
-    var length = 0.0
+fun Bezier.length(steps: Int = 100, temp: Point = Point()): Float {
+    val dt = 1f / steps
+    var oldX = 0f
+    var oldY = 0f
+    var length = 0f
     for (n in 0..steps) {
         calc(dt * n, temp)
         if (n != 0) {

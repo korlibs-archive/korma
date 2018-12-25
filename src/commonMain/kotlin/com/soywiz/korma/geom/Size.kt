@@ -4,30 +4,30 @@ import com.soywiz.korma.internal.*
 import com.soywiz.korma.interpolation.*
 
 interface ISize {
-    val width: Double
-    val height: Double
+    val width: Float
+    val height: Float
 }
 
 inline class Size(val p: Point) : MutableInterpolable<Size>, Interpolable<Size>, ISize, Sizeable {
     override val size: Size get() = this
 
-    override var width: Double
+    override var width: Float
         set(value) = run { p.x = value }
         get() = p.x
-    override var height: Double
+    override var height: Float
         set(value) = run { p.y = value }
         get() = p.y
 
-    fun setTo(width: Double, height: Double) = this.apply {
+    fun setTo(width: Float, height: Float) = this.apply {
         this.width = width
         this.height = height
     }
 
     fun clone() = Size(width, height)
 
-    override fun interpolateWith(other: Size, ratio: Double): Size = Size(0, 0).setToInterpolated(this, other, ratio)
+    override fun interpolateWith(other: Size, ratio: Float): Size = Size(0, 0).setToInterpolated(this, other, ratio)
 
-    override fun setToInterpolated(l: Size, r: Size, ratio: Double): Size = this.setTo(
+    override fun setToInterpolated(l: Size, r: Size, ratio: Float): Size = this.setTo(
         ratio.interpolate(l.width, r.width),
         ratio.interpolate(l.height, r.height)
     )
@@ -35,13 +35,15 @@ inline class Size(val p: Point) : MutableInterpolable<Size>, Interpolable<Size>,
     override fun toString(): String = "Size(width=${width.niceStr}, height=${height.niceStr})"
 }
 
-val ISize.area: Double get() = width * height
-val ISize.perimeter: Double get() = width * 2 + height * 2
-val ISize.min: Double get() = kotlin.math.min(width, height)
-val ISize.max: Double get() = kotlin.math.max(width, height)
+inline fun Size.setTo(width: Number, height: Number) = setTo(width.toFloat(), height.toFloat())
 
-inline fun Size(width: Number, height: Number): Size = Size(Point(width.toDouble(), height.toDouble()))
-inline fun ISize(width: Number, height: Number): ISize = Size(Point(width.toDouble(), height.toDouble()))
+val ISize.area: Float get() = width * height
+val ISize.perimeter: Float get() = width * 2 + height * 2
+val ISize.min: Float get() = kotlin.math.min(width, height)
+val ISize.max: Float get() = kotlin.math.max(width, height)
+
+inline fun Size(width: Number, height: Number): Size = Size(Point(width, height))
+inline fun ISize(width: Number, height: Number): ISize = Size(Point(width, height))
 
 interface ISizeInt {
     val width: Int
@@ -55,10 +57,10 @@ inline class SizeInt(val size: Size) : ISizeInt {
     }
 
     override var width: Int
-        set(value) = run { size.width = value.toDouble() }
+        set(value) = run { size.width = value.toFloat() }
         get() = size.width.toInt()
     override var height: Int
-        set(value) = run { size.height = value.toDouble() }
+        set(value) = run { size.height = value.toFloat() }
         get() = size.height.toInt()
 
     override fun toString(): String = "SizeInt($width, $height)"

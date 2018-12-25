@@ -23,6 +23,6 @@ rootProject.name = (new File(rootProject.projectDir, 'gradle.properties')).withI
     properties
 }.getProperty("project.name")
 
-include ':korma-shape-ops'
 include ':korma-triangulate-pathfind'
+include ':korma-shape-ops'
 include ':korma-integration-tests'

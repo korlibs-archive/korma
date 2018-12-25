@@ -2,18 +2,16 @@
 
 package com.soywiz.korma.geom
 
-import com.soywiz.korma.algo.*
-import com.soywiz.korma.geom.ds.*
 import com.soywiz.korma.internal.*
 import com.soywiz.korma.interpolation.*
 import kotlin.math.*
 
 interface IPoint {
-    val x: Double
-    val y: Double
+    val x: Float
+    val y: Float
 }
 
-data class Point(override var x: Double = 0.0, override var y: Double = x) : MutableInterpolable<Point>, Interpolable<Point>, IPoint {
+data class Point(override var x: Float, override var y: Float) : MutableInterpolable<Point>, Interpolable<Point>, IPoint {
     companion object {
         val Zero = IPoint(0, 0)
         val One = IPoint(1, 1)
@@ -24,18 +22,18 @@ data class Point(override var x: Double = 0.0, override var y: Double = x) : Mut
         val Right = IPoint(+1, 0)
 
         inline operator fun invoke(x: Number, y: Number): Point = Point(x.toDouble(), y.toDouble())
+        inline operator fun invoke(xy: Number): Point = Point(xy.toDouble(), xy.toDouble())
         inline operator fun invoke(v: IPoint): Point = Point(v.x, v.y)
-        inline operator fun invoke(): IPoint = IPoint(0.0, 0.0)
-        inline operator fun invoke(xy: Number): IPoint = IPoint(xy.toDouble(), xy.toDouble())
+        inline operator fun invoke(): Point = Point(0.0, 0.0)
 
         fun middle(a: IPoint, b: IPoint): Point = Point((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
 
-        fun angle(a: IPoint, b: IPoint): Double = acos((a.dot(b)) / (a.length * b.length))
+        fun angle(a: IPoint, b: IPoint): Angle = Angle.fromRadians(acos((a.dot(b)) / (a.length * b.length)))
 
         fun angle(ax: Double, ay: Double, bx: Double, by: Double): Double =
             acos(((ax * bx) + (ay * by)) / (hypot(ax, ay) * hypot(bx, by)))
 
-        fun compare(lx: Double, ly: Double, rx: Double, ry: Double): Int {
+        fun compare(lx: Float, ly: Float, rx: Float, ry: Float): Int {
             val ret = ly.compareTo(ry)
             return if (ret == 0) lx.compareTo(rx) else ret
         }
@@ -55,9 +53,7 @@ data class Point(override var x: Double = 0.0, override var y: Double = x) : Mut
         }
     }
 
-    inline fun setTo(x: Number, y: Number): Point = setTo(x.toDouble(), y.toDouble())
-
-    fun setTo(x: Double, y: Double): Point {
+    fun setTo(x: Float, y: Float): Point {
         this.x = x
         this.y = y
         return this
@@ -65,7 +61,7 @@ data class Point(override var x: Double = 0.0, override var y: Double = x) : Mut
 
     fun setToZero() = setTo(0.0, 0.0)
     fun neg() = setTo(-x, -y)
-    fun mul(s: Double) = setTo(x * s, y * s)
+    fun mul(s: Float) = setTo(x * s, y * s)
     fun add(p: IPoint) = this.setToAdd(this, p)
     fun sub(p: IPoint) = this.setToSub(this, p)
 
@@ -73,7 +69,7 @@ data class Point(override var x: Double = 0.0, override var y: Double = x) : Mut
 
     fun setToTransform(mat: IMatrix, p: IPoint): Point = setToTransform(mat, p.x, p.y)
 
-    fun setToTransform(mat: IMatrix, x: Double, y: Double): Point = setTo(
+    fun setToTransform(mat: IMatrix, x: Float, y: Float): Point = setTo(
         mat.transformX(x, y),
         mat.transformY(x, y)
     )
@@ -96,35 +92,40 @@ data class Point(override var x: Double = 0.0, override var y: Double = x) : Mut
         this.setTo(this.x / len, this.y / len)
     }
 
-    override fun interpolateWith(other: Point, ratio: Double): Point =
+    override fun interpolateWith(other: Point, ratio: Float): Point =
         Point().setToInterpolated(this, other, ratio)
 
-    override fun setToInterpolated(l: Point, r: Point, ratio: Double): Point =
+    override fun setToInterpolated(l: Point, r: Point, ratio: Float): Point =
         this.setTo(ratio.interpolate(l.x, r.x), ratio.interpolate(l.y, r.y))
 
     override fun toString(): String = "(${x.niceStr}, ${y.niceStr})"
 }
 
-inline fun Point(x: Number, y: Number): Point = Point(x.toDouble(), y.toDouble())
-inline fun IPoint(x: Number, y: Number): IPoint = Point(x.toDouble(), y.toDouble())
+inline fun Point.mul(s: Number) = mul(s.toFloat())
+
+inline fun Point(x: Number, y: Number): Point = Point(x.toFloat(), y.toFloat())
+inline fun IPoint(x: Number, y: Number): IPoint = Point(x.toFloat(), y.toFloat())
 
 val Point.unit: IPoint get() = this / length
 
+inline fun Point.setTo(x: Number, y: Number): Point = setTo(x.toFloat(), y.toFloat())
+
 // @TODO: mul instead of dot
 operator fun IPoint.plus(that: IPoint): IPoint = IPoint(x + that.x, y + that.y)
+
 
 operator fun IPoint.minus(that: IPoint): IPoint = IPoint(x - that.x, y - that.y)
 operator fun IPoint.times(that: IPoint): IPoint = IPoint(x * that.x, y * that.y)
 operator fun IPoint.div(that: IPoint): IPoint = IPoint(x / that.x, y / that.y)
 
-operator fun IPoint.times(scale: Double): IPoint = IPoint(x * scale, y * scale)
-operator fun IPoint.div(scale: Double): IPoint = IPoint(x / scale, y / scale)
+inline operator fun IPoint.times(scale: Number): IPoint = IPoint(x * scale.toFloat(), y * scale.toFloat())
+inline operator fun IPoint.div(scale: Number): IPoint = IPoint(x / scale.toFloat(), y / scale.toFloat())
 
-infix fun IPoint.dot(that: IPoint) = this.x * that.x + this.y * that.y
-fun IPoint.distanceTo(x: Double, y: Double) = hypot(x - this.x, y - this.y)
+infix fun IPoint.dot(that: IPoint): Float = this.x * that.x + this.y * that.y
+inline fun IPoint.distanceTo(x: Number, y: Number): Float = hypot(x.toFloat() - this.x, y.toFloat() - this.y)
 fun IPoint.distanceTo(that: IPoint) = distanceTo(that.x, that.y)
 
-fun IPoint.angleToRad(other: IPoint): Double = Angle.betweenRad(this.x, this.y, other.x, other.y)
+fun IPoint.angleToRad(other: IPoint): Float = Angle.betweenRad(this.x, this.y, other.x, other.y)
 fun IPoint.angleTo(other: IPoint): Angle = Angle.between(this.x, this.y, other.x, other.y)
 
 fun IPoint.transformed(mat: IMatrix, out: Point = Point()): Point = out.setToTransform(mat, this)
@@ -135,8 +136,8 @@ operator fun IPoint.get(index: Int) = when (index) {
 }
 
 val IPoint.unit: IPoint get() = this / this.length
-val IPoint.length: Double get() = hypot(x, y)
-val IPoint.magnitude: Double get() = hypot(x, y)
+val IPoint.length: Float get() = hypot(x, y)
+val IPoint.magnitude: Float get() = hypot(x, y)
 val IPoint.normalized: IPoint
     get() {
         val imag = 1.0 / magnitude
@@ -162,10 +163,10 @@ inline class PointInt(val p: Point) : IPointInt {
         operator fun invoke(x: Int, y: Int): PointInt = PointInt(Point(x, y))
     }
     override var x: Int
-        set(value) = run { p.x = value.toDouble() }
+        set(value) = run { p.x = value.toFloat() }
         get() = p.x.toInt()
     override var y: Int
-        set(value) = run { p.y = value.toDouble() }
+        set(value) = run { p.y = value.toFloat() }
         get() = p.y.toInt()
     fun setTo(x: Int, y: Int) = this.apply { this.x = x; this.y = y }
     fun setTo(that: IPointInt) = this.setTo(that.x, that.y)
@@ -179,7 +180,7 @@ operator fun IPointInt.div(that: IPointInt) = PointInt(this.x / that.x, this.y /
 operator fun IPointInt.rem(that: IPointInt) = PointInt(this.x % that.x, this.y % that.y)
 
 fun Point.asInt(): PointInt = PointInt(this)
-fun PointInt.asDouble(): Point = this.p
+fun PointInt.asFloat(): Point = this.p
 
 val IPoint.int get() = PointInt(x.toInt(), y.toInt())
 val IPointInt.double get() = IPoint(x.toDouble(), y.toDouble())
@@ -195,8 +196,8 @@ fun Iterable<IPoint>.getPolylineLength(): Double {
 }
 
 fun Iterable<IPoint>.bounds(out: Rectangle = Rectangle()): Rectangle = out.setBounds(
-    left = this.map { it.x }.min() ?: 0.0,
-    top = this.map { it.y }.min() ?: 0.0,
-    right = this.map { it.x }.max() ?: 0.0,
-    bottom = this.map { it.y }.max() ?: 0.0
+    left = this.map { it.x }.min() ?: 0f,
+    top = this.map { it.y }.min() ?: 0f,
+    right = this.map { it.x }.max() ?: 0f,
+    bottom = this.map { it.y }.max() ?: 0f
 )

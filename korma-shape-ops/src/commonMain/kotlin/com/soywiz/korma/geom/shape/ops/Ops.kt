@@ -15,7 +15,7 @@ infix fun Shape2d.difference(other: Shape2d): Shape2d = this.clipperOp(other, Cl
 operator fun Shape2d.plus(other: Shape2d): Shape2d = this.clipperOp(other, Clipper.ClipType.UNION)
 operator fun Shape2d.minus(other: Shape2d): Shape2d = this.clipperOp(other, Clipper.ClipType.DIFFERENCE)
 
-fun Shape2d.extend(size: Double, cap: VectorPath.LineCap = VectorPath.LineCap.ROUND): Shape2d {
+fun Shape2d.extend(size: Float, cap: VectorPath.LineCap = VectorPath.LineCap.ROUND): Shape2d {
     val clipper = ClipperOffset()
     val solution = Paths()
     clipper.addPaths(
@@ -26,7 +26,7 @@ fun Shape2d.extend(size: Double, cap: VectorPath.LineCap = VectorPath.LineCap.RO
     return solution.toShape2d()
 }
 
-fun Shape2d.extendLine(size: Double, join: VectorPath.LineJoin = VectorPath.LineJoin.SQUARE, cap: VectorPath.LineCap = VectorPath.LineCap.SQUARE): Shape2d {
+fun Shape2d.extendLine(size: Float, join: VectorPath.LineJoin = VectorPath.LineJoin.SQUARE, cap: VectorPath.LineCap = VectorPath.LineCap.SQUARE): Shape2d {
     val clipper = ClipperOffset()
     val solution = Paths()
     clipper.addPaths(
@@ -36,5 +36,8 @@ fun Shape2d.extendLine(size: Double, join: VectorPath.LineJoin = VectorPath.Line
     clipper.execute(solution, size)
     return solution.toShape2d()
 }
+
+//inline fun Shape2d.extend(size: Number, cap: VectorPath.LineCap = VectorPath.LineCap.ROUND): Shape2d = extend(size.toFloat(), cap)
+//inline fun Shape2d.extendLine(size: Number, join: VectorPath.LineJoin = VectorPath.LineJoin.SQUARE, cap: VectorPath.LineCap) = extendLine(size.toFloat(), join, cap)
 
 fun VectorPath.toShape2d(): Shape2d = this.toClipperPaths().toShape2d()

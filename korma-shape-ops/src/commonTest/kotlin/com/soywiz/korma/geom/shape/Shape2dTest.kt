@@ -1,9 +1,6 @@
 package com.soywiz.korma.geom.shape
 
-import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.shape.ops.*
-import com.soywiz.korma.geom.vector.*
-import kotlin.math.*
 import kotlin.test.*
 
 class Shape2dTest {
@@ -29,7 +26,7 @@ class Shape2dTest {
     fun extend() {
         assertEquals(
             "Rectangle(x=-10, y=-10, width=30, height=30)",
-            (Shape2d.Rectangle(0, 0, 10, 10).extend(10.0)).toString()
+            (Shape2d.Rectangle(0, 0, 10, 10).extend(10f)).toString()
         )
     }
 }
