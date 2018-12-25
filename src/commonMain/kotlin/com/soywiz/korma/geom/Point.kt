@@ -81,10 +81,12 @@ data class Point(override var x: Float, override var y: Float) : MutableInterpol
     fun setToSub(a: IPoint, b: IPoint): Point = setTo(a.x - b.x, a.y - b.y)
 
     fun setToMul(a: IPoint, b: IPoint): Point = setTo(a.x * b.x, a.y * b.y)
-    fun setToMul(a: IPoint, s: Double): Point = setTo(a.x * s, a.y * s)
+    fun setToMul(a: IPoint, s: Float): Point = setTo(a.x * s, a.y * s)
+    inline fun setToMul(a: IPoint, s: Number): Point = setToMul(a, s.toFloat())
 
     fun setToDiv(a: IPoint, b: IPoint): Point = setTo(a.x / b.x, a.y / b.y)
-    fun setToDiv(a: IPoint, s: Double): Point = setTo(a.x / s, a.y / s)
+    fun setToDiv(a: IPoint, s: Float): Point = setTo(a.x / s, a.y / s)
+    inline fun setToDiv(a: IPoint, s: Number): Point = setToDiv(a, s.toFloat())
 
     operator fun plusAssign(that: IPoint) {
         setTo(this.x + that.x, this.y + that.y)

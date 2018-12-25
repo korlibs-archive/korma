@@ -53,7 +53,7 @@ interface Triangle {
     data class Base(override val p0: IPoint, override val p1: IPoint, override val p2: IPoint) : Triangle
 
     companion object {
-        private const val EPSILON: Double = 1e-12
+        private const val EPSILON: Float = 1e-12f
 
         fun area(p1: IPoint, p2: IPoint, p3: IPoint): Float = area(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
 

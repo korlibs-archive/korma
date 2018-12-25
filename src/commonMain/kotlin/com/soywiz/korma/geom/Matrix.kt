@@ -103,7 +103,7 @@ data class Matrix(
         tx = tx1
     }
 
-    fun rotateDeg(thetaDeg: Float) = rotate(Angle.toRadians(thetaDeg.toDouble()).toFloat())
+    fun rotateDeg(thetaDeg: Float) = rotate(Angle.toRadians(thetaDeg))
 
     fun rotate(angle: Angle) = rotate(angle.radians)
 
@@ -165,9 +165,6 @@ data class Matrix(
 
     fun transform(p: IPoint, out: Point = Point()): Point =
         out.setTo(transformX(p.x, p.y), transformY(p.x, p.y))
-
-    fun transformXd(px: Float, py: Float): Double = (this.a * px + this.c * py + this.tx).toDouble()
-    fun transformYd(px: Float, py: Float): Double = (this.d * py + this.b * px + this.ty).toDouble()
 
     fun transformX(px: Float, py: Float): Float = (this.a * px + this.c * py + this.tx)
     fun transformY(px: Float, py: Float): Float = (this.d * py + this.b * px + this.ty)

@@ -225,8 +225,10 @@ fun RectangleInt.asFloat() = this.rect
 val IRectangle.int get() = RectangleInt(x, y, width, height)
 val IRectangleInt.float get() = Rectangle(x, y, width, height)
 
-fun IRectangleInt.anchor(ax: Double, ay: Double): IPointInt =
+fun IRectangleInt.anchor(ax: Float, ay: Float): IPointInt =
     PointInt((x + width * ax).toInt(), (y + height * ay).toInt())
+
+inline fun IRectangleInt.anchor(ax: Number, ay: Number): IPointInt = anchor(ax.toFloat(), ay.toFloat())
 
 val IRectangleInt.center get() = anchor(0.5, 0.5)
 

@@ -22,9 +22,9 @@ abstract class Shape2d {
         override fun containsPoint(x: Float, y: Float) = false
     }
 
-    data class Line(val x0: Double, val y0: Double, val x1: Double, val y1: Double) : Shape2d(), WithArea {
+    data class Line(val x0: Float, val y0: Float, val x1: Float, val y1: Float) : Shape2d(), WithArea {
         companion object {
-            inline operator fun invoke(x0: Number, y0: Number, x1: Number, y1: Number) = Line(x0.toDouble(), y0.toDouble(), x1.toDouble(), y1.toDouble())
+            inline operator fun invoke(x0: Number, y0: Number, x1: Number, y1: Number) = Line(x0.toFloat(), y0.toFloat(), x1.toFloat(), y1.toFloat())
         }
 
         override val paths get() = listOf(PointArrayList(2).apply { add(x0, y0).add(x1, y1) })

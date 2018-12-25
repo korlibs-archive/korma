@@ -34,15 +34,8 @@ inline class Angle(val radians: Float) {
 
         fun degreesToRadians(deg: Float): Float = deg * DEG2RAD
         fun radiansToDegrees(rad: Float): Float = rad * RAD2DEG
-
-        fun degreesToRadians(deg: Double): Double = deg * DEG2RAD
-        fun radiansToDegrees(rad: Double): Double = rad * RAD2DEG
-
         fun toRadians(v: Float): Float = v / 180f * PI
         fun toDegrees(v: Float): Float = v * 180f / PI
-
-        fun toRadians(v: Double): Double = v / 180.0 * kotlin.math.PI
-        fun toDegrees(v: Double): Double = v * 180.0 / kotlin.math.PI
 
         fun shortRadDistanceTo(fromRad: Float, toRad: Float): Float {
             val r0 = fromRad umod MAX_RADIANS

@@ -79,7 +79,8 @@ fun SizeInt.applyScaleMode(container: SizeInt, mode: ScaleMode, out: SizeInt = S
 fun SizeInt.fitTo(container: SizeInt, out: SizeInt = SizeInt(0, 0)): SizeInt =
     applyScaleMode(container, ScaleMode.SHOW_ALL, out)
 
-fun SizeInt.setToScaled(sx: Double, sy: Double = sx) = setTo((this.width * sx).toInt(), (this.height * sy).toInt())
+fun SizeInt.setToScaled(sx: Float, sy: Float) = setTo((this.width * sx).toInt(), (this.height * sy).toInt())
+inline fun SizeInt.setToScaled(sx: Number, sy: Number = sx) = setToScaled(sx.toFloat(), sy.toFloat())
 
 fun SizeInt.anchoredIn(container: RectangleInt, anchor: Anchor, out: RectangleInt = RectangleInt()): RectangleInt {
     return out.setTo(
@@ -91,7 +92,8 @@ fun SizeInt.anchoredIn(container: RectangleInt, anchor: Anchor, out: RectangleIn
 }
 
 operator fun SizeInt.contains(v: SizeInt): Boolean = (v.width <= width) && (v.height <= height)
-operator fun SizeInt.times(v: Double) = SizeInt(Size((width * v).toInt(), (height * v).toInt()))
+operator fun SizeInt.times(v: Float) = SizeInt(Size((width * v).toInt(), (height * v).toInt()))
+inline operator fun SizeInt.times(v: Number) = times(v.toFloat())
 
 fun SizeInt.getAnchorPosition(anchor: Anchor, out: PointInt = PointInt(0, 0)): PointInt =
     out.setTo((width * anchor.sx).toInt(), (height * anchor.sy).toInt())

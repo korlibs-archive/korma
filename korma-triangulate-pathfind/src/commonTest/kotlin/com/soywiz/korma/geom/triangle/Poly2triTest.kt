@@ -203,49 +203,49 @@ class PointTest {
 
     @Test
     fun testValues() {
-        assertEqualsDouble(p1.x, P1X, DELTA_FLOAT)
-        assertEqualsDouble(p1.y, P1Y, DELTA_FLOAT)
+        assertEqualsNumber(p1.x, P1X, DELTA_FLOAT)
+        assertEqualsNumber(p1.y, P1Y, DELTA_FLOAT)
     }
 
     @Test
     fun testSum() {
         p1.add(p2)
-        assertEqualsDouble(p1.x, P1X + P2X, DELTA_FLOAT)
-        assertEqualsDouble(p1.y, P1Y + P2Y, DELTA_FLOAT)
+        assertEqualsNumber(p1.x, P1X + P2X, DELTA_FLOAT)
+        assertEqualsNumber(p1.y, P1Y + P2Y, DELTA_FLOAT)
     }
 
     @Test
     fun testSub() {
         p1.sub(p2)
-        assertEqualsDouble(p1.x, P1X - P2X, DELTA_FLOAT)
-        assertEqualsDouble(p1.y, P1Y - P2Y, DELTA_FLOAT)
+        assertEqualsNumber(p1.x, P1X - P2X, DELTA_FLOAT)
+        assertEqualsNumber(p1.y, P1Y - P2Y, DELTA_FLOAT)
     }
 
     @Test
     fun testNeg() {
         p1.neg()
-        assertEqualsDouble(p1.x, -P1X, DELTA_FLOAT)
-        assertEqualsDouble(p1.y, -P1Y, DELTA_FLOAT)
+        assertEqualsNumber(p1.x, -P1X, DELTA_FLOAT)
+        assertEqualsNumber(p1.y, -P1Y, DELTA_FLOAT)
     }
 
     @Test
     fun testMul() {
         p1.mul(SCALAR)
-        assertEqualsDouble(p1.x, P1X * SCALAR, DELTA_FLOAT)
-        assertEqualsDouble(p1.y, P1Y * SCALAR, DELTA_FLOAT)
+        assertEqualsNumber(p1.x, P1X * SCALAR, DELTA_FLOAT)
+        assertEqualsNumber(p1.y, P1Y * SCALAR, DELTA_FLOAT)
     }
 
     @Test
     fun testLength() {
-        assertEqualsDouble(p1.length, sqrt(P1X * P1X + P1Y * P1Y), DELTA_FLOAT)
+        assertEqualsNumber(p1.length, sqrt(P1X * P1X + P1Y * P1Y), DELTA_FLOAT)
     }
 
     @Test
     fun testNormalize() {
         assertNotEquals(p3.length, 1f)
-        p3.normalize(); assertEqualsDouble(p3.length, 1f, DELTA_FLOAT)
-        p1.normalize(); assertEqualsDouble(p1.length, 1f, DELTA_FLOAT)
-        p2.normalize(); assertEqualsDouble(p2.length, 1f, DELTA_FLOAT)
+        p3.normalize(); assertEqualsNumber(p3.length, 1f, DELTA_FLOAT)
+        p1.normalize(); assertEqualsNumber(p1.length, 1f, DELTA_FLOAT)
+        p2.normalize(); assertEqualsNumber(p2.length, 1f, DELTA_FLOAT)
     }
 
     @Test
@@ -369,7 +369,7 @@ class TriangleTest {
     @Test
     fun testArea() {
         val triangle = Triangle(IPoint(0, 0), IPoint(0, -10), IPoint(+10, 0))
-        assertEqualsDouble(50f, triangle.area, 0.0001f)
+        assertEqualsNumber(50f, triangle.area, 0.0001f)
     }
 
     @Test
