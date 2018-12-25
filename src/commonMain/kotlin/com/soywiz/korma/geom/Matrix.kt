@@ -246,6 +246,16 @@ data class Matrix(
             get() = Angle.radiansToDegrees(rotation)
             set(value) = run { rotation = Angle.degreesToRadians(value) }
 
+        fun identity() {
+            x = 0f
+            y = 0f
+            scaleX = 1f
+            scaleY = 1f
+            skewX = 0f
+            skewY = 0f
+            rotation = 0f
+        }
+
         fun setMatrix(matrix: IMatrix): Transform {
             val PI_4 = PI / 4.0
             this.x = matrix.tx
