@@ -25,10 +25,11 @@ data class Point(override var x: Float, override var y: Float) : MutableInterpol
         val Left: IPoint = Point(-1f, 0f)
         val Right: IPoint = Point(+1f, 0f)
 
+        inline operator fun invoke(): Point = Point(0f, 0f) // @TODO: // e: java.lang.NullPointerException at org.jetbrains.kotlin.com.google.gwt.dev.js.JsAstMapper.mapFunction(JsAstMapper.java:562) (val pt = Array(1) { Point() })
+        //operator fun invoke(): Point = Point(0f, 0f)
         inline operator fun invoke(x: Number, y: Number): Point = Point(x.toFloat(), y.toFloat())
         inline operator fun invoke(xy: Number): Point = Point(xy.toFloat(), xy.toFloat())
         inline operator fun invoke(v: IPoint): Point = Point(v.x, v.y)
-        inline operator fun invoke(): Point = Point(0.0, 0.0)
 
         fun middle(a: IPoint, b: IPoint): Point = Point((a.x + b.x) * 0.5, (a.y + b.y) * 0.5)
 
@@ -192,9 +193,4 @@ fun Iterable<IPoint>.getPolylineLength(): Float {
     return out
 }
 
-fun Iterable<IPoint>.bounds(out: Rectangle = Rectangle()): Rectangle = out.setBounds(
-    left = this.map { it.x }.min() ?: 0f,
-    top = this.map { it.y }.min() ?: 0f,
-    right = this.map { it.x }.max() ?: 0f,
-    bottom = this.map { it.y }.max() ?: 0f
-)
+fun Iterable<IPoint>.bounds(out: Rectangle = Rectangle(), bb: BoundsBuilder = BoundsBuilder()): Rectangle = BoundsBuilder().add(this).getBounds(out)

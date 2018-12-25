@@ -8,9 +8,11 @@ interface IVector3D {
     val y: Float
     val z: Float
     val w: Float
-}
 
-inline fun IVector3D(x: Number, y: Number, z: Number, w: Number): Vector3D = Vector3D(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat())
+    companion object {
+        inline operator fun invoke(x: Number, y: Number, z: Number, w: Number): Vector3D = Vector3D(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat())
+    }
+}
 
 val IVector3D.length: Float get() = sqrt((x * x) + (y * y) + (z * z) + (w * w))
 
