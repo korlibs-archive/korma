@@ -528,6 +528,21 @@ class Matrix3D(
     }
 }
 
+fun Matrix3D.copyToFloatWxH(out: FloatArray, w: Int, h: Int) {
+    var n = 0
+    for (y in 0 until h) {
+        val m = y * 4
+        for (x in 0 until w) {
+            out[n] = this.data[m + x]
+            n++
+        }
+    }
+}
+
+fun Matrix3D.copyToFloat2x2(out: FloatArray) = copyToFloatWxH(out, 2, 2)
+fun Matrix3D.copyToFloat3x3(out: FloatArray) = copyToFloatWxH(out, 3, 3)
+fun Matrix3D.copyToFloat4x4(out: FloatArray) = run { for (n in 0 until 16) out[n] = this.data[n] }
+
 inline fun Matrix3D.setToOrtho(left: Number, top: Number, right: Number, bottom: Number, near: Number, far: Number): Matrix3D = setToOrtho(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), near.toFloat(), far.toFloat())
 inline fun Matrix3D.setTo(
     a0: Number, b0: Number, c0: Number, d0: Number,
