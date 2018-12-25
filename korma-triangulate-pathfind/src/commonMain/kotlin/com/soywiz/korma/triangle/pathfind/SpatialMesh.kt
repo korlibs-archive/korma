@@ -2,7 +2,6 @@ package com.soywiz.korma.triangle.pathfind
 
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.triangle.*
-import com.soywiz.korma.internal.*
 import com.soywiz.korma.triangle.internal.*
 import kotlin.math.*
 
@@ -94,7 +93,7 @@ class SpatialMesh {
 
         fun distanceToSpatialNode(that: Node): Int = hypot(this.x - that.x, this.y - that.y).toInt()
 
-        override fun toString(): String = "SpatialNode(${x.niceStr}, ${y.niceStr})"
+        override fun toString(): String = "SpatialNode(${x.niceStr2}, ${y.niceStr2})"
     }
 
     override fun toString() = "SpatialMesh(" + nodes.joinToString(",") + ")"
