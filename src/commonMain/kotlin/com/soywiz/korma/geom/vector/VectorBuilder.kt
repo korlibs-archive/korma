@@ -132,6 +132,11 @@ fun VectorBuilder.ellipse(x: Double, y: Double, rw: Double, rh: Double) {
     cubicTo(xm - ox, ye, x, ym + oy, x, ym)
 }
 
+fun VectorBuilder.moveTo(p: Point) = moveTo(p.x, p.y)
+fun VectorBuilder.lineTo(p: Point) = lineTo(p.x, p.y)
+fun VectorBuilder.quadTo(c: Point, a: Point) = quadTo(c.x, c.y, a.x, a.y)
+fun VectorBuilder.cubicTo(c1: Point, c2: Point, a: Point) = cubicTo(c1.x, c1.y, c2.x, c2.y, a.x, a.y)
+
 inline fun VectorBuilder.moveTo(x: Number, y: Number) = moveTo(x.toDouble(), y.toDouble())
 inline fun VectorBuilder.lineTo(x: Number, y: Number) = lineTo(x.toDouble(), y.toDouble())
 inline fun VectorBuilder.quadTo(controlX: Number, controlY: Number, anchorX: Number, anchorY: Number) = quadTo(controlX.toDouble(), controlY.toDouble(), anchorX.toDouble(), anchorY.toDouble())
