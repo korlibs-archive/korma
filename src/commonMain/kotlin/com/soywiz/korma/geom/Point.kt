@@ -11,6 +11,7 @@ interface IPoint {
     val y: Double
 
     companion object {
+        operator fun invoke(): IPoint = Point(0.0, 0.0)
         inline operator fun invoke(x: Number, y: Number): IPoint = Point(x.toDouble(), y.toDouble())
     }
 }

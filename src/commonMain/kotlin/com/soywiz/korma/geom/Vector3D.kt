@@ -18,7 +18,15 @@ val IVector3D.length: Double get() = sqrt((x * x) + (y * y) + (z * z) + (w * w))
 
 data class Vector3D(override var x: Double, override var y: Double, override var z: Double, override var w: Double) : IVector3D {
     companion object {
-        inline operator fun invoke(x: Number, y: Number, z: Number, w: Number = 0.0): Vector3D = Vector3D(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
+        operator fun invoke(): Vector3D = Vector3D(0.0, 0.0, 0.0, 1.0)
+        inline operator fun invoke(x: Number, y: Number, z: Number, w: Number = 1.0): Vector3D = Vector3D(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
+    }
+    fun setTo(x: Double, y: Double, z: Double, w: Double): Vector3D {
+        this.x = x
+        this.y = y
+        this.z = z
+        this.w = w
+        return this
     }
     override fun toString(): String = "(${x.niceStr}, ${y.niceStr}, ${z.niceStr}, ${w.niceStr})"
 }
