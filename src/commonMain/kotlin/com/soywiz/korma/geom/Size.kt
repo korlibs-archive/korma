@@ -6,9 +6,18 @@ import com.soywiz.korma.interpolation.*
 interface ISize {
     val width: Double
     val height: Double
+
+    companion object {
+        inline operator fun invoke(width: Number, height: Number): ISize = Size(Point(width, height))
+    }
 }
 
 inline class Size(val p: Point) : MutableInterpolable<Size>, Interpolable<Size>, ISize, Sizeable {
+    companion object {
+        operator fun invoke(): Size = Size(Point(0, 0))
+        inline operator fun invoke(width: Number, height: Number): Size = Size(Point(width, height))
+    }
+
     override val size: Size get() = this
 
     override var width: Double
@@ -36,14 +45,15 @@ inline class Size(val p: Point) : MutableInterpolable<Size>, Interpolable<Size>,
 }
 
 inline fun Size.setTo(width: Number, height: Number) = setTo(width.toDouble(), height.toDouble())
+fun Size.setTo(that: ISize) = setTo(that.width, that.height)
+fun Size.setToScaled(sx: Double, sy: Double) = setTo((this.width * sx), (this.height * sy))
+inline fun Size.setToScaled(sx: Number, sy: Number = sx) = setToScaled(sx.toDouble(), sy.toDouble())
+
 
 val ISize.area: Double get() = width * height
 val ISize.perimeter: Double get() = width * 2 + height * 2
 val ISize.min: Double get() = kotlin.math.min(width, height)
 val ISize.max: Double get() = kotlin.math.max(width, height)
-
-inline fun Size(width: Number, height: Number): Size = Size(Point(width, height))
-inline fun ISize(width: Number, height: Number): ISize = Size(Point(width, height))
 
 interface ISizeInt {
     val width: Int
@@ -73,12 +83,6 @@ fun SizeInt.setTo(width: Int, height: Int) = this.apply {
 }
 
 fun SizeInt.setTo(that: SizeInt) = setTo(that.width, that.height)
-
-fun SizeInt.applyScaleMode(container: SizeInt, mode: ScaleMode, out: SizeInt = SizeInt(0, 0)): SizeInt =
-    mode(this, container, out)
-
-fun SizeInt.fitTo(container: SizeInt, out: SizeInt = SizeInt(0, 0)): SizeInt =
-    applyScaleMode(container, ScaleMode.SHOW_ALL, out)
 
 fun SizeInt.setToScaled(sx: Double, sy: Double) = setTo((this.width * sx).toInt(), (this.height * sy).toInt())
 inline fun SizeInt.setToScaled(sx: Number, sy: Number = sx) = setToScaled(sx.toDouble(), sy.toDouble())

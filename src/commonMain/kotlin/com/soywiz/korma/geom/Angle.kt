@@ -9,11 +9,11 @@ inline class Angle(val radians: Double) {
     override fun toString(): String = "Angle($degrees)"
 
     companion object {
-        fun fromRadians(rad: Double): Angle = Angle(rad)
-        fun fromDegrees(deg: Double): Angle = Angle(deg2rad(deg))
+        fun fromRadians(radians: Double): Angle = Angle(radians)
+        fun fromDegrees(degrees: Double): Angle = Angle(degreesToRadians(degrees))
 
-        inline fun fromRadians(rad: Number) = fromRadians(rad.toDouble())
-        inline fun fromDegrees(deg: Number) = fromDegrees(deg.toDouble())
+        inline fun fromRadians(radians: Number) = fromRadians(radians.toDouble())
+        inline fun fromDegrees(degrees: Number) = fromDegrees(degrees.toDouble())
 
         const val PI2 = PI * 2
 
@@ -28,37 +28,25 @@ inline class Angle(val radians: Double) {
 
         fun cos01(ratio: Double) = kotlin.math.cos(PI2 * ratio)
         fun sin01(ratio: Double) = kotlin.math.sin(PI2 * ratio)
-        fun deg2rad(deg: Double) = deg * DEG2RAD
-        fun rad2deg(rad: Double) = rad * RAD2DEG
 
-        fun degreesToRadians(deg: Double): Double = deg * DEG2RAD
-        fun radiansToDegrees(rad: Double): Double = rad * RAD2DEG
-        fun toRadians(v: Double): Double = v / 180.0 * PI
-        fun toDegrees(v: Double): Double = v * 180.0 / PI
+        fun degreesToRadians(degrees: Double): Double = degrees * DEG2RAD
+        fun radiansToDegrees(radians: Double): Double = radians * RAD2DEG
 
-        fun normalizeRadian(value: Double): Double {
-            var vv = (value + kotlin.math.PI) % (kotlin.math.PI * 2.0)
-            vv += if (vv > 0.0) -kotlin.math.PI else kotlin.math.PI
-            return vv
-        }
-
-        fun shortRadDistanceTo(fromRad: Double, toRad: Double): Double {
-            val r0 = fromRad umod MAX_RADIANS
-            val r1 = toRad umod MAX_RADIANS
+        fun shortDistanceTo(from: Angle, to: Angle): Angle {
+            val r0 = from.radians umod MAX_RADIANS
+            val r1 = to.radians umod MAX_RADIANS
             val diff = (r1 - r0 + HALF_RADIANS) % MAX_RADIANS - HALF_RADIANS
-            return if (diff < -HALF_RADIANS) diff + MAX_RADIANS else diff
+            return if (diff < -HALF_RADIANS) Angle(diff + MAX_RADIANS) else Angle(diff)
         }
 
-        fun betweenRad(x0: Double, y0: Double, x1: Double, y1: Double): Double {
+        fun between(x0: Double, y0: Double, x1: Double, y1: Double): Angle {
             val angle = atan2(y1 - y0, x1 - x0)
-            return if (angle < 0) angle + PI2 else angle
+            return if (angle < 0) Angle(angle + PI2) else Angle(angle)
         }
 
-        fun between(x0: Double, y0: Double, x1: Double, y1: Double): Angle =
-            Angle.fromRadians(betweenRad(x0, y0, x1, y1))
+        inline fun between(x0: Number, y0: Number, x1: Number, y1: Number): Angle = between(x0.toDouble(), y0.toDouble(), x1.toDouble(), y1.toDouble())
 
-        fun betweenRad(p0: IPoint, p1: IPoint): Double = betweenRad(p0.x, p0.y, p1.x, p1.y)
-        fun between(p0: IPoint, p1: IPoint): Angle = Angle.fromRadians(betweenRad(p0, p1))
+        fun between(p0: IPoint, p1: IPoint): Angle = between(p0.x, p0.y, p1.x, p1.y)
     }
 }
 
@@ -66,13 +54,11 @@ fun cos(angle: Angle): Double = kotlin.math.cos(angle.radians)
 fun sin(angle: Angle): Double = kotlin.math.sin(angle.radians)
 fun tan(angle: Angle): Double = kotlin.math.tan(angle.radians)
 
-val Angle.degrees get() = Angle.rad2deg(radians)
+val Angle.degrees get() = Angle.radiansToDegrees(radians)
 
-//val normalizedRadians get() = KdsExt { radians umod Angle.MAX_RADIANS }
-//val normalizedDegrees get() = KdsExt { degrees umod Angle.MAX_DEGREES }
 val Angle.absoluteValue: Angle get() = Angle.fromRadians(radians.absoluteValue)
+fun Angle.shortDistanceTo(other: Angle): Angle = Angle.shortDistanceTo(this, other)
 
-fun Angle.shortDistanceTo(other: Angle): Angle = Angle(Angle.shortRadDistanceTo(this.radians, other.radians))
 inline operator fun Angle.times(scale: Number): Angle = Angle(this.radians * scale.toDouble())
 inline operator fun Angle.div(scale: Number): Angle = Angle(this.radians / scale.toDouble())
 inline operator fun Angle.plus(other: Angle): Angle = Angle(this.radians + other.radians)
@@ -80,9 +66,6 @@ inline operator fun Angle.minus(other: Angle): Angle = shortDistanceTo(other)
 inline operator fun Angle.unaryMinus(): Angle = Angle(-radians)
 inline operator fun Angle.unaryPlus(): Angle = Angle(+radians)
 
-val Angle.normalizedRadians get() = radians umod Angle.MAX_RADIANS
-val Angle.normalizedDegrees get() = degrees umod Angle.MAX_DEGREES
-val Angle.normalized get() = Angle(radians umod Angle.MAX_RADIANS)
-
 inline val Number.degrees get() = Angle.fromDegrees(this)
 inline val Number.radians get() = Angle.fromRadians(this)
+val Angle.normalized get() = Angle(radians umod Angle.MAX_RADIANS)

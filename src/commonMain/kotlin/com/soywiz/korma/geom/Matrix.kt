@@ -103,7 +103,7 @@ data class Matrix(
         tx = tx1
     }
 
-    fun rotateDeg(thetaDeg: Double) = rotate(Angle.toRadians(thetaDeg))
+    fun rotateDeg(thetaDeg: Double) = rotate(Angle.degreesToRadians(thetaDeg))
 
     fun rotate(angle: Angle) = rotate(angle.radians)
 
@@ -243,6 +243,10 @@ data class Matrix(
         var rotation: Double = 0.0
     ) {
         companion object
+
+        var rotationAngle: Angle
+            get() = rotation.radians
+            set(value) = run { rotation = value.radians }
 
         var rotationDegrees: Double
             get() = Angle.radiansToDegrees(rotation)

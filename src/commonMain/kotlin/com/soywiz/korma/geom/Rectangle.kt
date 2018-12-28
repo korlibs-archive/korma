@@ -38,6 +38,7 @@ data class Rectangle(
     var right: Double; get() = x + width; set(value) = run { width = value - x }
     var bottom: Double; get() = y + height; set(value) = run { height = value - y }
 
+    val position: Point get() = Point(x, y)
     override val size: Size get() = Size(width, height)
 
     fun setTo(x: Double, y: Double, width: Double, height: Double) = this.apply {
@@ -82,11 +83,13 @@ data class Rectangle(
 
     fun clone() = Rectangle(x, y, width, height)
 
-    fun setToAnchoredRectangle(small: Rectangle, anchor: Anchor, big: Rectangle) = setTo(
-        anchor.sx * (big.width - small.width),
-        anchor.sy * (big.height - small.height),
-        small.width,
-        small.height
+    fun setToAnchoredRectangle(item: Rectangle, anchor: Anchor, container: Rectangle) = setToAnchoredRectangle(item.size, anchor, container)
+
+    fun setToAnchoredRectangle(item: Size, anchor: Anchor, container: Rectangle) = setTo(
+        container.x + anchor.sx * (container.width - item.width),
+        container.y + anchor.sy * (container.height - item.height),
+        item.width,
+        item.height
     )
 
     //override fun toString(): String = "Rectangle([${left.niceStr}, ${top.niceStr}]-[${right.niceStr}, ${bottom.niceStr}])"
@@ -116,6 +119,7 @@ inline fun Rectangle.setTo(x: Number, y: Number, width: Number, height: Number) 
     this.setTo(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 
 inline fun Rectangle.setBounds(left: Number, top: Number, right: Number, bottom: Number) = setBounds(left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble())
+
 inline operator fun Rectangle.times(scale: Number) = times(scale.toDouble())
 inline operator fun Rectangle.div(scale: Number) = div(scale.toDouble())
 inline fun Rectangle.contains(x: Number, y: Number) = contains(x.toDouble(), y.toDouble())
@@ -220,7 +224,7 @@ fun IRectangleInt.getAnchorPosition(anchor: Anchor, out: PointInt = PointInt()):
     out.setTo((x + width * anchor.sx).toInt(), (y + height * anchor.sy).toInt())
 
 fun Rectangle.asInt() = RectangleInt(this)
-fun RectangleInt.asFloat() = this.rect
+fun RectangleInt.asDouble() = this.rect
 
 val IRectangle.int get() = RectangleInt(x, y, width, height)
 val IRectangleInt.float get() = Rectangle(x, y, width, height)

@@ -128,7 +128,6 @@ infix fun IPoint.dot(that: IPoint): Double = this.x * that.x + this.y * that.y
 inline fun IPoint.distanceTo(x: Number, y: Number): Double = hypot(x.toDouble() - this.x, y.toDouble() - this.y)
 fun IPoint.distanceTo(that: IPoint): Double = distanceTo(that.x, that.y)
 
-fun IPoint.angleToRad(other: IPoint): Double = Angle.betweenRad(this.x, this.y, other.x, other.y)
 fun IPoint.angleTo(other: IPoint): Angle = Angle.between(this.x, this.y, other.x, other.y)
 
 fun IPoint.transformed(mat: IMatrix, out: Point = Point()): Point = out.setToTransform(mat, this)
@@ -190,7 +189,7 @@ operator fun IPointInt.div(that: IPointInt) = PointInt(this.x / that.x, this.y /
 operator fun IPointInt.rem(that: IPointInt) = PointInt(this.x % that.x, this.y % that.y)
 
 fun Point.asInt(): PointInt = PointInt(this)
-fun PointInt.asFloat(): Point = this.p
+fun PointInt.asDouble(): Point = this.p
 
 val IPoint.int get() = PointInt(x.toInt(), y.toInt())
 val IPointInt.float get() = IPoint(x.toDouble(), y.toDouble())
