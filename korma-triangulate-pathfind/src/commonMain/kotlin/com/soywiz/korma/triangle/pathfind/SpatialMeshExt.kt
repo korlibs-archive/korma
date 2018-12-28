@@ -21,6 +21,6 @@ fun SpatialMeshFind.funnel(p0: IPoint, p1: IPoint): List<IPoint> {
 fun List<Triangle>.funnel(p0: IPoint, p1: IPoint): List<IPoint> = this.pathFind().funnel(p0, p1)
 fun List<Triangle>.pathFind(p0: IPoint, p1: IPoint): List<IPoint> = this.pathFind().funnel(p0, p1)
 
-fun Shape2d.toSpatialMesh(): SpatialMesh = SpatialMesh(this.triangulate())
-fun Shape2d.pathFind(): SpatialMeshFind = this.triangulate().pathFind()
-fun Shape2d.pathFind(p0: IPoint, p1: IPoint): List<IPoint> = this.triangulate().pathFind().funnel(p0, p1)
+fun Shape2d.toSpatialMesh(): SpatialMesh = SpatialMesh(this.triangulateFlat())
+fun Shape2d.pathFind(): SpatialMeshFind = this.triangulateFlat().pathFind()
+fun Shape2d.pathFind(p0: IPoint, p1: IPoint): List<IPoint> = this.triangulateFlat().pathFind().funnel(p0, p1)

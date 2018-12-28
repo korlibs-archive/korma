@@ -7,9 +7,10 @@ class BinPacker(val width: Double, val height: Double, val algo: Algo = MaxRects
         fun add(width: Double, height: Double): Rectangle?
     }
 
-    class Result<T>(val maxWidth: Double, val maxHeight: Double, val items: List<Pair<T, Rectangle>>) {
-        val width = items.map { it.second.right }.maxBy { it } ?: 0.0
-        val height = items.map { it.second.bottom }.maxBy { it } ?: 0.0
+    class Result<T>(val maxWidth: Double, val maxHeight: Double, val items: List<Pair<T, Rectangle?>>) {
+        private val rectanglesNotNull = items.map { it.second }.filterNotNull()
+        val width = rectanglesNotNull.maxBy { it.right } ?: 0.0
+        val height = rectanglesNotNull.maxBy { it.bottom } ?: 0.0
         val rects get() = items.map { it.second }
         val rectsStr: String get() = rects.toString()
     }
@@ -33,16 +34,20 @@ class BinPacker(val width: Double, val height: Double, val algo: Algo = MaxRects
         return rect
     }
 
-    fun <T> addBatch(items: Iterable<T>, getSize: (T) -> Size): List<Pair<T, Rectangle?>> =
-        algo.addBatch(items, getSize)
+    fun <T> addBatch(items: Iterable<T>, getSize: (T) -> Size): Result<T> {
+        return Result(width, height, algo.addBatch(items, getSize))
+    }
 
     fun addBatch(items: Iterable<Size>): List<Rectangle?> = algo.addBatch(items) { it }.map { it.second }
 
     companion object {
         inline operator fun invoke(width: Number, height: Number, algo: Algo = MaxRects(width.toDouble(), height.toDouble())) = BinPacker(width.toDouble(), height.toDouble(), algo)
 
-        fun <T> pack(width: Double, height: Double, items: Iterable<T>, getSize: (T) -> Size) =
+        fun <T> pack(width: Double, height: Double, items: Iterable<T>, getSize: (T) -> Size): Result<T> =
             BinPacker(width, height).addBatch(items, getSize)
+
+        inline fun <T> pack(width: Number, height: Number, items: Iterable<T>, noinline getSize: (T) -> Size): Result<T> =
+            pack(width.toDouble(), height.toDouble(), items, getSize)
 
         inline fun <T : Sizeable> packSeveral(
             maxWidth: Number,

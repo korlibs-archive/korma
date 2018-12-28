@@ -28,6 +28,6 @@ class RectangleTest {
         val ro = r1.copy()
         ro.setToAnchoredRectangle(ro, Anchor.MIDDLE_CENTER, r2)
         //Assert.assertEquals(Rectangle(0, 0, 0, 0), r1)
-        assertEquals(Rectangle(35, 20, 30, 10), ro)
+        assertEquals(Rectangle(135, 20, 30, 10), ro)
     }
 }

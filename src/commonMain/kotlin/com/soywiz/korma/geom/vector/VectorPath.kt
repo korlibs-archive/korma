@@ -12,6 +12,10 @@ open class VectorPath(
 ) : VectorBuilder {
     open fun clone(): VectorPath = VectorPath(IntArrayList(commands), DoubleArrayList(data), winding)
 
+    companion object {
+    	inline operator fun invoke(winding: Winding = Winding.EVEN_ODD, callback: VectorPath.() -> Unit): VectorPath = VectorPath(winding = winding).apply(callback)
+    }
+
     interface Visitor {
         fun close()
         fun moveTo(x: Double, y: Double)

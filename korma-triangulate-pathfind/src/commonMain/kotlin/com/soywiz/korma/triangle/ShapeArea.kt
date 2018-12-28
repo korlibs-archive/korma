@@ -8,5 +8,5 @@ val Shape2d.area: Double
     get() = when (this) {
         is Shape2d.Complex -> this.items.sumByDouble { it.area }
         is Shape2d.WithArea -> this.area
-        else -> this.triangulate().sumByDouble { it.area }
+        else -> this.triangulateFlat().sumByDouble { it.area }
     }

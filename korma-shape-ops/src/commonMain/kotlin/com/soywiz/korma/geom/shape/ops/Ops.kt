@@ -36,8 +36,3 @@ fun Shape2d.extendLine(size: Double, join: VectorPath.LineJoin = VectorPath.Line
     clipper.execute(solution, size)
     return solution.toShape2d()
 }
-
-//inline fun Shape2d.extend(size: Number, cap: VectorPath.LineCap = VectorPath.LineCap.ROUND): Shape2d = extend(size.toDouble(), cap)
-//inline fun Shape2d.extendLine(size: Number, join: VectorPath.LineJoin = VectorPath.LineJoin.SQUARE, cap: VectorPath.LineCap) = extendLine(size.toDouble(), join, cap)
-
-fun VectorPath.toShape2d(): Shape2d = this.toClipperPaths().toShape2d()

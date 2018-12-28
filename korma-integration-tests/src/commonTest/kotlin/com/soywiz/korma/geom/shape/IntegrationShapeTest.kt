@@ -28,7 +28,7 @@ class IntegrationShapeTest {
         //println(shape.getAllPoints().toPoints())
         assertEquals(
             "[Triangle((0, 100), (100, 0), (100, 100)), Triangle((0, 100), (0, 0), (100, 0))]",
-            shape.triangulate().toString()
+            shape.triangulateFlat().toString()
         )
     }
 

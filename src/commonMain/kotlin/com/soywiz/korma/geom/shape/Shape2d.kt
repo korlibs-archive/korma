@@ -72,7 +72,7 @@ abstract class Shape2d {
         override fun containsPoint(x: Double, y: Double): Boolean = this.points.contains(x, y)
     }
 
-    data class Poyline(val points: IPointArrayList) : Shape2d(), WithArea {
+    data class Polyline(val points: IPointArrayList) : Shape2d(), WithArea {
         override val paths = listOf(points)
         override val closed: Boolean = false
         override val area: Double get() = 0.0
@@ -137,6 +137,28 @@ inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Double, y: Double)
         }
     )
     flush()
+}
+
+fun IPointArrayList.toShape2d(closed: Boolean = true): Shape2d {
+    if (closed && this.size == 4) {
+        val x0 = this.getX(0)
+        val y0 = this.getY(0)
+        val x1 = this.getX(2)
+        val y1 = this.getY(2)
+        if (this.getX(1) == x1 && this.getY(1) == y0 && this.getX(3) == x0 && this.getY(3) == y1) {
+            return Shape2d.Rectangle(Rectangle.fromBounds(x0, y0, x1, y1))
+        }
+    }
+    return if (closed) Shape2d.Polygon(this) else Shape2d.Polyline(this)
+}
+
+fun VectorPath.toShape2d(closed: Boolean = true): Shape2d {
+    val items = toPathList().map { it.toShape2d(closed) }
+    return when (items.size) {
+        0 -> Shape2d.Empty
+        1 -> items.first()
+        else -> Shape2d.Complex(items)
+    }
 }
 
 fun VectorPath.toPathList(): List<IPointArrayList> {
