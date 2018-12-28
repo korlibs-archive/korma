@@ -10,6 +10,8 @@ class PointArea(val size: Int) {
     @PublishedApi
     internal fun alloc() = points[offset++]
 
+    inline fun Point(x: Number, y: Number) = alloc().setTo(x, y)
+
     operator fun IPoint.plus(other: IPoint): IPoint = alloc().setToAdd(this, other)
     operator fun IPoint.minus(other: IPoint): IPoint = alloc().setToSub(this, other)
 
