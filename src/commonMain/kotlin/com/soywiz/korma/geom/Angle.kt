@@ -8,26 +8,25 @@ import kotlin.math.atan2
 inline class Angle(val radians: Double) {
     override fun toString(): String = "Angle($degrees)"
 
+    @Suppress("MemberVisibilityCanBePrivate")
     companion object {
-        fun fromRadians(radians: Double): Angle = Angle(radians)
-        fun fromDegrees(degrees: Double): Angle = Angle(degreesToRadians(degrees))
+        inline fun fromRadians(radians: Number) = Angle(radians.toDouble())
+        inline fun fromDegrees(degrees: Number) = Angle(degreesToRadians(degrees.toDouble()))
 
-        inline fun fromRadians(radians: Number) = fromRadians(radians.toDouble())
-        inline fun fromDegrees(degrees: Number) = fromDegrees(degrees.toDouble())
+        internal const val PI2 = PI * 2
 
-        const val PI2 = PI * 2
+        internal const val DEG2RAD = PI / 180.0
+        internal const val RAD2DEG = 180.0 / PI
 
-        const val DEG2RAD = PI / 180.0
-        const val RAD2DEG = 180.0 / PI
+        internal const val MAX_DEGREES = 360.0
+        internal const val MAX_RADIANS = PI2
 
-        const val MAX_DEGREES = 360.0
-        const val MAX_RADIANS = PI2
-
-        const val HALF_DEGREES = MAX_DEGREES / 2f
-        const val HALF_RADIANS = MAX_RADIANS / 2f
+        internal const val HALF_DEGREES = MAX_DEGREES / 2.0
+        internal const val HALF_RADIANS = MAX_RADIANS / 2.0
 
         fun cos01(ratio: Double) = kotlin.math.cos(PI2 * ratio)
         fun sin01(ratio: Double) = kotlin.math.sin(PI2 * ratio)
+        fun tan01(ratio: Double) = kotlin.math.tan(PI2 * ratio)
 
         fun degreesToRadians(degrees: Double): Double = degrees * DEG2RAD
         fun radiansToDegrees(radians: Double): Double = radians * RAD2DEG
@@ -61,6 +60,7 @@ fun Angle.shortDistanceTo(other: Angle): Angle = Angle.shortDistanceTo(this, oth
 
 inline operator fun Angle.times(scale: Number): Angle = Angle(this.radians * scale.toDouble())
 inline operator fun Angle.div(scale: Number): Angle = Angle(this.radians / scale.toDouble())
+inline operator fun Angle.div(other: Angle): Double = this.radians / other.radians // Ratio
 inline operator fun Angle.plus(other: Angle): Angle = Angle(this.radians + other.radians)
 inline operator fun Angle.minus(other: Angle): Angle = shortDistanceTo(other)
 inline operator fun Angle.unaryMinus(): Angle = Angle(-radians)
