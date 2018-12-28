@@ -249,14 +249,14 @@ fun Triangle(p0: IPoint, p1: IPoint, p2: IPoint, fixOrientation: Boolean = false
     @Suppress("NAME_SHADOWING")
     var p2 = p2
     if (fixOrientation) {
-        if (Orientation.orient2d(p0, p1, p2) == Orientation.CW) {
+        if (Orientation.orient2d(p0, p1, p2) == Orientation.CLOCK_WISE) {
             val pt = p2
             p2 = p1
             p1 = pt
             //println("Fixed orientation");
         }
     }
-    if (checkOrientation && Orientation.orient2d(p2, p1, p0) != Orientation.CW) throw(Error("Triangle must defined with Orientation.CW"))
+    if (checkOrientation && Orientation.orient2d(p2, p1, p0) != Orientation.CLOCK_WISE) throw(Error("Triangle must defined with Orientation.CW"))
     return Triangle.Base(p0, p1, p2)
 }
 

@@ -271,7 +271,7 @@ internal class Sweep(private var context: SweepContext) {
             edgeEventByPoints(
                 ep,
                 eq,
-                if (o1 == Orientation.CW) triangle.neighborCCW(point)!! else triangle.neighborCW(point)!!,
+                if (o1 == Orientation.CLOCK_WISE) triangle.neighborCCW(point)!! else triangle.neighborCW(point)!!,
                 point
             )
         } else {
@@ -420,7 +420,7 @@ internal class Sweep(private var context: SweepContext) {
                 node.point,
                 node.next!!.point,
                 node.next!!.next!!.point
-            ) == Orientation.CCW
+            ) == Orientation.COUNTER_CLOCK_WISE
         ) node.next!!.next else node.next
 
         // Find the bottom and right node
@@ -464,13 +464,13 @@ internal class Sweep(private var context: SweepContext) {
                 return
             }
             node.prev == this.context.basin.leftNode -> {
-                if (Orientation.orient2d(node.point, node.next!!.point, node.next!!.next!!.point) == Orientation.CW) {
+                if (Orientation.orient2d(node.point, node.next!!.point, node.next!!.next!!.point) == Orientation.CLOCK_WISE) {
                     return
                 }
                 node = node.next!!
             }
             node.next == this.context.basin.rightNode -> {
-                if (Orientation.orient2d(node.point, node.prev!!.point, node.prev!!.prev!!.point) == Orientation.CCW) {
+                if (Orientation.orient2d(node.point, node.prev!!.point, node.prev!!.prev!!.point) == Orientation.COUNTER_CLOCK_WISE) {
                     return
                 }
                 node = node.prev!!
@@ -507,7 +507,7 @@ internal class Sweep(private var context: SweepContext) {
         var n = node
         while (n.next!!.point.x < edge.p.x) {
             // Check if next node is below the edge
-            if (Orientation.orient2d(edge.q, n.next!!.point, edge.p) == Orientation.CCW) {
+            if (Orientation.orient2d(edge.q, n.next!!.point, edge.p) == Orientation.COUNTER_CLOCK_WISE) {
                 this.fillRightBelowEdgeEvent(edge, n)
             } else {
                 n = n.next!!
@@ -517,7 +517,7 @@ internal class Sweep(private var context: SweepContext) {
 
     fun fillRightBelowEdgeEvent(edge: Edge, node: Node) {
         if (node.point.x >= edge.p.x) return
-        if (Orientation.orient2d(node.point, node.next!!.point, node.next!!.next!!.point) == Orientation.CCW) {
+        if (Orientation.orient2d(node.point, node.next!!.point, node.next!!.next!!.point) == Orientation.COUNTER_CLOCK_WISE) {
             // Concave
             this.fillRightConcaveEdgeEvent(edge, node)
         } else {
@@ -530,9 +530,9 @@ internal class Sweep(private var context: SweepContext) {
         this.fill(node.next!!)
         if (node.next!!.point != edge.p) {
             // Next above or below edge?
-            if (Orientation.orient2d(edge.q, node.next!!.point, edge.p) == Orientation.CCW) {
+            if (Orientation.orient2d(edge.q, node.next!!.point, edge.p) == Orientation.COUNTER_CLOCK_WISE) {
                 // Below
-                if (Orientation.orient2d(node.point, node.next!!.point, node.next!!.next!!.point) == Orientation.CCW) {
+                if (Orientation.orient2d(node.point, node.next!!.point, node.next!!.next!!.point) == Orientation.COUNTER_CLOCK_WISE) {
                     // Next is concave
                     this.fillRightConcaveEdgeEvent(edge, node)
                 } else {
@@ -548,14 +548,14 @@ internal class Sweep(private var context: SweepContext) {
                 node.next!!.point,
                 node.next!!.next!!.point,
                 node.next!!.next!!.next!!.point
-            ) == Orientation.CCW
+            ) == Orientation.COUNTER_CLOCK_WISE
         ) {
             // Concave
             this.fillRightConcaveEdgeEvent(edge, node.next!!)
         } else {
             // Convex
             // Next above or below edge?
-            if (Orientation.orient2d(edge.q, node.next!!.next!!.point, edge.p) == Orientation.CCW) {
+            if (Orientation.orient2d(edge.q, node.next!!.next!!.point, edge.p) == Orientation.COUNTER_CLOCK_WISE) {
                 // Below
                 this.fillRightConvexEdgeEvent(edge, node.next!!)
             } else {
@@ -568,7 +568,7 @@ internal class Sweep(private var context: SweepContext) {
         var n = node
         while (n.prev!!.point.x > edge.p.x) {
             // Check if next node is below the edge
-            if (Orientation.orient2d(edge.q, n.prev!!.point, edge.p) == Orientation.CW) {
+            if (Orientation.orient2d(edge.q, n.prev!!.point, edge.p) == Orientation.CLOCK_WISE) {
                 this.fillLeftBelowEdgeEvent(edge, n)
             } else {
                 n = n.prev!!
@@ -578,7 +578,7 @@ internal class Sweep(private var context: SweepContext) {
 
     fun fillLeftBelowEdgeEvent(edge: Edge, node: Node) {
         if (node.point.x > edge.p.x) {
-            if (Orientation.orient2d(node.point, node.prev!!.point, node.prev!!.prev!!.point) == Orientation.CW) {
+            if (Orientation.orient2d(node.point, node.prev!!.point, node.prev!!.prev!!.point) == Orientation.CLOCK_WISE) {
                 // Concave
                 this.fillLeftConcaveEdgeEvent(edge, node)
             } else {
@@ -596,14 +596,14 @@ internal class Sweep(private var context: SweepContext) {
                 node.prev!!.point,
                 node.prev!!.prev!!.point,
                 node.prev!!.prev!!.prev!!.point
-            ) == Orientation.CW
+            ) == Orientation.CLOCK_WISE
         ) {
             // Concave
             this.fillLeftConcaveEdgeEvent(edge, node.prev!!)
         } else {
             // Convex
             // Next above or below edge?
-            if (Orientation.orient2d(edge.q, node.prev!!.prev!!.point, edge.p) == Orientation.CW) {
+            if (Orientation.orient2d(edge.q, node.prev!!.prev!!.point, edge.p) == Orientation.CLOCK_WISE) {
                 // Below
                 this.fillLeftConvexEdgeEvent(edge, node.prev!!)
             } else {
@@ -616,9 +616,9 @@ internal class Sweep(private var context: SweepContext) {
         this.fill(node.prev!!)
         if (node.prev!!.point != edge.p) {
             // Next above or below edge?
-            if (Orientation.orient2d(edge.q, node.prev!!.point, edge.p) == Orientation.CW) {
+            if (Orientation.orient2d(edge.q, node.prev!!.point, edge.p) == Orientation.CLOCK_WISE) {
                 // Below
-                if (Orientation.orient2d(node.point, node.prev!!.point, node.prev!!.prev!!.point) == Orientation.CW) {
+                if (Orientation.orient2d(node.point, node.prev!!.point, node.prev!!.prev!!.point) == Orientation.CLOCK_WISE) {
                     // Next is concave
                     this.fillLeftConcaveEdgeEvent(edge, node)
                 } else {
@@ -665,19 +665,19 @@ internal class Sweep(private var context: SweepContext) {
     }
 
     fun nextFlipTriangle(o: Orientation, t: PolyTriangle, ot: PolyTriangle, p: IPoint, op: IPoint): PolyTriangle {
-        val tt = if (o == Orientation.CCW) ot else t
+        val tt = if (o == Orientation.COUNTER_CLOCK_WISE) ot else t
         // ot is not crossing edge after flip
         tt.delaunay_edge[tt.edgeIndex(p, op)] = true
         this.legalize(tt)
         tt.clearDelunayEdges()
-        return if (o == Orientation.CCW) t else ot
+        return if (o == Orientation.COUNTER_CLOCK_WISE) t else ot
     }
 
     companion object {
         fun nextFlipPoint(ep: IPoint, eq: IPoint, ot: Triangle, op: IPoint): IPoint {
             return when (Orientation.orient2d(eq, op, ep)) {
-                Orientation.CW -> ot.pointCCW(op) // Right
-                Orientation.CCW -> ot.pointCW(op) // Left
+                Orientation.CLOCK_WISE -> ot.pointCCW(op) // Right
+                Orientation.COUNTER_CLOCK_WISE -> ot.pointCW(op) // Left
                 else -> throw Error("[Unsupported] Sweep.NextFlipPoint: opposing point on constrained edge!")
             }
         }
@@ -1087,13 +1087,13 @@ internal fun PolyTriangle(p0: IPoint, p1: IPoint, p2: IPoint, fixOrientation: Bo
     @Suppress("NAME_SHADOWING")
     var p2 = p2
     if (fixOrientation) {
-        if (Orientation.orient2d(p0, p1, p2) == Orientation.CW) {
+        if (Orientation.orient2d(p0, p1, p2) == Orientation.CLOCK_WISE) {
             val pt = p2
             p2 = p1
             p1 = pt
             //println("Fixed orientation");
         }
     }
-    if (checkOrientation && Orientation.orient2d(p2, p1, p0) != Orientation.CW) throw(Error("Triangle must defined with Orientation.CW"))
+    if (checkOrientation && Orientation.orient2d(p2, p1, p0) != Orientation.CLOCK_WISE) throw(Error("Triangle must defined with Orientation.CW"))
     return PolyTriangle(true, p0, p1, p2)
 }

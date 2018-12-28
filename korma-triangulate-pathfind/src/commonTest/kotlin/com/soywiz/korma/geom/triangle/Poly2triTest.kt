@@ -64,12 +64,12 @@ class OrientationTest {
 
     @Test
     fun testOrientationCW() {
-        assertEquals(Orientation.orient2d(IPoint(0, 0), IPoint(1, 1), IPoint(2, 0)), Orientation.CW)
+        assertEquals(Orientation.orient2d(IPoint(0, 0), IPoint(1, 1), IPoint(2, 0)), Orientation.CLOCK_WISE)
     }
 
     @Test
     fun testOrientationCCW() {
-        assertEquals(Orientation.orient2d(IPoint(0, 0), IPoint(-1, 1), IPoint(-2, 0)), Orientation.CCW)
+        assertEquals(Orientation.orient2d(IPoint(0, 0), IPoint(-1, 1), IPoint(-2, 0)), Orientation.COUNTER_CLOCK_WISE)
     }
 }
 
