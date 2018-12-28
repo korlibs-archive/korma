@@ -3,6 +3,7 @@ package com.soywiz.korma.geom
 class BoundsBuilder {
     val tempRect = Rectangle()
 
+    private var npoints = 0
     private var xmin = Double.MAX_VALUE
     private var xmax = Double.MIN_VALUE
     private var ymin = Double.MAX_VALUE
@@ -13,6 +14,7 @@ class BoundsBuilder {
         xmax = Double.MIN_VALUE
         ymin = Double.MAX_VALUE
         ymax = Double.MIN_VALUE
+        npoints = 0
     }
 
     fun add(x: Double, y: Double): BoundsBuilder {
@@ -20,11 +22,19 @@ class BoundsBuilder {
         xmax = kotlin.math.max(xmax, x)
         ymin = kotlin.math.min(ymin, y)
         ymax = kotlin.math.max(ymax, y)
+        npoints++
         //println("add($x, $y) -> ($xmin,$ymin)-($xmax,$ymax)")
         return this
     }
 
-    fun getBounds(out: Rectangle = Rectangle()): Rectangle = out.setBounds(xmin, ymin, xmax, ymax)
+    fun getBoundsOrNull(out: Rectangle = Rectangle()): Rectangle? = if (npoints == 0) null else out.setBounds(xmin, ymin, xmax, ymax)
+
+    fun getBounds(out: Rectangle = Rectangle()): Rectangle {
+        if (getBoundsOrNull(out) == null) {
+            out.setBounds(0, 0, 0, 0)
+        }
+        return out
+    }
 }
 
 inline fun BoundsBuilder.add(x: Number, y: Number) = add(x.toDouble(), y.toDouble())
