@@ -3,6 +3,7 @@ package com.soywiz.korma.random
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.interpolation.*
 import com.soywiz.korma.math.*
+import kotlin.math.*
 import kotlin.random.*
 
 fun Random.ints(): Sequence<Int> = sequence { while (true) yield(nextInt()) }
@@ -36,7 +37,7 @@ fun <T> Random.weighted(weights: RandomWeights<T>): T = shuffledWeighted(weights
 fun <T> Random.shuffledWeighted(weights: Map<T, Double>): List<T> = shuffledWeighted(RandomWeights(weights))
 fun <T> Random.shuffledWeighted(values: List<T>, weights: List<Double>): List<T> = shuffledWeighted(RandomWeights(values, weights))
 fun <T> Random.shuffledWeighted(weights: RandomWeights<T>): List<T> {
-    val randoms = (0 until weights.items.size).map { -pow(nextDouble(), (1.0 / weights.normalizedWeights[it])) }
+    val randoms = (0 until weights.items.size).map { -(nextDouble().pow(1.0 / weights.normalizedWeights[it])) }
     val sortedIndices = (0 until weights.items.size).sortedWith(Comparator { a, b -> randoms[a].compareTo(randoms[b]) })
     return sortedIndices.map { weights.items[it] }
 }

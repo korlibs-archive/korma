@@ -134,15 +134,11 @@ fun Triangle.containsEdgePoints(p1: IPoint, p2: IPoint): Boolean = containsPoint
 private fun _product(p1: IPoint, p2: IPoint, p3: IPoint): Double = (p1.x - p3.x) * (p2.y - p3.y) - (p1.y - p3.y) * (p2.x - p3.x)
 
 fun Triangle.pointInsideTriangle(pp: IPoint): Boolean {
-    val sign = _product(p0, p1, p2)
+    val sign0 = _product(p0, p1, p2)
     val sign1 = _product(p0, p1, pp)
     val sign2 = _product(p1, p2, pp)
     val sign3 = _product(p2, p0, pp)
-    return if (sign >= 0) {
-        (sign1 >= 0) && (sign2 >= 0) && (sign3 >= 0)
-    } else {
-        (sign1 <= 0) && (sign2 <= 0) && (sign3 <= 0)
-    }
+    return if (sign0 >= 0) (sign1 >= 0) && (sign2 >= 0) && (sign3 >= 0) else (sign1 <= 0) && (sign2 <= 0) && (sign3 <= 0)
 }
 
 // Optimized?

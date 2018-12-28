@@ -8,7 +8,8 @@ interface MutableInterpolable<T> {
     fun setToInterpolated(ratio: Double, l: T, r: T): T
 }
 
-@Suppress("UNCHECKED_CAST", "USELESS_CAST")
+@Suppress("UNCHECKED_CAST", "USELESS_CAST", "DeprecatedCallableAddReplaceWith")
+@Deprecated("Kotlin.JS can't differentiate numeric types, so this might cause strange issues with Ints having decimals")
 fun <T> Double.interpolateAny(min: T, max: T): T = when (min) {
     is Float -> this.interpolate(min as Float, max as Float) as T
     is Int -> this.interpolate(min as Int, max as Int) as T
@@ -24,12 +25,3 @@ fun Double.interpolate(l: Int, r: Int): Int = (l + (r - l) * this).toInt()
 fun Double.interpolate(l: Long, r: Long): Long = (l + (r - l) * this).toLong()
 fun <T> Double.interpolate(l: Interpolable<T>, r: Interpolable<T>): T = l.interpolateWith(this, r as T)
 fun <T : Interpolable<T>> Double.interpolate(l: T, r: T): T = l.interpolateWith(this, r)
-
-fun <T> Float.interpolateAny(min: T, max: T): T = this.toDouble().interpolateAny(min, max)
-
-fun Float.interpolate(l: Float, r: Float): Float = (l + (r - l) * this)
-fun Float.interpolate(l: Double, r: Double): Double = l + (r - l) * this
-fun Float.interpolate(l: Int, r: Int): Int = (l + (r - l) * this).toInt()
-fun Float.interpolate(l: Long, r: Long): Long = (l + (r - l) * this).toLong()
-fun <T> Float.interpolate(l: Interpolable<T>, r: Interpolable<T>): T = l.interpolateWith(this.toDouble(), r as T)
-fun <T : Interpolable<T>> Float.interpolate(l: T, r: T): T = l.interpolateWith(this.toDouble(), r)

@@ -1,8 +1,6 @@
-package com.soywiz.korma
+package com.soywiz.korma.geom
 
-import com.soywiz.korma.geom.*
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import kotlin.test.*
 
 class Matrix3DTest {
     @Test

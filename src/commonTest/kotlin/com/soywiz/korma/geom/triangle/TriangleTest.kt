@@ -38,6 +38,31 @@ class TriangleTest {
         assertEquals(true, t1.containsEdge(Edge(Point(10, 0), Point(0, 10))))
         assertEquals(true, t1.containsEdge(Edge(Point(0, 0), Point(0, 10))))
         assertEquals(false, t2.containsEdge(Edge(Point(0, 0), Point(0, 10))))
+    }
 
+    @Test
+    fun inside() {
+        // Edges
+        assertEquals(true, t1.pointInsideTriangle(Point(0, 0)))
+        assertEquals(true, t1.pointInsideTriangle(Point(10, 0)))
+        assertEquals(true, t1.pointInsideTriangle(Point(0, 10)))
+
+        assertEquals(true, t1.pointInsideTriangle(Point(2, 2)))
+
+        assertEquals(false, t1.pointInsideTriangle(Point(-2, -2)))
+        assertEquals(false, t1.pointInsideTriangle(Point(2, -2)))
+        assertEquals(false, t1.pointInsideTriangle(Point(-2, 2)))
+    }
+
+    @Test
+    fun extra() {
+        assertEquals(Point(0, 10), t1.pointCW(Point(0, 0)))
+        assertEquals(Point(10, 0), t1.pointCCW(Point(0, 0)))
+
+        assertEquals(Point(0, 0), t1.pointCW(Point(10, 0)))
+        assertEquals(Point(0, 10), t1.pointCCW(Point(10, 0)))
+
+        assertEquals(Point(10, 0), t1.pointCW(Point(0, 10)))
+        assertEquals(Point(0, 0), t1.pointCCW(Point(0, 10)))
     }
 }

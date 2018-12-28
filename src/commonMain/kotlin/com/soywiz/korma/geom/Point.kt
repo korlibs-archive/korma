@@ -50,6 +50,13 @@ data class Point(override var x: Double, override var y: Double) : MutableInterp
 
         fun angle(x1: Double, y1: Double, x2: Double, y2: Double, x3: Double, y3: Double): Angle = Angle.between(x1 - x2, y1 - y2, x1 - x3, y1 - y3)
 
+        fun distance(a: Double, b: Double): Double = kotlin.math.abs(a - b)
+        fun distance(x1: Double, y1: Double, x2: Double, y2: Double): Double = kotlin.math.hypot(x1 - x2, y1 - y2)
+        inline fun distance(x1: Number, y1: Number, x2: Number, y2: Number): Double = distance(x1.toDouble(), y1.toDouble(), x2.toDouble(), y2.toDouble())
+
+        fun distance(a: IPoint, b: IPoint): Double = distance(a.x, a.y, b.x, b.y)
+        fun distance(a: IPointInt, b: IPointInt): Double = distance(a.x, a.y, b.x, b.y)
+
         //val ax = x1 - x2
         //val ay = y1 - y2
         //val al = hypot(ax, ay)
