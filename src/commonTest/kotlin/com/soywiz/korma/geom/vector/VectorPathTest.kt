@@ -1,5 +1,6 @@
-package com.soywiz.korma.geom
+package com.soywiz.korma.geom.vector
 
+import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.vector.*
 import kotlin.test.Test
 import kotlin.test.assertEquals

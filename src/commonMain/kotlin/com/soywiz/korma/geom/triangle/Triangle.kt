@@ -1,49 +1,8 @@
-/*
-Poly2Tri:Fast and Robust Simple Polygon triangulation with/without holes
-                        by Sweep Line Algorithm
-                               Liang, Wu
-        http://www.mema.ucl.ac.be/~wu/Poly2Tri/poly2tri.html
-        Copyright (C) 2003, 2004, 2005, ALL RIGHTS RESERVED.
-
----------------------------------------------------------------------
-wu@mema.ucl.ac.be                           wuliang@femagsoft.com
-Centre for Sys. Eng. & App. Mech.           FEMAGSoft S.A.
-Universite Cathalique de Louvain            4, Avenue Albert Einstein
-Batiment Euler, Avenue Georges Lemaitre, 4  B-1348 Louvain-la-Neuve
-B-1348, Louvain-la-Neuve                    Belgium
-Belgium
----------------------------------------------------------------------
-
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHAN-
-TABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-This program may be freely redistributed under the condition that all
-the copyright notices in all source files ( including the copyright
-notice printed when the `-h' switch is selected) are not removed.Both
-the binary and source codes may not be sold or included in any comme-
-rcial products without a license from the corresponding author(s) &
-entities.
-
-1) Arbitrary precision floating-point arithmetic and fast robust geo-
-   metric predicates (predicates.cc) is copyrighted by
-   Jonathan Shewchuk (http://www.cs.berkeley.edu/~jrs) and you may get
-   the source code from http://www.cs.cmu.edu/~quake/robust.html
-
-2) The shell script mps2eps is copyrighted by Jon Edvardsson
-   (http://www.ida.liu.se/~pelab/members/index.php4/?12) and you may
-   get the copy from http://www.ida.liu.se/~joned/download/mps2eps/
-
-3) All other source codes and exmaples files distributed in Poly2Tri
-   are copyrighted by Liang, Wu (http://www.mema.ucl.ac.be/~wu) and
-   FEMAGSoft S.A.
- */
-
 package com.soywiz.korma.geom.triangle
 
 import com.soywiz.korma.geom.Orientation
 import com.soywiz.korma.geom.IPoint
-import kotlin.math.abs
+import kotlin.math.*
 
 interface Triangle {
     val p0: IPoint
@@ -88,47 +47,6 @@ interface Triangle {
 
         fun getUniquePointsFromTriangles(triangles: List<Triangle>) = triangles.flatMap { listOf(it.p0, it.p1, it.p2) }.distinct()
 
-        fun traceList(triangles: List<Triangle>) {
-            val pointsList = getUniquePointsFromTriangles(triangles)
-            val pointsMap = hashMapOf<IPoint, Int>()
-            var points_length = 0
-            for (point in pointsList) pointsMap[point] = ++points_length
-            fun getPointName(point: IPoint): String = "p" + pointsMap[point]
-            println("Points:")
-            for (point in pointsList) println("  " + getPointName(point) + " = " + point)
-            println("Triangles:")
-            for (triangle in triangles) println(
-                "  Triangle(${getPointName(triangle.point(0))}, ${getPointName(triangle.point(1))}, ${getPointName(
-                    triangle.point(2)
-                )})"
-            )
-        }
-
-
-        /**
-         * <b>Requirement</b>:<br>
-         * 1. a, b and c form a triangle.<br>
-         * 2. a and d is know to be on opposite side of bc<br>
-         * <pre>
-         *                a
-         *                +
-         *               / \
-         *              /   \
-         *            b/     \c
-         *            +-------+
-         *           /    d    \
-         *          /           \
-         * </pre>
-         * <b>Fact</b>: d has to be in area B to have a chance to be inside the circle formed by
-         *  a,b and c<br>
-         *  d is outside B if orient2d(a,b,d) or orient2d(c,a,d) is CW<br>
-         *  This preknowledge gives us a way to optimize the incircle test
-         * @param pa - triangle point, opposite d
-         * @param pb - triangle point
-         * @param pc - triangle point
-         * @param pd - point opposite a
-         * @return true if d is inside circle, false if on circle edge
-         */
         fun insideIncircle(pa: IPoint, pb: IPoint, pc: IPoint, pd: IPoint): Boolean {
             val adx = pa.x - pd.x
             val ady = pa.y - pd.y
@@ -215,10 +133,16 @@ fun Triangle.containsEdgePoints(p1: IPoint, p2: IPoint): Boolean = containsPoint
 
 private fun _product(p1: IPoint, p2: IPoint, p3: IPoint): Double = (p1.x - p3.x) * (p2.y - p3.y) - (p1.y - p3.y) * (p2.x - p3.x)
 
-fun Triangle.pointInsideTriangle(pp: IPoint): Boolean = if (_product(p0, p1, p2) >= 0) {
-    (_product(p0, p1, pp) >= 0) && (_product(p1, p2, pp)) >= 0 && (_product(p2, p0, pp) >= 0)
-} else {
-    (_product(p0, p1, pp) <= 0) && (_product(p1, p2, pp)) <= 0 && (_product(p2, p0, pp) <= 0)
+fun Triangle.pointInsideTriangle(pp: IPoint): Boolean {
+    val sign = _product(p0, p1, p2)
+    val sign1 = _product(p0, p1, pp)
+    val sign2 = _product(p1, p2, pp)
+    val sign3 = _product(p2, p0, pp)
+    return if (sign >= 0) {
+        (sign1 >= 0) && (sign2 >= 0) && (sign3 >= 0)
+    } else {
+        (sign1 <= 0) && (sign2 <= 0) && (sign3 <= 0)
+    }
 }
 
 // Optimized?
@@ -259,17 +183,6 @@ fun Triangle(p0: IPoint, p1: IPoint, p2: IPoint, fixOrientation: Boolean = false
     if (checkOrientation && Orientation.orient2d(p2, p1, p0) != Orientation.CLOCK_WISE) throw(Error("Triangle must defined with Orientation.CW"))
     return Triangle.Base(p0, p1, p2)
 }
-
-/*public fun getPointIndexOffset(p:Point2d, offset:Int = 0):uint {
-	for (var n:uint = 0; n < 3; n++) if (p == (this.points[n])) return (n + offset) % 3;
-	throw(Error("Point2d not in triangle"));
-}*/
-
-
-/** Alias for containsPoint */
-fun Triangle.isPointAVertex(p: IPoint): Boolean = containsPoint(p)
-//for (var n:uint = 0; n < 3; n++) if (p == [this.points[n]]) return true;
-//return false;
 
 val Triangle.area: Double get() = Triangle.area(p0, p1, p2)
 

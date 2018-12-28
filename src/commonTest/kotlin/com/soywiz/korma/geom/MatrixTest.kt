@@ -94,8 +94,13 @@ class MatrixTest {
     @Test
     fun transform2() {
         assertEquals(Matrix(2, 0, 0, 3, 10, 20), Matrix.Transform(10, 20, scaleX = 2, scaleY = 3).toMatrix())
-        val t1 = Matrix.Transform(10, 20, scaleX = 2, scaleY = 3, rotation = 90.degrees)
-        val t2 = Matrix.Transform(20, 40, scaleX = 4, scaleY = 5, rotation = 180.degrees)
+
+        // @TODO: Kotlin.JS BUG (missing arguments are NaN or undefined but it works fine on JVM)
+        //val t1 = Matrix.Transform(10, 20, scaleX = 2, scaleY = 3, rotation = 90.degrees)
+        //val t2 = Matrix.Transform(20, 40, scaleX = 4, scaleY = 5, rotation = 180.degrees)
+
+        val t1 = Matrix.Transform(10, 20, scaleX = 2, scaleY = 3, skewX = 0.0, skewY = 0.0, rotation = 90.degrees)
+        val t2 = Matrix.Transform(20, 40, scaleX = 4, scaleY = 5, skewX = 0.0, skewY = 0.0, rotation = 180.degrees)
         assertEquals(
             Matrix.Transform(x=15.0, y=30.0, scaleX=3.0, scaleY=4.0, skewX=0.0, skewY=0.0, rotation=135.degrees),
             0.5.interpolate(t1, t2)
