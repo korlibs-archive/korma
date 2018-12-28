@@ -9,9 +9,9 @@ class BinPacker(val width: Double, val height: Double, val algo: Algo = MaxRects
 
     class Result<T>(val maxWidth: Double, val maxHeight: Double, val items: List<Pair<T, Rectangle?>>) {
         private val rectanglesNotNull = items.map { it.second }.filterNotNull()
-        val width = rectanglesNotNull.maxBy { it.right } ?: 0.0
-        val height = rectanglesNotNull.maxBy { it.bottom } ?: 0.0
-        val rects get() = items.map { it.second }
+        val width: Double = rectanglesNotNull.map { it.right }.max() ?: 0.0
+        val height: Double = rectanglesNotNull.map { it.bottom }.max() ?: 0.0
+        val rects: List<Rectangle?> get() = items.map { it.second }
         val rectsStr: String get() = rects.toString()
     }
 

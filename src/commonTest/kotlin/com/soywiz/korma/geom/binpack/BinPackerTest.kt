@@ -23,6 +23,17 @@ class BinPackerTest {
             listOf(Size(10, 10), Size(5, 5), Size(5, 5), Size(5, 5), Size(5, 5), Size(10, 5), Size(5, 10), Size(5, 5))
         )
         assertEquals(4, packs.size)
+
+        assertEquals(10.0, packs.first().width)
+        assertEquals(10.0, packs.first().height)
+        assertEquals(10.0, packs.first().maxWidth)
+        assertEquals(10.0, packs.first().maxHeight)
+
+        assertEquals(10.0, packs.last().width)
+        assertEquals(10.0, packs.last().height)
+        assertEquals(10.0, packs.last().maxWidth)
+        assertEquals(10.0, packs.last().maxHeight)
+
         assertEquals("[Rectangle(x=0, y=0, width=10, height=10)]", packs[0].rectsStr)
         assertEquals(
             "[Rectangle(x=0, y=0, width=5, height=5), Rectangle(x=0, y=5, width=5, height=5), Rectangle(x=5, y=0, width=5, height=5), Rectangle(x=5, y=5, width=5, height=5)]",

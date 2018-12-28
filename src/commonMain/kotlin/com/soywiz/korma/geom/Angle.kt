@@ -1,12 +1,13 @@
 package com.soywiz.korma.geom
 
 import com.soywiz.korma.internal.umod
+import com.soywiz.korma.interpolation.*
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.atan2
 
 inline class Angle(val radians: Double) {
-    override fun toString(): String = "Angle($degrees)"
+    override fun toString(): String = "$degrees.degrees"
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {
@@ -49,9 +50,9 @@ inline class Angle(val radians: Double) {
     }
 }
 
-fun cos(angle: Angle): Double = kotlin.math.cos(angle.radians)
-fun sin(angle: Angle): Double = kotlin.math.sin(angle.radians)
-fun tan(angle: Angle): Double = kotlin.math.tan(angle.radians)
+inline fun cos(angle: Angle): Double = kotlin.math.cos(angle.radians)
+inline fun sin(angle: Angle): Double = kotlin.math.sin(angle.radians)
+inline fun tan(angle: Angle): Double = kotlin.math.tan(angle.radians)
 
 val Angle.degrees get() = Angle.radiansToDegrees(radians)
 
@@ -69,3 +70,5 @@ inline operator fun Angle.unaryPlus(): Angle = Angle(+radians)
 inline val Number.degrees get() = Angle.fromDegrees(this)
 inline val Number.radians get() = Angle.fromRadians(this)
 val Angle.normalized get() = Angle(radians umod Angle.MAX_RADIANS)
+
+fun Double.interpolate(l: Angle, r: Angle): Angle = this.interpolate(l.radians, r.radians).radians
