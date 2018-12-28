@@ -16,7 +16,9 @@ interface IPoint {
     }
 }
 
-data class Point(override var x: Double, override var y: Double) : MutableInterpolable<Point>, Interpolable<Point>, IPoint {
+data class Point(override var x: Double, override var y: Double) : MutableInterpolable<Point>, Interpolable<Point>, Comparable<IPoint>, IPoint {
+    override fun compareTo(other: IPoint): Int = compare(this.x, this.y, other.x, other.y)
+
     companion object {
         val Zero: IPoint = Point(0.0, 0.0)
         val One: IPoint = Point(1.0, 1.0)
@@ -158,10 +160,17 @@ interface IPointInt {
     }
 }
 
-inline class PointInt(val p: Point) : IPointInt {
+inline class PointInt(val p: Point) : IPointInt, Comparable<IPointInt> {
+    override fun compareTo(other: IPointInt): Int = compare(this.x, this.y, other.x, other.y)
+
     companion object {
         operator fun invoke(): PointInt = PointInt(0, 0)
         operator fun invoke(x: Int, y: Int): PointInt = PointInt(Point(x, y))
+
+        fun compare(lx: Int, ly: Int, rx: Int, ry: Int): Int {
+            val ret = ly.compareTo(ry)
+            return if (ret == 0) lx.compareTo(rx) else ret
+        }
     }
     override var x: Int
         set(value) = run { p.x = value.toDouble() }
