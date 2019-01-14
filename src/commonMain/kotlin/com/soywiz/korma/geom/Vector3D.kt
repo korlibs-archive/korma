@@ -3,31 +3,28 @@ package com.soywiz.korma.geom
 import com.soywiz.korma.internal.*
 import kotlin.math.*
 
-interface IVector3D {
-    val x: Double
-    val y: Double
-    val z: Double
-    val w: Double
+class Vector3D {
+    val data = floatArrayOf(0f, 0f, 0f, 1f)
+
+    var x: Float get() = data[0]; set(value) = run { data[0] = value }
+    var y: Float get() = data[1]; set(value) = run { data[1] = value }
+    var z: Float get() = data[2]; set(value) = run { data[2] = value }
+    var w: Float get() = data[3]; set(value) = run { data[3] = value }
+
+    val lengthSquared: Float get() = (x * x) + (y * y) + (z * z) + (w * w)
+    val length: Float get() = sqrt(lengthSquared)
 
     companion object {
-        inline operator fun invoke(x: Number, y: Number, z: Number, w: Number): Vector3D = Vector3D(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
+        inline operator fun invoke(x: Number, y: Number, z: Number, w: Number = 1f): Vector3D = Vector3D().setTo(x, y, z, w)
     }
-}
 
-val IVector3D.length: Double get() = sqrt((x * x) + (y * y) + (z * z) + (w * w))
+    fun copyFrom(other: Vector3D) = setTo(other.x, other.y, other.z, other.w)
+    fun setTo(x: Float, y: Float, z: Float, w: Float): Vector3D = this.apply { this.x = x; this.y = y; this.z = z; this.w = w }
+    inline fun setTo(x: Number, y: Number, z: Number, w: Number): Vector3D = setTo(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat())
 
-data class Vector3D(override var x: Double, override var y: Double, override var z: Double, override var w: Double) : IVector3D {
-    companion object {
-        operator fun invoke(): Vector3D = Vector3D(0.0, 0.0, 0.0, 1.0)
-        inline operator fun invoke(x: Number, y: Number, z: Number, w: Number = 1.0): Vector3D = Vector3D(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
-    }
-    fun setTo(x: Double, y: Double, z: Double, w: Double): Vector3D {
-        this.x = x
-        this.y = y
-        this.z = z
-        this.w = w
-        return this
-    }
+    override fun equals(other: Any?): Boolean = (other is Vector3D) && this.data.contentEquals(other.data)
+    override fun hashCode(): Int = data.contentHashCode()
+
     override fun toString(): String = "(${x.niceStr}, ${y.niceStr}, ${z.niceStr}, ${w.niceStr})"
 }
 
