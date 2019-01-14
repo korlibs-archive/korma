@@ -224,16 +224,20 @@ class Matrix3D {
 
     fun transform(v: Vector3D, out: Vector3D = Vector3D()): Vector3D = transform(v.x, v.y, v.z, v.w, out)
 
-    fun setToOrtho(left: Float, top: Float, right: Float, bottom: Float, near: Float, far: Float): Matrix3D {
-        val lr = 1f / (left - right)
-        val bt = 1f / (bottom - top)
-        val nf = 1f / (near - far)
+    fun setToOrtho(left: Float, top: Float, right: Float, bottom: Float, near: Float = 0f, far: Float = 1f): Matrix3D {
+        val sx = 2 / (right - left)
+        val sy = 2 / (top - bottom)
+        val sz = -2 / (far - near)
+
+        val tx = -(right + left) / (right - left)
+        val ty = -(top + bottom) / (top - bottom)
+        val tz = -(far + near) / (far - near)
 
         return setRows(
-            -2f * lr, 0f, 0f, 0f,
-            0f, -2f * bt, 0f, 0f,
-            0f, 0f, 2f * nf, 0f,
-            (left + right) * lr, (top + bottom) * bt, (far + near) * nf, 1f
+            sx, 0, 0, tx,
+            0, sy, 0, ty,
+            0, 0, sz, tz,
+            0, 0, 0, 1
         )
     }
 
@@ -270,7 +274,8 @@ fun Matrix3D.copyToFloat2x2(out: FloatArray, order: MajorOrder) = copyToFloatWxH
 fun Matrix3D.copyToFloat3x3(out: FloatArray, order: MajorOrder) = copyToFloatWxH(out, 3, 3, order)
 fun Matrix3D.copyToFloat4x4(out: FloatArray, order: MajorOrder) = copyToFloatWxH(out, 4, 4, order)
 
-inline fun Matrix3D.setToOrtho(left: Number, top: Number, right: Number, bottom: Number, near: Number, far: Number): Matrix3D = setToOrtho(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), near.toFloat(), far.toFloat())
+inline fun Matrix3D.setToOrtho(left: Number, top: Number, right: Number, bottom: Number, near: Number, far: Number): Matrix3D =
+    setToOrtho(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), near.toFloat(), far.toFloat())
 
 inline fun Matrix3D.setRows(
     a00: Number, a01: Number, a02: Number, a03: Number,

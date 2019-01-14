@@ -82,9 +82,31 @@ class Matrix3DTest {
 
     @Test
     fun test3() {
-        val mat = Matrix(2, 0, 0, 2, 20, 20)
-        val mat4 = mat.toMatrix3D()
-        assertEquals(Point(40, 40), mat.transform(Point(10, 10)))
-        assertEquals(Vector3D(40, 40, 0), mat4.transform(Vector3D(10f, 10f, 0f)))
+        run {
+            val mat = Matrix(2, 0, 0, 2, 20, 20)
+            val mat4 = mat.toMatrix3D()
+            assertEquals(Point(40, 40), mat.transform(Point(10, 10)))
+            assertEquals(Vector3D(40, 40, 0), mat4.transform(Vector3D(10f, 10f, 0f)))
+        }
+        run {
+            val mat = Matrix(1, 2, 3, 4, 5, 6)
+            val mat4 = mat.toMatrix3D()
+            assertEquals(Point(45, 66), mat.transform(Point(10, 10)))
+            assertEquals(Vector3D(45, 66, 0), mat4.transform(Vector3D(10f, 10f, 0f)))
+        }
+    }
+
+    @Test
+    fun ortho() {
+        run {
+            val projection = Matrix3D().setToOrtho(0f, 0f, 200f, 100f, 0f, -20f)
+            assertEquals(Vector3D(0, 0, -1), Vector3D(100f, 50f, 0f).transform(projection))
+            assertEquals(Vector3D(0, 0, +1), Vector3D(100f, 50f, 20f).transform(projection))
+        }
+        run {
+            val projection = Matrix3D().setToOrtho(0f, 0f, 200f, 100f, 0f, +20f)
+            assertEquals(Vector3D(0, 0, -1), Vector3D(100f, 50f, 0f).transform(projection))
+            assertEquals(Vector3D(0, 0, +1), Vector3D(100f, 50f, -20f).transform(projection))
+        }
     }
 }

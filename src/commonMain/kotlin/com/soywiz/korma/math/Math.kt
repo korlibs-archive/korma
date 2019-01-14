@@ -8,6 +8,12 @@ fun Double.clamp(min: Double, max: Double): Double = if (this < min) min else if
 fun Float.clamp(min: Float, max: Float): Float = if (this < min) min else if (this > max) max else this
 fun Double.betweenInclusive(min: Double, max: Double): Boolean = (this >= min) && (this <= max)
 
+fun almostEquals(a: Float, b: Float) = almostZero(a - b)
+fun almostZero(a: Float) = abs(a) <= 0.0000001
+
+fun almostEquals(a: Double, b: Double) = almostZero(a - b)
+fun almostZero(a: Double) = abs(a) <= 0.0000001
+
 fun Double.roundDecimalPlaces(places: Int): Double {
     val placesFactor: Double = 10.0.pow(places.toDouble())
     return kotlin.math.round(this * placesFactor) / placesFactor

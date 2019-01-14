@@ -1,6 +1,7 @@
 package com.soywiz.korma.geom
 
 import com.soywiz.korma.internal.*
+import com.soywiz.korma.math.*
 import kotlin.math.*
 
 class Vector3D {
@@ -14,6 +15,9 @@ class Vector3D {
     val lengthSquared: Float get() = (x * x) + (y * y) + (z * z) + (w * w)
     val length: Float get() = sqrt(lengthSquared)
 
+    operator fun get(index: Int): Float = data[index]
+    operator fun set(index: Int, value: Float) = run { data[index] = value }
+
     companion object {
         inline operator fun invoke(x: Number, y: Number, z: Number, w: Number = 1f): Vector3D = Vector3D().setTo(x, y, z, w)
     }
@@ -22,7 +26,9 @@ class Vector3D {
     fun setTo(x: Float, y: Float, z: Float, w: Float): Vector3D = this.apply { this.x = x; this.y = y; this.z = z; this.w = w }
     inline fun setTo(x: Number, y: Number, z: Number, w: Number): Vector3D = setTo(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat())
 
-    override fun equals(other: Any?): Boolean = (other is Vector3D) && this.data.contentEquals(other.data)
+    fun transform(mat: Matrix3D) = mat.transform(this, this)
+
+    override fun equals(other: Any?): Boolean = (other is Vector3D) && almostEquals(this.x, other.x) && almostEquals(this.y, other.y) && almostEquals(this.z, other.z) && almostEquals(this.w, other.w)
     override fun hashCode(): Int = data.contentHashCode()
 
     override fun toString(): String = "(${x.niceStr}, ${y.niceStr}, ${z.niceStr}, ${w.niceStr})"
