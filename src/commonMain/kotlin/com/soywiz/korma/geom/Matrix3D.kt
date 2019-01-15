@@ -36,30 +36,6 @@ class Matrix3D {
 
         operator fun invoke(m: Matrix3D) = Matrix3D().copyFrom(m)
 
-        fun fromRows(
-            a00: Float, a01: Float, a02: Float, a03: Float,
-            a10: Float, a11: Float, a12: Float, a13: Float,
-            a20: Float, a21: Float, a22: Float, a23: Float,
-            a30: Float, a31: Float, a32: Float, a33: Float
-        ) = Matrix3D().setRows(
-            a00, a01, a02, a03,
-            a10, a11, a12, a13,
-            a20, a21, a22, a23,
-            a30, a31, a32, a33
-        )
-
-        fun fromColumns(
-            a00: Float, a10: Float, a20: Float, a30: Float,
-            a01: Float, a11: Float, a21: Float, a31: Float,
-            a02: Float, a12: Float, a22: Float, a32: Float,
-            a03: Float, a13: Float, a23: Float, a33: Float
-        ) = Matrix3D().setColumns(
-            a00, a10, a20, a30,
-            a01, a11, a21, a31,
-            a02, a12, a22, a32,
-            a03, a13, a23, a33
-        )
-
         fun rowMajorIndex(row: Int, column: Int) = row * 4 + column
         fun columnMajorIndex(row: Int, column: Int) = column * 4 + row
         fun index(row: Int, column: Int, order: MajorOrder) = if (order == MajorOrder.ROW) rowMajorIndex(row, column) else columnMajorIndex(row, column)
@@ -301,12 +277,44 @@ inline fun Matrix3D.setColumns(
     a03.toFloat(), a13.toFloat(), a23.toFloat(), a33.toFloat()
 )
 
+inline fun Matrix3D.setRows3x3(
+    a00: Number, a01: Number, a02: Number,
+    a10: Number, a11: Number, a12: Number,
+    a20: Number, a21: Number, a22: Number
+): Matrix3D = setRows(
+    a00.toFloat(), a01.toFloat(), a02.toFloat(), 0f,
+    a10.toFloat(), a11.toFloat(), a12.toFloat(), 0f,
+    a20.toFloat(), a21.toFloat(), a22.toFloat(), 0f,
+    0f, 0f, 0f, 1f
+)
+
+inline fun Matrix3D.setColumns3x3(
+    a00: Number, a10: Number, a20: Number,
+    a01: Number, a11: Number, a21: Number,
+    a02: Number, a12: Number, a22: Number
+): Matrix3D = setColumns(
+    a00.toFloat(), a10.toFloat(), a20.toFloat(), 0f,
+    a01.toFloat(), a11.toFloat(), a21.toFloat(), 0f,
+    a02.toFloat(), a12.toFloat(), a22.toFloat(), 0f,
+    0f, 0f, 0f, 1f
+)
+
+inline fun Matrix3D.setRows2x2(
+    a00: Number, a01: Number,
+    a10: Number, a11: Number
+): Matrix3D = setRows(
+    a00.toFloat(), a01.toFloat(), 0f, 0f,
+    a10.toFloat(), a11.toFloat(), 0f, 0f,
+    0f, 0f, 1f, 0f,
+    0f, 0f, 0f, 1f
+)
+
 inline fun Matrix3D.Companion.fromRows(
     a00: Number, a01: Number, a02: Number, a03: Number,
     a10: Number, a11: Number, a12: Number, a13: Number,
     a20: Number, a21: Number, a22: Number, a23: Number,
     a30: Number, a31: Number, a32: Number, a33: Number
-): Matrix3D = fromRows(
+): Matrix3D = Matrix3D().setRows(
     a00.toFloat(), a01.toFloat(), a02.toFloat(), a03.toFloat(),
     a10.toFloat(), a11.toFloat(), a12.toFloat(), a13.toFloat(),
     a20.toFloat(), a21.toFloat(), a22.toFloat(), a23.toFloat(),
@@ -318,13 +326,58 @@ inline fun Matrix3D.Companion.fromColumns(
     a01: Number, a11: Number, a21: Number, a31: Number,
     a02: Number, a12: Number, a22: Number, a32: Number,
     a03: Number, a13: Number, a23: Number, a33: Number
-): Matrix3D = fromColumns(
+): Matrix3D = Matrix3D().setColumns(
     a00.toFloat(), a10.toFloat(), a20.toFloat(), a30.toFloat(),
     a01.toFloat(), a11.toFloat(), a21.toFloat(), a31.toFloat(),
     a02.toFloat(), a12.toFloat(), a22.toFloat(), a32.toFloat(),
     a03.toFloat(), a13.toFloat(), a23.toFloat(), a33.toFloat()
 )
 
+inline fun Matrix3D.setColumns2x2(
+    a00: Number, a10: Number,
+    a01: Number, a11: Number
+): Matrix3D = setColumns(
+    a00.toFloat(), a10.toFloat(), 0f, 0f,
+    a01.toFloat(), a11.toFloat(), 0f, 0f,
+    0f, 0f, 1f, 0f,
+    0f, 0f, 0f, 1f
+)
+
+inline fun Matrix3D.Companion.fromRows3x3(
+    a00: Number, a01: Number, a02: Number,
+    a10: Number, a11: Number, a12: Number,
+    a20: Number, a21: Number, a22: Number
+): Matrix3D = Matrix3D().setRows3x3(
+    a00.toFloat(), a01.toFloat(), a02.toFloat(),
+    a10.toFloat(), a11.toFloat(), a12.toFloat(),
+    a20.toFloat(), a21.toFloat(), a22.toFloat()
+)
+
+inline fun Matrix3D.Companion.fromColumns3x3(
+    a00: Number, a10: Number, a20: Number,
+    a01: Number, a11: Number, a21: Number,
+    a02: Number, a12: Number, a22: Number
+): Matrix3D = Matrix3D().setColumns3x3(
+    a00.toFloat(), a10.toFloat(), a20.toFloat(),
+    a01.toFloat(), a11.toFloat(), a21.toFloat(),
+    a02.toFloat(), a12.toFloat(), a22.toFloat()
+)
+
+inline fun Matrix3D.Companion.fromRows2x2(
+    a00: Number, a01: Number,
+    a10: Number, a11: Number
+): Matrix3D = Matrix3D().setRows2x2(
+    a00.toFloat(), a01.toFloat(),
+    a10.toFloat(), a11.toFloat()
+)
+
+inline fun Matrix3D.Companion.fromColumns2x2(
+    a00: Number, a10: Number,
+    a01: Number, a11: Number
+): Matrix3D = Matrix3D().setColumns2x2(
+    a00.toFloat(), a10.toFloat(),
+    a01.toFloat(), a11.toFloat()
+)
 
 inline operator fun Matrix3D.times(that: Matrix3D): Matrix3D = Matrix3D().multiply(this, that)
 inline operator fun Matrix3D.times(value: Number): Matrix3D = Matrix3D(this).multiply(value.toFloat())
