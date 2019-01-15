@@ -109,4 +109,21 @@ class Matrix3DTest {
             assertEquals(Vector3D(0, 0, +1), Vector3D(100f, 50f, -20f).transform(projection))
         }
     }
+
+    @Test
+    fun translation() {
+        assertEquals(Vector3D(11f, 22f, 33f), Vector3D(10f, 20f, 30f).transform(Matrix3D().setToTranslation(1f, 2f, 3f)))
+    }
+
+    @Test
+    fun scale() {
+        assertEquals(Vector3D(100f, 400f, 900f), Vector3D(10f, 20f, 30f).transform(Matrix3D().setToScale(10f, 20f, 30f)))
+    }
+
+    @Test
+    fun rotation() {
+        assertEquals(Vector3D(0, 10, 0), Vector3D(10, 0, 0).transform(Matrix3D().setToRotationZ(90.degrees)))
+        assertEquals(Vector3D(-10, 0, 0), Vector3D(10, 0, 0).transform(Matrix3D().setToRotationZ(180.degrees)))
+        assertEquals(Vector3D(0, 10, 0), Vector3D(10, 0, 0).transform(Matrix3D().setToRotation(90.degrees, Vector3D(0, 0, 1))))
+    }
 }

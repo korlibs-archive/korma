@@ -144,6 +144,40 @@ class Matrix3D {
         return target
     }
 
+    val determinant: Float get() = 0f +
+        (v30 * v21 * v12 * v03) -
+        (v20 * v31 * v12 * v03) -
+        (v30 * v11 * v22 * v03) +
+        (v10 * v31 * v22 * v03) +
+        (v20 * v11 * v32 * v03) -
+        (v10 * v21 * v32 * v03) -
+        (v30 * v21 * v02 * v13) +
+        (v20 * v31 * v02 * v13) +
+        (v30 * v01 * v22 * v13) -
+        (v00 * v31 * v22 * v13) -
+        (v20 * v01 * v32 * v13) +
+        (v00 * v21 * v32 * v13) +
+        (v30 * v11 * v02 * v23) -
+        (v10 * v31 * v02 * v23) -
+        (v30 * v01 * v12 * v23) +
+        (v00 * v31 * v12 * v23) +
+        (v10 * v01 * v32 * v23) -
+        (v00 * v11 * v32 * v23) -
+        (v20 * v11 * v02 * v33) +
+        (v10 * v21 * v02 * v33) +
+        (v20 * v01 * v12 * v33) -
+        (v00 * v21 * v12 * v33) -
+        (v10 * v01 * v22 * v33) +
+        (v00 * v11 * v22 * v33)
+
+    val determinant3x3: Float get() = 0f +
+        (v00 * v11 * v22) +
+        (v01 * v12 * v20) +
+        (v02 * v10 * v21) -
+        (v00 * v12 * v21) -
+        (v01 * v10 * v22) -
+        (v02 * v11 * v20)
+
     fun setRow(row: Int, data: FloatArray): Matrix3D = setRow(row, data[0], data[1], data[2], data[3])
     fun setColumn(column: Int, data: FloatArray): Matrix3D = setColumn(column, data[0], data[1], data[2], data[3])
 
@@ -159,6 +193,80 @@ class Matrix3D {
         0f, 0f, 1f, 0f,
         0f, 0f, 0f, 1f
     )
+
+    inline fun setToTranslation(x: Number, y: Number, z: Number, w: Number = 1f) = setToTranslation(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat())
+    fun setToTranslation(x: Float, y: Float, z: Float, w: Float = 1f): Matrix3D = this.setRows(
+        1, 0, 0, x,
+        0, 1, 0, y,
+        0, 0, 1, z,
+        0, 0, 0, w
+    )
+
+    inline fun setToScale(x: Number, y: Number, z: Number, w: Number = 1f) = setToScale(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat())
+    fun setToScale(x: Float, y: Float, z: Float, w: Float = 1f): Matrix3D = this.setRows(
+        x, 0, 0, 0,
+        0, y, 0, 0,
+        0, 0, z, 0,
+        0, 0, 0, w
+    )
+
+    inline fun setToShear(x: Number, y: Number, z: Number) = setToShear(x.toFloat(), y.toFloat(), z.toFloat())
+    fun setToShear(x: Float, y: Float, z: Float): Matrix3D = this.setRows(
+        1, y, z, 0,
+        x, 1, z, 0,
+        x, y, 1, 0,
+        0, 0, 0, 1
+    )
+
+    fun setToRotationX(angle: Angle): Matrix3D {
+        val c = cos(angle)
+        val s = sin(angle)
+        return this.setRows(
+            1, 0, 0, 0,
+            0, c, - s, 0,
+            0, s, c, 0,
+            0, 0, 0, 1
+        )
+    }
+
+    fun setToRotationY(angle: Angle): Matrix3D {
+        val c = cos(angle)
+        val s = sin(angle)
+        return this.setRows(
+            c, 0, s, 0,
+            0, 1, 0, 0,
+            - s, 0, c, 0,
+            0, 0, 0, 1
+        )
+    }
+
+    fun setToRotationZ(angle: Angle): Matrix3D {
+        val c = cos(angle)
+        val s = sin(angle)
+        return this.setRows(
+            c, - s, 0, 0,
+            s, c, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        )
+    }
+
+    inline fun setToRotation(angle: Angle, direction: Vector3D): Matrix3D = setToRotation(angle, direction.x, direction.y, direction.z)
+    inline fun setToRotation(angle: Angle, x: Number, y: Number, z: Number): Matrix3D = setToRotation(angle, x.toFloat(), y.toFloat(), z.toFloat())
+    fun setToRotation(angle: Angle, x: Float, y: Float, z: Float): Matrix3D {
+        val c = cos(angle)
+        val s = sin(angle)
+        val t = 1 - c
+        val tx = t * x
+        val ty = t * y
+
+        return this.setRows(
+            tx * x + c, tx * y - s * z, tx * z + s * y, 0,
+            tx * y + s * z, ty * y + c, ty * z - s * x, 0,
+            tx * z - s * y, ty * z + s * x, t * z * z + c, 0,
+            0, 0, 0, 1
+        )
+    }
 
     fun multiply(l: Matrix3D, r: Matrix3D) = this.setRows(
         (l.v00 * r.v00) + (l.v01 * r.v10) + (l.v02 * r.v20) + (l.v03 * r.v30),
@@ -182,8 +290,8 @@ class Matrix3D {
         (l.v30 * r.v03) + (l.v31 * r.v13) + (l.v32 * r.v23) + (l.v33 * r.v33)
     )
 
-    fun multiply(scale: Float) = this.apply {
-        for (n in 0 until 16) this.data[n] *= scale
+    fun multiply(scale: Float, l: Matrix3D = this) = this.apply {
+        for (n in 0 until 16) this.data[n] = l.data[n] * scale
     }
 
     fun copyFrom(that: Matrix3D): Matrix3D {
@@ -382,4 +490,4 @@ inline fun Matrix3D.Companion.fromColumns2x2(
 inline operator fun Matrix3D.times(that: Matrix3D): Matrix3D = Matrix3D().multiply(this, that)
 inline operator fun Matrix3D.times(value: Number): Matrix3D = Matrix3D(this).multiply(value.toFloat())
 inline operator fun Matrix3D.div(value: Number): Matrix3D = Matrix3D(this).multiply(1f / value.toFloat())
-inline fun Matrix3D.multiply(scale: Number) = multiply(scale.toFloat())
+inline fun Matrix3D.multiply(scale: Number, l: Matrix3D = this) = multiply(scale.toFloat(), l)
