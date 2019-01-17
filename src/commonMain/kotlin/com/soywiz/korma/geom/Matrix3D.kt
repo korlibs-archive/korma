@@ -251,9 +251,14 @@ class Matrix3D {
         )
     }
 
-    inline fun setToRotation(angle: Angle, direction: Vector3D): Matrix3D = setToRotation(angle, direction.x, direction.y, direction.z)
-    inline fun setToRotation(angle: Angle, x: Number, y: Number, z: Number): Matrix3D = setToRotation(angle, x.toFloat(), y.toFloat(), z.toFloat())
-    fun setToRotation(angle: Angle, x: Float, y: Float, z: Float): Matrix3D {
+    inline fun setToRotation(angle: Angle, x: Float, y: Float, z: Float): Matrix3D = setToRotation(angle, Vector3D(x,y,z,0))
+    inline fun setToRotation(angle: Angle, x: Number, y: Number, z: Number): Matrix3D = setToRotation(angle, Vector3D(x,y,z,0))
+    fun setToRotation(angle: Angle, direction: Vector3D): Matrix3D {
+        val axis = direction.normalized()
+
+        val x = axis.x
+        val y = axis.y
+        val z = axis.z
         val c = cos(angle)
         val s = sin(angle)
         val t = 1 - c

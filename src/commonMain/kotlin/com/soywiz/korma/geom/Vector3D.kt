@@ -28,6 +28,15 @@ class Vector3D {
 
     fun transform(mat: Matrix3D) = mat.transform(this, this)
 
+    fun normalized() : Vector3D {
+        val mag = sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
+        val norm = 1.0 / mag
+        val x = this.x * norm
+        val y = this.y * norm
+        val z = this.z * norm
+        return Vector3D(x, y, z, 0);
+    }
+
     override fun equals(other: Any?): Boolean = (other is Vector3D) && almostEquals(this.x, other.x) && almostEquals(this.y, other.y) && almostEquals(this.z, other.z) && almostEquals(this.w, other.w)
     override fun hashCode(): Int = data.contentHashCode()
 
