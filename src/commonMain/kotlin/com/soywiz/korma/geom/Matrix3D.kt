@@ -325,6 +325,41 @@ class Matrix3D {
         )
     }
 
+    fun setToFrustum(left: Float, right: Float, bottom: Float, top: Float, zNear: Float, zFar: Float): Matrix3D {
+        if (zNear <= 0.0f || zFar <= zNear) {
+            throw Exception("Error: Required zNear > 0 and zFar > zNear, but zNear $zNear, zFar $zFar")
+        }
+        if (left == right || top == bottom) {
+            throw Exception("Error: top,bottom and left,right must not be equal")
+        }
+
+        val zNear2 = 2.0f * zNear
+        val dx = right - left
+        val dy = top - bottom
+        val dz = zFar - zNear
+        val A = (right + left) / dx
+        val B = (top + bottom) / dy
+        val C = -1.0f * (zFar + zNear) / dz
+        val D = -2.0f * (zFar * zNear) / dz
+
+        val s = zNear2 / dx
+
+        return setRows(
+            s, 0, A, 0,
+            0, s, B, 0,
+            0, 0, C, D,
+            0, 0, -1, 0
+        )
+    }
+
+    fun setToPerspective(fovy: Angle, aspect: Float, zNear: Float, zFar: Float): Matrix3D {
+        val top = tan(fovy.radians / 2f) * zNear
+        val bottom = -1.0f * top
+        val left = aspect * bottom
+        val right = aspect * top
+        return setToFrustum(left.toFloat(), right.toFloat(), bottom.toFloat(), top.toFloat(), zNear, zFar)
+    }
+
     override fun equals(other: Any?): Boolean = (other is Matrix3D) && this.data.contentEquals(other.data)
     override fun hashCode(): Int = data.contentHashCode()
 
