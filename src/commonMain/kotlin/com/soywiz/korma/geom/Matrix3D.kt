@@ -347,11 +347,9 @@ class Matrix3D {
         val C = -1.0f * (zFar + zNear) / dz
         val D = -2.0f * (zFar * zNear) / dz
 
-        val s = zNear2 / dx
-
         return setRows(
-            s, 0, A, 0,
-            0, s, B, 0,
+            zNear2 / dx, 0, A, 0,
+            0, zNear2 / dy, B, 0,
             0, 0, C, D,
             0, 0, -1, 0
         )
