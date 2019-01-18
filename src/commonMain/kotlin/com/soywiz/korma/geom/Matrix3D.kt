@@ -314,6 +314,11 @@ class Matrix3D {
 
     fun transform(v: Vector3D, out: Vector3D = Vector3D()): Vector3D = transform(v.x, v.y, v.z, v.w, out)
 
+    inline fun setToOrtho(rect: Rectangle, near: Number = 0f, far: Number = 1f): Matrix3D = setToOrtho(rect.left, rect.right, rect.bottom, rect.top, near, far)
+
+    inline fun setToOrtho(left: Number, right: Number, bottom: Number, top: Number, near: Number, far: Number): Matrix3D =
+        setToOrtho(left.toFloat(), right.toFloat(), bottom.toFloat(), top.toFloat(), near.toFloat(), far.toFloat())
+
     fun setToOrtho(left: Float, right: Float, bottom: Float, top: Float, near: Float = 0f, far: Float = 1f): Matrix3D {
         val sx = 2 / (right - left)
         val sy = 2 / (top - bottom)
@@ -331,7 +336,12 @@ class Matrix3D {
         )
     }
 
-    fun setToFrustum(left: Float, right: Float, bottom: Float, top: Float, zNear: Float, zFar: Float): Matrix3D {
+    inline fun setToFrustum(rect: Rectangle, zNear: Number = 0f, zFar: Number = 1f): Matrix3D = setToFrustum(rect.left, rect.right, rect.bottom, rect.top, zNear, zFar)
+
+    inline fun setToFrustum(left: Number, right: Number, bottom: Number, top: Number, zNear: Number = 0f, zFar: Number = 1f): Matrix3D
+        = setToFrustum(left.toFloat(), right.toFloat(), bottom.toFloat(), top.toFloat(), zNear.toFloat(), zFar.toFloat())
+
+    fun setToFrustum(left: Float, right: Float, bottom: Float, top: Float, zNear: Float = 0f, zFar: Float = 1f): Matrix3D {
         if (zNear <= 0.0f || zFar <= zNear) {
             throw Exception("Error: Required zNear > 0 and zFar > zNear, but zNear $zNear, zFar $zFar")
         }
@@ -355,6 +365,9 @@ class Matrix3D {
             0, 0, -1, 0
         )
     }
+
+    inline fun setToPerspective(fovy: Angle, aspect: Number, zNear: Number, zFar: Number): Matrix3D
+        = setToPerspective(fovy, aspect.toFloat(), zNear.toFloat(), zFar.toFloat())
 
     fun setToPerspective(fovy: Angle, aspect: Float, zNear: Float, zFar: Float): Matrix3D {
         val top = tan(fovy.radians / 2f) * zNear
@@ -396,9 +409,6 @@ fun Matrix3D.copyToFloatWxH(out: FloatArray, rows: Int, columns: Int, order: Maj
 fun Matrix3D.copyToFloat2x2(out: FloatArray, order: MajorOrder) = copyToFloatWxH(out, 2, 2, order)
 fun Matrix3D.copyToFloat3x3(out: FloatArray, order: MajorOrder) = copyToFloatWxH(out, 3, 3, order)
 fun Matrix3D.copyToFloat4x4(out: FloatArray, order: MajorOrder) = copyToFloatWxH(out, 4, 4, order)
-
-inline fun Matrix3D.setToOrtho(left: Number, top: Number, right: Number, bottom: Number, near: Number, far: Number): Matrix3D =
-    setToOrtho(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), near.toFloat(), far.toFloat())
 
 inline fun Matrix3D.setRows(
     a00: Number, a01: Number, a02: Number, a03: Number,

@@ -99,12 +99,17 @@ class Matrix3DTest {
     @Test
     fun ortho() {
         run {
-            val projection = Matrix3D().setToOrtho(0f, 0f, 200f, 100f, 0f, -20f)
+            val projection = Matrix3D().setToOrtho(0f, 200f, 100f, 0f, 0f, -20f)
             assertEquals(Vector3D(0, 0, -1), Vector3D(100f, 50f, 0f).transform(projection))
             assertEquals(Vector3D(0, 0, +1), Vector3D(100f, 50f, 20f).transform(projection))
         }
         run {
-            val projection = Matrix3D().setToOrtho(0f, 0f, 200f, 100f, 0f, +20f)
+            val projection = Matrix3D().setToOrtho(0f, 200f, 100f, 0f, 0f, +20f)
+            assertEquals(Vector3D(0, 0, -1), Vector3D(100f, 50f, 0f).transform(projection))
+            assertEquals(Vector3D(0, 0, +1), Vector3D(100f, 50f, -20f).transform(projection))
+        }
+        run {
+            val projection = Matrix3D().setToOrtho(Rectangle(0, 0, 200, 100), 0f, +20f)
             assertEquals(Vector3D(0, 0, -1), Vector3D(100f, 50f, 0f).transform(projection))
             assertEquals(Vector3D(0, 0, +1), Vector3D(100f, 50f, -20f).transform(projection))
         }
