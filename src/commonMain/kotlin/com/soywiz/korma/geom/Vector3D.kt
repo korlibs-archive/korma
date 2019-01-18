@@ -15,6 +15,9 @@ class Vector3D {
     val lengthSquared: Float get() = (x * x) + (y * y) + (z * z) + (w * w)
     val length: Float get() = sqrt(lengthSquared)
 
+    val length3Squared: Float get() = (x * x) + (y * y) + (z * z)
+    val length3: Float get() = sqrt(length3Squared)
+
     operator fun get(index: Int): Float = data[index]
     operator fun set(index: Int, value: Float) = run { data[index] = value }
 
@@ -28,14 +31,13 @@ class Vector3D {
 
     fun transform(mat: Matrix3D) = mat.transform(this, this)
 
-    fun normalized() : Vector3D {
-        val mag = sqrt(this.x * this.x + this.y * this.y + this.z * this.z)
+    fun normalize(): Vector3D = this.apply {
+        val mag = length3
         val norm = 1.0 / mag
-        val x = this.x * norm
-        val y = this.y * norm
-        val z = this.z * norm
-        return Vector3D(x, y, z, 0);
+        setTo(x * norm, y * norm, z * norm, 1)
     }
+
+    fun normalized(out: Vector3D = Vector3D()): Vector3D = out.copyFrom(this).normalize()
 
     override fun equals(other: Any?): Boolean = (other is Vector3D) && almostEquals(this.x, other.x) && almostEquals(this.y, other.y) && almostEquals(this.z, other.z) && almostEquals(this.w, other.w)
     override fun hashCode(): Int = data.contentHashCode()
