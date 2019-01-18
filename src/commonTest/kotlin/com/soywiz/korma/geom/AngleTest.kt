@@ -21,6 +21,8 @@ class AngleTest {
     fun testAngleOps() {
 
         assertEquals(180.degrees, 90.degrees + 90.degrees)
+        assertEquals((-10).degrees, 90.degrees - 100.degrees)
+        assertEquals((-350).degrees, 0.degrees - 350.degrees)
         assertEquals(180.degrees, 90.degrees * 2)
         assertEquals(45.degrees, 90.degrees / 2)
         assertEquals(2.0, 90.degrees / 45.degrees)
@@ -60,8 +62,8 @@ class AngleTest {
     }
 
     @Test
-    fun ops() {
-
+    fun shortDistance() {
+        assertEquals((-10).degrees, 0.degrees.shortDistanceTo(350.degrees))
     }
 
     // @TODO: Required to avoid: java.lang.AssertionError: expected:<3.141592653589793> but was:<Angle(180.0)>

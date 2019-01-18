@@ -63,7 +63,7 @@ inline operator fun Angle.times(scale: Number): Angle = Angle(this.radians * sca
 inline operator fun Angle.div(scale: Number): Angle = Angle(this.radians / scale.toDouble())
 inline operator fun Angle.div(other: Angle): Double = this.radians / other.radians // Ratio
 inline operator fun Angle.plus(other: Angle): Angle = Angle(this.radians + other.radians)
-inline operator fun Angle.minus(other: Angle): Angle = shortDistanceTo(other)
+inline operator fun Angle.minus(other: Angle): Angle = Angle(this.radians - other.radians)
 inline operator fun Angle.unaryMinus(): Angle = Angle(-radians)
 inline operator fun Angle.unaryPlus(): Angle = Angle(+radians)
 
