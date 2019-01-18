@@ -251,24 +251,25 @@ class Matrix3D {
         )
     }
 
-    inline fun setToRotation(angle: Angle, x: Float, y: Float, z: Float): Matrix3D = setToRotation(angle, Vector3D(x,y,z,0))
-    inline fun setToRotation(angle: Angle, x: Number, y: Number, z: Number): Matrix3D = setToRotation(angle, Vector3D(x,y,z,0))
-    fun setToRotation(angle: Angle, direction: Vector3D): Matrix3D {
-        val axis = direction.normalized()
+    inline fun setToRotation(angle: Angle, direction: Vector3D): Matrix3D = setToRotation(angle, direction.x,direction.y,direction.z)
+    inline fun setToRotation(angle: Angle, x: Number, y: Number, z: Number): Matrix3D = setToRotation(angle, x.toFloat(),y.toFloat(),z.toFloat())
+    fun setToRotation(angle: Angle, x: Float, y: Float, z: Float): Matrix3D {
+        val mag = sqrt(x * x + y * y + z * z)
+        val norm = 1.0 / mag
 
-        val x = axis.x
-        val y = axis.y
-        val z = axis.z
+        val nx = x * norm
+        val ny = y * norm
+        val nz = z * norm
         val c = cos(angle)
         val s = sin(angle)
         val t = 1 - c
-        val tx = t * x
-        val ty = t * y
+        val tx = t * nx
+        val ty = t * ny
 
         return this.setRows(
-            tx * x + c, tx * y - s * z, tx * z + s * y, 0,
-            tx * y + s * z, ty * y + c, ty * z - s * x, 0,
-            tx * z - s * y, ty * z + s * x, t * z * z + c, 0,
+            tx * nx + c, tx * ny - s * nz, tx * nz + s * ny, 0,
+            tx * ny + s * nz, ty * ny + c, ty * nz - s * nx, 0,
+            tx * nz - s * ny, ty * nz + s * nx, t * nz * nz + c, 0,
             0, 0, 0, 1
         )
     }
@@ -313,7 +314,7 @@ class Matrix3D {
 
     fun transform(v: Vector3D, out: Vector3D = Vector3D()): Vector3D = transform(v.x, v.y, v.z, v.w, out)
 
-    fun setToOrtho(left: Float, top: Float, right: Float, bottom: Float, near: Float = 0f, far: Float = 1f): Matrix3D {
+    fun setToOrtho(left: Float, right: Float, bottom: Float, top: Float, near: Float = 0f, far: Float = 1f): Matrix3D {
         val sx = 2 / (right - left)
         val sy = 2 / (top - bottom)
         val sz = -2 / (far - near)
