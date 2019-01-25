@@ -1,4 +1,3 @@
 dependencies {
     commonMainApi "com.soywiz:kds:$kdsVersion"
-    commonMainApi project(":korma")
 }

@@ -1,5 +1,6 @@
 dependencies {
-    commonMainApi rootProject
+    commonMainApi "com.soywiz:kds:$kdsVersion"
+    commonMainApi project(":korma")
     commonMainApi project(":korma-shape-ops")
     commonMainApi project(":korma-triangulate-pathfind")
 }

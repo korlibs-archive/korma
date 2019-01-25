@@ -1,5 +1,2 @@
 dependencies {
-    commonMainApi "com.soywiz:kds:$kdsVersion"
-    //jvmMainApi "com.soywiz:kds-jvm:$kdsVersion"
-    //jsMainApi "com.soywiz:kds-js:$kdsVersion"
 }
