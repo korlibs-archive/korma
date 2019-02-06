@@ -1,3 +1,0 @@
-dependencies {
-    commonMainApi "com.soywiz:kds:$kdsVersion"
-}
