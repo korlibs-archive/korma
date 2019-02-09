@@ -1,0 +1,7 @@
+apply plugin: com.soywiz.korlibs.KorlibsPlugin
+
+korlibs {
+    dependencyProject(":korma")
+    dependencyProject(":korma-shape-ops")
+    dependencyProject(":korma-triangulate-pathfind")
+}

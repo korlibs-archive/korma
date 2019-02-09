@@ -1,0 +1,6 @@
+apply plugin: com.soywiz.korlibs.KorlibsPlugin
+
+korlibs {
+    exposeVersion()
+    dependencyMulti("com.soywiz:kds:$kdsVersion")
+}
