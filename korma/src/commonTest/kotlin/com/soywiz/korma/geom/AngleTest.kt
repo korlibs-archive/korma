@@ -1,5 +1,6 @@
 package com.soywiz.korma.geom
 
+import com.soywiz.korma.math.isAlmostZero
 import kotlin.math.*
 import kotlin.test.*
 
@@ -63,7 +64,54 @@ class AngleTest {
 
     @Test
     fun shortDistance() {
+        assertEquals(0.degrees, 0.degrees.shortDistanceTo(0.degrees))
         assertEquals((-10).degrees, 0.degrees.shortDistanceTo(350.degrees))
+        assertEquals((+10).degrees, 0.degrees.shortDistanceTo(10.degrees))
+
+        assertEquals(0.degrees, 0.degrees.longDistanceTo(0.degrees))
+        assertEquals((+350).degrees, 0.degrees.longDistanceTo(350.degrees))
+        assertEquals((-350).degrees, 0.degrees.longDistanceTo(10.degrees))
+    }
+
+    @Test
+    fun inBetweenInclusive() {
+        assertEquals(true, (-15).degrees inBetween ((-15).degrees .. 15.degrees))
+        assertEquals(true, (+15).degrees inBetween ((-15).degrees .. 15.degrees))
+        assertEquals(true, 0.degrees inBetween ((-15).degrees .. 15.degrees))
+        assertEquals(true, 0.degrees inBetween (345.degrees .. 15.degrees))
+
+        assertEquals(false, (-20).degrees inBetween ((-15).degrees .. 15.degrees))
+        assertEquals(false, (+20).degrees inBetween ((-15).degrees .. 15.degrees))
+        assertEquals(false, (-20).degrees inBetween (345.degrees .. 15.degrees))
+        assertEquals(false, (+20).degrees inBetween (345.degrees .. 15.degrees))
+    }
+
+    @Test
+    fun inBetweenExclusive() {
+        assertEquals(true, (-15).degrees inBetween ((-15).degrees until 15.degrees))
+        assertEquals(false, (+15).degrees inBetween ((-15).degrees until 15.degrees))
+        assertEquals(true, 0.degrees inBetween ((-15).degrees until 15.degrees))
+        assertEquals(true, 0.degrees inBetween (345.degrees until 15.degrees))
+
+        assertEquals(false, (-20).degrees inBetween ((-15).degrees until 15.degrees))
+        assertEquals(false, (+20).degrees inBetween ((-15).degrees until 15.degrees))
+        assertEquals(false, (-20).degrees inBetween (345.degrees until 15.degrees))
+        assertEquals(false, (+20).degrees inBetween (345.degrees until 15.degrees))
+    }
+
+    @Test
+    fun testProperties() {
+        assertEquals(0.0, 0.degrees.sine)
+        assertEquals(1.0, 0.degrees.cosine)
+        assertTrue(0.degrees.tangent.isAlmostZero())
+    }
+
+    @Test
+    fun testCompare() {
+        assertTrue { 90.degrees == 90.degrees }
+        assertTrue { 90.degrees <= 90.degrees }
+        assertTrue { 90.degrees <= 100.degrees }
+        assertTrue { 100.degrees >= 90.degrees }
     }
 
     // @TODO: Required to avoid: java.lang.AssertionError: expected:<3.141592653589793> but was:<Angle(180.0)>
