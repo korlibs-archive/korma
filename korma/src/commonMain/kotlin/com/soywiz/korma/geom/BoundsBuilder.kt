@@ -3,17 +3,22 @@ package com.soywiz.korma.geom
 class BoundsBuilder {
     val tempRect = Rectangle()
 
+    companion object {
+        private val MIN = Double.NEGATIVE_INFINITY
+        private val MAX = Double.POSITIVE_INFINITY
+    }
+
     private var npoints = 0
-    private var xmin = Double.MAX_VALUE
-    private var xmax = Double.MIN_VALUE
-    private var ymin = Double.MAX_VALUE
-    private var ymax = Double.MIN_VALUE
+    private var xmin = MAX
+    private var xmax = MIN
+    private var ymin = MAX
+    private var ymax = MIN
 
     fun reset() {
-        xmin = Double.MAX_VALUE
-        xmax = Double.MIN_VALUE
-        ymin = Double.MAX_VALUE
-        ymax = Double.MIN_VALUE
+        xmin = MAX
+        xmax = MIN
+        ymin = MAX
+        ymax = MIN
         npoints = 0
     }
 

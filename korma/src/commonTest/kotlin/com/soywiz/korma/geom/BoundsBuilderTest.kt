@@ -18,4 +18,15 @@ class BoundsBuilderTest {
         assertEquals("Rectangle(x=0, y=0, width=1, height=1)", bb.getBoundsOrNull().toString())
         assertEquals("Rectangle(x=0, y=0, width=1, height=1)", bb.getBounds().toString())
     }
+
+    @Test
+    fun test2() {
+        val bb = BoundsBuilder()
+            .add(-100, 100)
+            .add(-90, 100)
+            .add(-100, 110)
+            .add(-90, 110)
+
+        assertEquals(Rectangle(-100, 100, 10, 10), bb.getBounds())
+    }
 }
