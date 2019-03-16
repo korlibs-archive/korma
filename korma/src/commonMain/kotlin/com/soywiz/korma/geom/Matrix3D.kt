@@ -1,5 +1,6 @@
 package com.soywiz.korma.geom
 
+import com.soywiz.korma.interpolation.*
 import kotlin.math.*
 
 enum class MajorOrder { ROW, COLUMN }
@@ -110,6 +111,48 @@ class Matrix3D {
         v20 = a20; v21 = a21; v22 = a22; v23 = a23
         v30 = a30; v31 = a31; v32 = a32; v33 = a33
     }
+
+    fun setColumns4x4(f: FloatArray, offset: Int) = setColumns(
+        f[offset + 0], f[offset + 1], f[offset + 2], f[offset + 3],
+        f[offset + 4], f[offset + 5], f[offset + 6], f[offset + 7],
+        f[offset + 8], f[offset + 9], f[offset + 10], f[offset + 11],
+        f[offset + 12], f[offset + 13], f[offset + 14], f[offset + 15]
+    )
+
+    fun setRows4x4(f: FloatArray, offset: Int) = setRows(
+        f[offset + 0], f[offset + 1], f[offset + 2], f[offset + 3],
+        f[offset + 4], f[offset + 5], f[offset + 6], f[offset + 7],
+        f[offset + 8], f[offset + 9], f[offset + 10], f[offset + 11],
+        f[offset + 12], f[offset + 13], f[offset + 14], f[offset + 15]
+    )
+
+    fun setColumns3x3(f: FloatArray, offset: Int) = setColumns(
+        f[offset + 0], f[offset + 1], f[offset + 2], 0f,
+        f[offset + 3], f[offset + 4], f[offset + 5], 0f,
+        f[offset + 6], f[offset + 7], f[offset + 8], 0f,
+        0f, 0f, 0f, 1f
+    )
+
+    fun setRows3x3(f: FloatArray, offset: Int) = setRows(
+        f[offset + 0], f[offset + 1], f[offset + 2], 0f,
+        f[offset + 3], f[offset + 4], f[offset + 5], 0f,
+        f[offset + 6], f[offset + 7], f[offset + 8], 0f,
+        0f, 0f, 0f, 1f
+    )
+
+    fun setColumns2x2(f: FloatArray, offset: Int) = setColumns(
+        f[offset + 0], f[offset + 1], 0f, 0f,
+        f[offset + 1], f[offset + 2], 0f, 0f,
+        0f, 0f, 1f, 0f,
+        0f, 0f, 0f, 1f
+    )
+
+    fun setRows2x2(f: FloatArray, offset: Int) = setRows(
+        f[offset + 0], f[offset + 1], 0f, 0f,
+        f[offset + 1], f[offset + 2], 0f, 0f,
+        0f, 0f, 1f, 0f,
+        0f, 0f, 0f, 1f
+    )
 
     fun setRow(row: Int, a: Float, b: Float, c: Float, d: Float): Matrix3D {
         data[columnMajorIndex(row, 0)] = a
@@ -726,12 +769,6 @@ fun Matrix3D.invert(m: Matrix3D = this): Matrix3D {
     }
 }
 
-fun Vector3D.Companion.lengthSq(x: Double, y: Double, z: Double): Double = x * x + y * y + z * z
-fun Vector3D.Companion.length(x: Double, y: Double, z: Double): Double = sqrt(lengthSq(x, y, z))
-fun Vector3D.Companion.length(x: Number, y: Number, z: Number): Double = length(x.toDouble(), y.toDouble(), z.toDouble())
-
-inline fun Vector3D.setTo(x: Number, y: Number, z: Number) = setTo(x, y, z, 1f)
-
 inline fun Matrix3D.setToMap(filter: (Float) -> Float) = setRows(
     filter(v00), filter(v01), filter(v02), filter(v03),
     filter(v10), filter(v11), filter(v12), filter(v13),
@@ -739,5 +776,9 @@ inline fun Matrix3D.setToMap(filter: (Float) -> Float) = setRows(
     filter(v30), filter(v31), filter(v32), filter(v33)
 )
 
-typealias Position3D = Vector3D
-typealias Scale3D = Vector3D
+fun Matrix3D.setToInterpolated(a: Matrix3D, b: Matrix3D, ratio: Double) = setColumns(
+    ratio.interpolate(a.v00, b.v00), ratio.interpolate(a.v10, b.v10), ratio.interpolate(a.v20, b.v20), ratio.interpolate(a.v30, b.v30),
+    ratio.interpolate(a.v01, b.v01), ratio.interpolate(a.v11, b.v11), ratio.interpolate(a.v21, b.v21), ratio.interpolate(a.v31, b.v31),
+    ratio.interpolate(a.v02, b.v02), ratio.interpolate(a.v12, b.v12), ratio.interpolate(a.v22, b.v22), ratio.interpolate(a.v32, b.v32),
+    ratio.interpolate(a.v03, b.v03), ratio.interpolate(a.v13, b.v13), ratio.interpolate(a.v23, b.v23), ratio.interpolate(a.v33, b.v33)
+)

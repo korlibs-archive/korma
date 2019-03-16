@@ -1,6 +1,7 @@
 package com.soywiz.korma.geom
 
 import com.soywiz.korma.internal.*
+import com.soywiz.korma.interpolation.interpolate
 import com.soywiz.korma.math.*
 import kotlin.math.*
 
@@ -23,18 +24,30 @@ class Vector3D {
 
     companion object {
         inline operator fun invoke(x: Number, y: Number, z: Number, w: Number = 1f): Vector3D = Vector3D().setTo(x, y, z, w)
+
+        fun length(x: Double, y: Double, z: Double, w: Double) = sqrt(lengthSq(x, y, z, w))
+        inline fun length(x: Number, y: Number, z: Number, w: Number) = length(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
+
+        fun lengthSq(x: Double, y: Double, z: Double, w: Double) = x * x + y * y + z * z + w * w
+        inline fun lengthSq(x: Number, y: Number, z: Number, w: Number) = lengthSq(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
+
+        fun length(x: Double, y: Double, z: Double) = sqrt(lengthSq(x, y, z))
+        inline fun length(x: Number, y: Number, z: Number) = length(x.toDouble(), y.toDouble(), z.toDouble())
+
+        fun lengthSq(x: Double, y: Double, z: Double) = x * x + y * y + z * z
+        inline fun lengthSq(x: Number, y: Number, z: Number) = lengthSq(x.toDouble(), y.toDouble(), z.toDouble())
     }
 
     fun copyFrom(other: Vector3D) = setTo(other.x, other.y, other.z, other.w)
     fun setTo(x: Float, y: Float, z: Float, w: Float): Vector3D = this.apply { this.x = x; this.y = y; this.z = z; this.w = w }
     inline fun setTo(x: Number, y: Number, z: Number, w: Number): Vector3D = setTo(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat())
+    inline fun setToFunc(func: (index: Int) -> Float): Vector3D = setTo(func(0), func(1), func(2), func(3))
 
     fun transform(mat: Matrix3D) = mat.transform(this, this)
 
-    fun normalize(): Vector3D = this.apply {
-        val mag = length3
-        val norm = 1.0 / mag
-        setTo(x * norm, y * norm, z * norm, 1)
+    fun normalize(vector: Vector3D = this): Vector3D = this.apply {
+        val norm = 1.0 / vector.length3
+        setTo(vector.x * norm, vector.y * norm, vector.z * norm, 1)
     }
 
     fun normalized(out: Vector3D = Vector3D()): Vector3D = out.copyFrom(this).normalize()
@@ -53,3 +66,12 @@ inline class IntVector3(val v: Vector3D) {
 }
 
 fun Vector3D.asIntVector3D() = IntVector3(this)
+fun Vector3D.setToInterpolated(left: Vector3D, right: Vector3D, t: Double): Vector3D = setToFunc { t.interpolate(left[it], right[it]) }
+
+fun Vector3D.scale(scale: Float) = this.setTo(this.x * scale, this.y * scale, this.z * scale, this.w * scale)
+inline fun Vector3D.scale(scale: Number) = scale(scale.toFloat())
+
+inline fun Vector3D.setTo(x: Number, y: Number, z: Number) = setTo(x, y, z, 1f)
+
+typealias Position3D = Vector3D
+typealias Scale3D = Vector3D

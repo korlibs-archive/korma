@@ -42,3 +42,12 @@ fun Double.isNanOrInfinite() = this.isNaN() || this.isInfinite()
 
 fun Float.isAlmostZero(): Boolean = kotlin.math.abs(this) <= 1e-19
 fun Float.isNanOrInfinite() = this.isNaN() || this.isInfinite()
+
+fun Int.nextMultipleOf(multiple: Int) = if (this.isMultipleOf(multiple)) this else (((this / multiple) + 1) * multiple)
+fun Long.nextMultipleOf(multiple: Long) = if (this.isMultipleOf(multiple)) this else (((this / multiple) + 1) * multiple)
+
+fun Int.prevMultipleOf(multiple: Int) = if (this.isMultipleOf(multiple)) this else nextMultipleOf(multiple) - multiple
+fun Long.prevMultipleOf(multiple: Long) = if (this.isMultipleOf(multiple)) this else nextMultipleOf(multiple) - multiple
+
+fun Int.isMultipleOf(multiple: Int) = multiple == 0 || (this % multiple) == 0
+fun Long.isMultipleOf(multiple: Long) = multiple == 0L || (this % multiple) == 0L

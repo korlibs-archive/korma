@@ -6,14 +6,34 @@ data class EulerRotation(
     var x: Angle = 0.degrees,
     var y: Angle = 0.degrees,
     var z: Angle = 0.degrees
-)
+) {
+    companion object
+}
 
 data class Quaternion(
     var x: Double = 0.0,
     var y: Double = 0.0,
     var z: Double = 0.0,
     var w: Double = 1.0
-)
+) {
+    operator fun get(index: Int): Double = when (index) {
+        0 -> x
+        1 -> y
+        2 -> z
+        3 -> w
+        else -> Double.NaN
+    }
+    inline fun setToFunc(callback: (Int) -> Double) = setTo(callback(0), callback(1), callback(2), callback(3))
+
+    companion object {
+        fun dotProduct(l: Quaternion, r: Quaternion): Double = l.x * r.x + l.y * r.y + l.z * r.z + l.w * r.w
+    }
+
+    fun normalize(v: Quaternion = this): Quaternion {
+        val length = 1.0 / Vector3D.length(v.x, v.y, v.z, v.w)
+        return this.setTo(v.x / length, v.y / length, v.z / length, v.w / length)
+    }
+}
 
 fun Quaternion(x: Number, y: Number, z: Number, w: Number) = Quaternion(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
 
@@ -125,3 +145,57 @@ fun Quaternion.setFromRotationMatrix(m: Matrix3D) = this.apply {
         }
     }
 }
+
+operator fun Quaternion.unaryMinus(): Quaternion = Quaternion(-x, -y, -z, -w)
+operator fun Quaternion.plus(other: Quaternion): Quaternion = Quaternion(x + other.x, y + other.y, z + other.z, w + other.w)
+operator fun Quaternion.minus(other: Quaternion): Quaternion = Quaternion(x - other.x, y - other.y, z - other.z, w - other.w)
+operator fun Quaternion.times(scale: Double): Quaternion = Quaternion(x * scale, y * scale, z * scale, w * scale)
+operator fun Double.times(scale: Quaternion): Quaternion = scale.times(this)
+
+fun Quaternion.negate() = this.setTo(-x, -y, -z, -w)
+
+fun Quaternion.setToFunc(l: Quaternion, r: Quaternion, func: (l: Double, r: Double) -> Double) = setTo(
+    func(l.x, r.x),
+    func(l.y, r.y),
+    func(l.z, r.z),
+    func(l.w, r.w)
+)
+
+fun Vector3D.setToFunc(l: Vector3D, r: Vector3D, func: (l: Float, r: Float) -> Float) = setTo(
+    func(l.x, r.x),
+    func(l.y, r.y),
+    func(l.z, r.z),
+    func(l.w, r.w)
+)
+
+// @TODO: Allocations and temps!
+private val tleft: Quaternion = Quaternion()
+private val tright: Quaternion = Quaternion()
+fun Quaternion.setToSlerp(left: Quaternion, right: Quaternion, t: Double): Quaternion {
+    val tleft = tleft.copyFrom(left).normalize()
+    val tright = tright.copyFrom(right).normalize()
+
+    var dot = Quaternion.dotProduct(tleft, right)
+
+    if (dot < 0.0f) {
+        tright.negate()
+        dot = -dot
+    }
+
+    if (dot > 0.99995f) return setToFunc(tleft, tright) { l, r -> l + t * (r - l) }
+
+    val angle0 = acos(dot)
+    val angle1 = angle0 * t
+
+    val s1 = sin(angle1) / sin(angle0)
+    val s0 = cos(angle1) - dot * s1
+
+    return setToFunc(tleft, tright) { l, r -> (s0 * l) + (s1 * r) }
+}
+
+fun Quaternion.setToNlerp(left: Quaternion, right: Quaternion, t: Double): Quaternion {
+    val sign = if (Quaternion.dotProduct(left, right) < 0) -1 else +1
+    return setToFunc { (1f - t) * left[it] + t * right[it] * sign }.normalize()
+}
+
+fun Quaternion.setToInterpolated(left: Quaternion, right: Quaternion, t: Double): Quaternion = setToSlerp(left, right, t)
