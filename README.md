@@ -20,10 +20,9 @@ in addition to ensure the continuity of the project, you will get exclusive cont
 </p>
 <!-- /SUPPORT -->
 
-It includes structures for Points and Matrices (2D and 3D), Typed Angles, Rectangles, BoundsBuilder, Anchors, Vector graphics with Bezier curves support and Context2D-like API for building vectors, Interpolation facilities, Easing, Triangulation, BinPacking and Path Finding in Bidimensional arrays and Triangulated Spatial Meshes.
+## Info:
 
-[![Build Status](https://travis-ci.org/korlibs/korma.svg?branch=master)](https://travis-ci.org/korlibs/korma)
-[![Maven Version](https://img.shields.io/github/tag/korlibs/korma.svg?style=flat&label=maven)](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22korma%22)
+It includes structures for Points and Matrices (2D and 3D), Typed Angles, Rectangles, BoundsBuilder, Anchors, Vector graphics with Bezier curves support and Context2D-like API for building vectors, Interpolation facilities, Easing, Triangulation, BinPacking and Path Finding in Bidimensional arrays and Triangulated Spatial Meshes.
 
 ### Full Documentation: https://korlibs.soywiz.com/korma/
 
