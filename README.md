@@ -1,6 +1,24 @@
-# ![KorMA](https://raw.githubusercontent.com/korlibs/korlibs-logos/master/256/korma.png)
+<p align="center"><img alt="Korma" src="https://raw.githubusercontent.com/korlibs/korlibs-logos/master/128/korma.png" /></p>
 
-Korma is a Mathematical Library mostly focused on geometry for Multiplatform Kotlin 1.3.
+<h1 align="center">Korma</h1>
+
+<p align="center">Korma is a Mathematical Library mostly focused on geometry for Multiplatform Kotlin 1.3</p>
+
+<!-- BADGES -->
+<p align="center">
+	<a href="https://travis-ci.org/korlibs/korma"><img alt="Build Status" src="https://travis-ci.org/korlibs/korma.svg?branch=master" /></a>
+	<a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22korma%22"><img alt="Maven Version" src="https://img.shields.io/github/tag/korlibs/korma.svg?style=flat&label=maven" /></a>
+	<a href="https://slack.soywiz.com/"><img alt="Slack" src="https://img.shields.io/badge/chat-on%20slack-green?style=flat&logo=slack" /></a>
+</p>
+<!-- /BADGES -->
+
+<!-- SUPPORT -->
+<h2 align="center">Support korma</h2>
+<p align="center">
+If you like korma, or want your company logo here, please consider <a href="https://github.com/sponsors/soywiz">becoming a sponsor ★</a>,<br />
+in addition to ensure the continuity of the project, you will get exclusive content.
+</p>
+<!-- /SUPPORT -->
 
 It includes structures for Points and Matrices (2D and 3D), Typed Angles, Rectangles, BoundsBuilder, Anchors, Vector graphics with Bezier curves support and Context2D-like API for building vectors, Interpolation facilities, Easing, Triangulation, BinPacking and Path Finding in Bidimensional arrays and Triangulated Spatial Meshes.
 
