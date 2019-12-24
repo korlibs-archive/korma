@@ -6,8 +6,8 @@
 
 <!-- BADGES -->
 <p align="center">
-	<a href="https://travis-ci.org/korlibs/korma"><img alt="Build Status" src="https://travis-ci.org/korlibs/korma.svg?branch=master" /></a>
-	<a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22korma%22"><img alt="Maven Version" src="https://img.shields.io/github/tag/korlibs/korma.svg?style=flat&label=maven" /></a>
+	<a href="https://github.com/korlibs/korma/actions"><img alt="Build Status" src="https://github.com/korlibs/korma/workflows/CI/badge.svg" /></a>
+	<a href="https://bintray.com/korlibs/korlibs/korma"><img alt="Maven Version" src="https://img.shields.io/bintray/v/korlibs/korlibs/korma.svg?style=flat&label=maven" /></a>
 	<a href="https://slack.soywiz.com/"><img alt="Slack" src="https://img.shields.io/badge/chat-on%20slack-green?style=flat&logo=slack" /></a>
 </p>
 <!-- /BADGES -->
@@ -78,10 +78,10 @@ assertEquals(
 ### Usage with gradle:
 
 ```kotlin
-def kormaVersion = "1.0.0"
+def kormaVersion = "1.9.1"
 
 repositories {
-    maven { url "https://dl.bintray.com/soywiz/soywiz" }
+    maven { url "https://dl.bintray.com/korlibs/korlibs" }
 }
 
 dependencies {
