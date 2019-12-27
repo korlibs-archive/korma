@@ -86,20 +86,20 @@ repositories {
 
 dependencies {
     // For multiplatform projects
-    implementation "com.soywiz:korma:$kormaVersion"
+    implementation "com.soywiz.korlibs.korma:korma:$kormaVersion"
     
     // For JVM/Android only
-    implementation "com.soywiz:korma-jvm:$kormaVersion"
+    implementation "com.soywiz.korlibs.korma:korma-jvm:$kormaVersion"
     // For JS only
-    implementation "com.soywiz:korma-js:$kormaVersion"
+    implementation "com.soywiz.korlibs.korma:korma-js:$kormaVersion"
 }
 
 // Additional funcionality using Clipper and poly2try code (with separate licenses):
 // - https://github.com/korlibs/korma/blob/master/korma-shape-ops/LICENSE
 // - https://github.com/korlibs/korma/blob/master/korma-triangulate-pathfind/LICENSE
 dependencies {
-    implementation "com.soywiz:korma-shape-ops:$kormaVersion"
-    implementation "com.soywiz:korma-triangulate-pathfind:$kormaVersion"
+    implementation "com.soywiz.korlibs.korma:korma-shape-ops:$kormaVersion"
+    implementation "com.soywiz.korlibs.korma:korma-triangulate-pathfind:$kormaVersion"
 }
 
 // settigs.gradle
