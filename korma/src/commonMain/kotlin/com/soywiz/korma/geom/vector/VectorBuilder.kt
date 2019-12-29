@@ -166,6 +166,15 @@ inline fun VectorBuilder.rCubicTo(cx1: Number, cy1: Number, cx2: Number, cy2: Nu
 )
 
 inline fun VectorBuilder.arcTo(ax: Number, ay: Number, cx: Number, cy: Number, r: Number) = arcTo(ax.toDouble(), ay.toDouble(), cx.toDouble(), cy.toDouble(), r.toDouble())
+
+fun VectorBuilder.line(p0: Point, p1: Point) = moveTo(p0).also { lineTo(p1) }
+fun VectorBuilder.quad(o: Point, c: Point, a: Point) = moveTo(o).also { quadTo(c, a) }
+fun VectorBuilder.cubic(o: Point, c1: Point, c2: Point, a: Point) = moveTo(o).also { cubicTo(c1, c2, a) }
+
+inline fun VectorBuilder.line(x0: Number, y0: Number, x1: Number, y1: Number) = moveTo(x0, y0).also { lineTo(x1, y1) }
+inline fun VectorBuilder.quad(x0: Number, y0: Number, controlX: Number, controlY: Number, anchorX: Number, anchorY: Number) = moveTo(x0, y0).also { quadTo(controlX.toDouble(), controlY.toDouble(), anchorX.toDouble(), anchorY.toDouble()) }
+inline fun VectorBuilder.cubic(x0: Number, y0: Number, cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number) = moveTo(x0, y0).also { cubicTo(cx1.toDouble(), cy1.toDouble(), cx2.toDouble(), cy2.toDouble(), ax.toDouble(), ay.toDouble()) }
+
 inline fun VectorBuilder.rect(x: Number, y: Number, width: Number, height: Number) = rect(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 inline fun VectorBuilder.rectHole(x: Number, y: Number, width: Number, height: Number) = rectHole(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 inline fun VectorBuilder.roundRect(x: Number, y: Number, w: Number, h: Number, rx: Number, ry: Number = rx) = roundRect(x.toDouble(), y.toDouble(), w.toDouble(), h.toDouble(), rx.toDouble(), ry.toDouble())
