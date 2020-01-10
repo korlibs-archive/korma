@@ -95,11 +95,9 @@ dependencies {
 }
 
 // Additional funcionality using Clipper and poly2try code (with separate licenses):
-// - https://github.com/korlibs/korma/blob/master/korma-shape-ops/LICENSE
-// - https://github.com/korlibs/korma/blob/master/korma-triangulate-pathfind/LICENSE
+// - https://github.com/korlibs/korma/blob/master/korma-shape/LICENSE
 dependencies {
-    implementation "com.soywiz.korlibs.korma:korma-shape-ops:$kormaVersion"
-    implementation "com.soywiz.korlibs.korma:korma-triangulate-pathfind:$kormaVersion"
+    implementation "com.soywiz.korlibs.korma:korma-shape:$kormaVersion"
 }
 
 // settigs.gradle
