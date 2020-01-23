@@ -94,7 +94,7 @@ fun BoundsBuilder.add(shape: Shape2d) {
 
 val Shape2d.bounds: Rectangle get() = BoundsBuilder().apply { add(this@bounds) }.getBounds()
 
-fun Rectangle.toShape() = Shape2d.Rectangle(x, y, width, height)
+fun IRectangle.toShape() = Shape2d.Rectangle(x, y, width, height)
 
 // @TODO: Instead of use curveSteps, let's determine the maximum distance between points for the curve, or the maximum angle (so we have a quality factor instead)
 inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Double, y: Double) -> Unit, curveSteps: Int = 20) {
