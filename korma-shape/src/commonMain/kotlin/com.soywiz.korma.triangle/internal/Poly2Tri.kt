@@ -1,7 +1,7 @@
 /*
 Poly2Tri:Fast and Robust Simple Polygon triangulation with/without holes
                         by Sweep Line Algorithm
-                               Liang, Wu
+                                Liang, Wu
         http://www.mema.ucl.ac.be/~wu/Poly2Tri/poly2tri.html
         Copyright (C) 2003, 2004, 2005, ALL RIGHTS RESERVED.
 
@@ -26,17 +26,17 @@ rcial products without a license from the corresponding author(s) &
 entities.
 
 1) Arbitrary precision floating-point arithmetic and fast robust geo-
-   metric predicates (predicates.cc) is copyrighted by
-   Jonathan Shewchuk (http://www.cs.berkeley.edu/~jrs) and you may get
-   the source code from http://www.cs.cmu.edu/~quake/robust.html
+    metric predicates (predicates.cc) is copyrighted by
+    Jonathan Shewchuk (http://www.cs.berkeley.edu/~jrs) and you may get
+    the source code from http://www.cs.cmu.edu/~quake/robust.html
 
 2) The shell script mps2eps is copyrighted by Jon Edvardsson
-   (http://www.ida.liu.se/~pelab/members/index.php4/?12) and you may
-   get the copy from http://www.ida.liu.se/~joned/download/mps2eps/
+    (http://www.ida.liu.se/~pelab/members/index.php4/?12) and you may
+    get the copy from http://www.ida.liu.se/~joned/download/mps2eps/
 
 3) All other source codes and exmaples files distributed in Poly2Tri
-   are copyrighted by Liang, Wu (http://www.mema.ucl.ac.be/~wu) and
-   FEMAGSoft S.A.
+    are copyrighted by Liang, Wu (http://www.mema.ucl.ac.be/~wu) and
+    FEMAGSoft S.A.
  */
 @file:Suppress("MemberVisibilityCanBePrivate")
 
@@ -143,19 +143,19 @@ internal class Node(var point: IPoint, var triangle: PolyTriangle? = null) {
     var value: Double = this.point.x
 
     /**
-     *
-     * @return the angle between 3 front nodes
-     */
+    *
+    * @return the angle between 3 front nodes
+    */
     val holeAngle: Double
         get() {
             /* Complex plane
-             * ab = cosA +i*sinA
-             * ab = (ax + ay*i)(bx + by*i) = (ax*bx + ay*by) + i(ax*by-ay*bx)
-             * atan2(y,x) computes the principal value of the argument function
-             * applied to the complex number x+iy
-             * Where x = ax*bx + ay*by
-             *       y = ax*by - ay*bx
-             */
+            * ab = cosA +i*sinA
+            * ab = (ax + ay*i)(bx + by*i) = (ax*bx + ay*by) + i(ax*by-ay*bx)
+            * atan2(y,x) computes the principal value of the argument function
+            * applied to the complex number x+iy
+            * Where x = ax*bx + ay*by
+            *       y = ax*by - ay*bx
+            */
             val prev = this.prev ?: throw IllegalStateException("Not enough vertices")
             val next = this.next ?: throw IllegalStateException("Not enough vertices")
             val ax: Double = next.point.x - this.point.x
@@ -187,8 +187,8 @@ internal class EdgeContext {
 internal class Sweep(private var context: SweepContext) {
     val edgeContext get() = context.edgeContext
     /**
-     * Triangulate simple polygon with holes.
-     */
+    * Triangulate simple polygon with holes.
+    */
     fun triangulate() {
         context.initTriangulation()
         context.createAdvancingFront()
@@ -219,10 +219,10 @@ internal class Sweep(private var context: SweepContext) {
     }
 
     /**
-     * Find closes node to the left of the point and
-     * create a triangle. If needed holes and basins
-     * will be filled to.
-     */
+    * Find closes node to the left of the point and
+    * create a triangle. If needed holes and basins
+    * will be filled to.
+    */
     fun pointEvent(point: IPoint): Node {
         val node = this.context.locateNode(point)!!
         val newNode = newFrontTriangle(point, node)
@@ -298,9 +298,9 @@ internal class Sweep(private var context: SweepContext) {
     }
 
     /**
-     * Adds a triangle to the advancing front to fill a hole.
-     * @param node - middle node, that is the bottom of the hole
-     */
+    * Adds a triangle to the advancing front to fill a hole.
+    * @param node - middle node, that is the bottom of the hole
+    */
     fun fill(node: Node) {
         val triangle = PolyTriangle(node.prev!!.point, node.point, node.next!!.point)
 
@@ -324,8 +324,8 @@ internal class Sweep(private var context: SweepContext) {
     }
 
     /**
-     * Fills holes in the Advancing Front
-     */
+    * Fills holes in the Advancing Front
+    */
     fun fillAdvancingFront(n: Node) {
         var node: Node
         var angle: Double
@@ -356,8 +356,8 @@ internal class Sweep(private var context: SweepContext) {
     }
 
     /**
-     * Returns true if triangle was legalized
-     */
+    * Returns true if triangle was legalized
+    */
     fun legalize(t: PolyTriangle): Boolean {
         // To legalize a triangle we start by finding if any of the three edges
         // violate the Delaunay condition
@@ -406,13 +406,13 @@ internal class Sweep(private var context: SweepContext) {
     }
 
     /**
-     * Fills a basin that has formed on the Advancing Front to the right
-     * of given node.<br>
-     * First we decide a left,bottom and right node that forms the
-     * boundaries of the basin. Then we do a reqursive fill.
-     *
-     * @param node - starting node, this or next node will be left node
-     */
+    * Fills a basin that has formed on the Advancing Front to the right
+    * of given node.<br>
+    * First we decide a left,bottom and right node that forms the
+    * boundaries of the basin. Then we do a reqursive fill.
+    *
+    * @param node - starting node, this or next node will be left node
+    */
     fun fillBasin(node: Node) {
         val context = this.context
         val basin = context.basin
@@ -447,10 +447,10 @@ internal class Sweep(private var context: SweepContext) {
     }
 
     /**
-     * Recursive algorithm to fill a Basin with triangles
-     *
-     * @param node - bottom_node
-     */
+    * Recursive algorithm to fill a Basin with triangles
+    *
+    * @param node - bottom_node
+    */
     fun fillBasinReq(node: Node) {
         @Suppress("NAME_SHADOWING")
         var node = node
@@ -735,10 +735,10 @@ internal class SweepContext() {
     }
 
     /**
-     * An alias of addPolyline.
-     *
-     * @param    polyline
-     */
+    * An alias of addPolyline.
+    *
+    * @param    polyline
+    */
     fun addHole(polyline: List<IPoint>) {
         addPolyline(polyline)
     }
@@ -755,9 +755,9 @@ internal class SweepContext() {
 
     companion object {
         /*
-		 * Inital triangle factor, seed triangle will extend 30% of
-		 * PointSet width to both left and right.
-		 */
+        * Inital triangle factor, seed triangle will extend 30% of
+        * PointSet width to both left and right.
+        */
         private const val kAlpha: Double = 0.3
     }
 
@@ -894,11 +894,11 @@ internal data class PolyTriangle internal constructor(
     }
 
     /**
-     * Legalize triangle by rotating clockwise.<br>
-     * This method takes either 1 parameter (then the triangle is rotated around
-     * points(0)) or 2 parameters (then the triangle is rotated around the first
-     * parameter).
-     */
+    * Legalize triangle by rotating clockwise.<br>
+    * This method takes either 1 parameter (then the triangle is rotated around
+    * points(0)) or 2 parameters (then the triangle is rotated around the first
+    * parameter).
+    */
     fun legalize(opoint: IPoint, npoint: IPoint? = null) {
         if (npoint == null) return this.legalize(this.point(0), opoint)
 
@@ -923,13 +923,13 @@ internal data class PolyTriangle internal constructor(
     }
 
     /**
-     * Update neighbor pointers.<br>
-     * This method takes either 3 parameters (<code>p1</code>, <code>p2</code> and
-     * <code>t</code>) or 1 parameter (<code>t</code>).
-     * @param   t   Triangle object.
-     * @param   p1  Point2d object.
-     * @param   p2  Point2d object.
-     */
+    * Update neighbor pointers.<br>
+    * This method takes either 3 parameters (<code>p1</code>, <code>p2</code> and
+    * <code>t</code>) or 1 parameter (<code>t</code>).
+    * @param   t   Triangle object.
+    * @param   p1  Point2d object.
+    * @param   p2  Point2d object.
+    */
     fun markNeighbor(t: PolyTriangle, p1: IPoint, p2: IPoint) {
         if ((p1 == (this.point(2)) && p2 == (this.point(1))) || (p1 == (this.point(1)) && p2 == (this.point(2)))) {
             this.neighbors[0] = t
@@ -969,10 +969,10 @@ internal data class PolyTriangle internal constructor(
 
 
     /**
-     * Mark an edge of this triangle as constrained.<br>
-     * This method takes either 1 parameter (an edge index or an Edge instance) or
-     * 2 parameters (two Point2d instances defining the edge of the triangle).
-     */
+    * Mark an edge of this triangle as constrained.<br>
+    * This method takes either 1 parameter (an edge index or an Edge instance) or
+    * 2 parameters (two Point2d instances defining the edge of the triangle).
+    */
     fun markConstrainedEdgeByIndex(index: Int): Unit = run { this.constrained_edge[index] = true }
 
     fun markConstrainedEdgeByEdge(edge: Edge): Unit = this.markConstrainedEdgeByPoints(edge.p, edge.q)
@@ -989,13 +989,13 @@ internal data class PolyTriangle internal constructor(
 
 // isEdgeSide
     /**
-     * Checks if a side from this triangle is an edge side.
-     * If sides are not marked they will be marked.
-     *
-     * @param    ep
-     * @param    eq
-     * @return
-     */
+    * Checks if a side from this triangle is an edge side.
+    * If sides are not marked they will be marked.
+    *
+    * @param    ep
+    * @param    eq
+    * @return
+    */
     fun isEdgeSide(ep: IPoint, eq: IPoint): Boolean {
         val index = this.edgeIndex(ep, eq)
         if (index == -1) return false
@@ -1004,8 +1004,8 @@ internal data class PolyTriangle internal constructor(
         return true
     }
     /**
-     * The neighbor across to given point.
-     */
+    * The neighbor across to given point.
+    */
     fun neighborAcross(p: IPoint): PolyTriangle? = this.neighbors[getPointIndexOffset(p, 0)]
 
     override fun hashCode(): Int = p0.hashCode() + p1.hashCode() * 3 + p2.hashCode() * 5
@@ -1020,19 +1020,19 @@ internal data class PolyTriangle internal constructor(
         internal const val CCW_OFFSET: Int = -1
 
         /**
-         * Rotates a triangle pair one vertex CW
-         *<pre>
-         *       n2                    n2
-         *  P +-----+             P +-----+
-         *    | t  /|               |\  t |
-         *    |   / |               | \   |
-         *  n1|  /  |n3           n1|  \  |n3
-         *    | /   |    after CW   |   \ |
-         *    |/ oT |               | oT \|
-         *    +-----+ oP            +-----+
-         *       n4                    n4
-         * </pre>
-         */
+        * Rotates a triangle pair one vertex CW
+        *<pre>
+        *       n2                    n2
+        *  P +-----+             P +-----+
+        *    | t  /|               |\  t |
+        *    |   / |               | \   |
+        *  n1|  /  |n3           n1|  \  |n3
+        *    | /   |    after CW   |   \ |
+        *    |/ oT |               | oT \|
+        *    +-----+ oP            +-----+
+        *       n4                    n4
+        * </pre>
+        */
         fun rotateTrianglePair(t: PolyTriangle, p: IPoint, ot: PolyTriangle, op: IPoint) {
             val n1 = t.neighborCCW(p)
             val n2 = t.neighborCW(p)

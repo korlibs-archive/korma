@@ -13,7 +13,7 @@ open class VectorPath(
     open fun clone(): VectorPath = VectorPath(IntArrayList(commands), DoubleArrayList(data), winding)
 
     companion object {
-    	inline operator fun invoke(winding: Winding = Winding.EVEN_ODD, callback: VectorPath.() -> Unit): VectorPath = VectorPath(winding = winding).apply(callback)
+        inline operator fun invoke(winding: Winding = Winding.EVEN_ODD, callback: VectorPath.() -> Unit): VectorPath = VectorPath(winding = winding).apply(callback)
     }
 
     interface Visitor {

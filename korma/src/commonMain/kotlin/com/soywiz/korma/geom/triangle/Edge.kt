@@ -26,4 +26,3 @@ data class Edge internal constructor(
 
     override fun toString(): String = "Edge(${this.p}, ${this.q})"
 }
-

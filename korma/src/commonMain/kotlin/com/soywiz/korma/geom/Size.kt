@@ -62,7 +62,7 @@ interface ISizeInt {
 
 inline class SizeInt(val size: Size) : ISizeInt {
     companion object {
-    	operator fun invoke(): SizeInt = SizeInt(Size(0, 0))
+        operator fun invoke(): SizeInt = SizeInt(Size(0, 0))
         operator fun invoke(x: Int, y: Int): SizeInt = SizeInt(Size(x, y))
     }
 

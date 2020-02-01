@@ -172,10 +172,10 @@ class SpatialMeshFind(val spatialMesh: SpatialMesh) {
             fun push(p1: IPoint, p2: IPoint = p1) {
                 this.portals.add(Portal(p1, p2))
                 /*if (p2 == p1) {
-					trace('channel.push(' + p1 + ');');
-				} else {
-					trace('channel.push(' + p1 + ', ' + p2 + ');');
-				}*/
+                    trace('channel.push(' + p1 + ');');
+                } else {
+                    trace('channel.push(' + p1 + ', ' + p2 + ');');
+                }*/
             }
 
             fun stringPull(): ArrayList<IPoint> {

@@ -9,17 +9,17 @@ class AStarTest {
     fun testFindReachable() {
         assertFind(
             input = """
-					S#....
-					.#.##.
-					.#.#E.
-					...#..
-				""",
+                    S#....
+                    .#.##.
+                    .#.#E.
+                    ...#..
+                """,
             expected = """
-					0#89ab
-					1#7##c
-					2#6#ed
-					345#..
-				""",
+                    0#89ab
+                    1#7##c
+                    2#6#ed
+                    345#..
+                """,
             findClosest = false
         )
     }
@@ -28,17 +28,17 @@ class AStarTest {
     fun testFindUnreachable() {
         assertFind(
             input = """
-					S#....
-					.#.##.
-					.#.#E.
-					.#.#..
-				""",
+                    S#....
+                    .#.##.
+                    .#.#E.
+                    .#.#..
+                """,
             expected = """
-					.#....
-					.#.##.
-					.#.#..
-					.#.#..
-				""",
+                    .#....
+                    .#.##.
+                    .#.#..
+                    .#.#..
+                """,
             findClosest = false
         )
     }
@@ -47,17 +47,17 @@ class AStarTest {
     fun testFindClosestUnreachable() {
         assertFind(
             input = """
-					S#....
-					.#.##.
-					.#.#E.
-					.#.#..
-				""",
+                    S#....
+                    .#.##.
+                    .#.#E.
+                    .#.#..
+                """,
             expected = """
-					0#....
-					1#.##.
-					2#.#..
-					.#.#..
-				""",
+                    0#....
+                    1#.##.
+                    2#.#..
+                    .#.#..
+                """,
             findClosest = true
         )
     }

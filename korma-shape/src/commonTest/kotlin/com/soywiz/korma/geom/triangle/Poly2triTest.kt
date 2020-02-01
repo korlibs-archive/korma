@@ -341,17 +341,17 @@ class SweepTest {
 
 class TriangleTest {
     /**
-     *    p5
-     *     |\
-     *     | \
-     *     |   \ p4
-     *   p3|____\____.p6
-     *    / \ t2|   /
-     *   / t1\  |  /
-     *  /_____\.|/
-     * p1      p2
-     *
-     */
+    *    p5
+    *     |\
+    *     | \
+    *     |   \ p4
+    *   p3|____\____.p6
+    *    / \ t2|   /
+    *   / t1\  |  /
+    *  /_____\.|/
+    * p1      p2
+    *
+    */
     private val p1 = IPoint(-1, 0)
     private val p2 = IPoint(+1, 0)
     private val p3 = IPoint(0, +1)
