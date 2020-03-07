@@ -1,9 +1,0 @@
-apply plugin: com.soywiz.korlibs.KorlibsPlugin
-
-korlibs {
-    exposeVersion()
-}
-
-dependencies {
-    commonMainApi("com.soywiz.korlibs.kds:kds:$kdsVersion")
-}
