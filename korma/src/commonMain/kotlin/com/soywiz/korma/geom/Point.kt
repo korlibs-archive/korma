@@ -211,4 +211,4 @@ fun Iterable<IPoint>.getPolylineLength(): Double {
     return out
 }
 
-fun Iterable<IPoint>.bounds(out: Rectangle = Rectangle(), bb: BoundsBuilder = BoundsBuilder()): Rectangle = BoundsBuilder().add(this).getBounds(out)
+fun Iterable<IPoint>.bounds(out: Rectangle = Rectangle(), bb: BoundsBuilder = BoundsBuilder()): Rectangle = bb.add(this).getBounds(out)
