@@ -242,16 +242,14 @@ internal class Sweep(private var context: SweepContext) {
         edgeEvent.constrainedEdge = edge
         edgeEvent.right = (edge.p.x > edge.q.x)
 
-        val triangle = node.triangle!!
-
-        if (triangle.isEdgeSide(edge.p, edge.q)) return
+        if (node.triangle!!.isEdgeSide(edge.p, edge.q)) return
 
         // For now we will do all needed filling
         // TODO: integrate with flip process might give some better performance
         //       but for now this avoid the issue with cases that needs both flips and fills
         this.fillEdgeEvent(edge, node)
 
-        this.edgeEventByPoints(edge.p, edge.q, triangle, edge.q)
+        this.edgeEventByPoints(edge.p, edge.q, node.triangle!!, edge.q)
     }
 
     fun edgeEventByPoints(ep: IPoint, eq: IPoint, triangle: PolyTriangle, point: IPoint) {
