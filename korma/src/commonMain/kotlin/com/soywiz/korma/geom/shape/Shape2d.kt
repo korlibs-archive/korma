@@ -139,6 +139,43 @@ inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Double, y: Double)
     flush()
 }
 
+@Suppress("DuplicatedCode")
+fun IPointArrayList.toRectangleOrNull(): Shape2d.Rectangle? {
+    if (this.size != 4) return null
+    val x0 = getX(0)
+    val y0 = getY(0)
+    val x1 = getX(1)
+    val y1 = getY(1)
+    val x2 = getX(2)
+    val y2 = getY(2)
+    val x3 = getX(3)
+    val y3 = getY(3)
+    if (x0 == x1 && x2 == x3 && x0 != x2) {
+        return if ((y0 == y2 && y1 == y3 && y0 != y1) || (y0 == y3 && y1 == y2 && y0 != y1))
+            formRectangle(x0, x2, y0, y1)
+        else null
+    }
+    if (x0 == x2 && x1 == x3 && x0 != x1) {
+        return if ((y0 == y1 && y2 == y3 && y0 != y2) || (y0 == y3 && y1 == y2 && y0 != y2))
+            formRectangle(x0, x1, y0, y2)
+        else null
+    }
+    if (x0 == x3 && x1 == x2 && x0 != x1) {
+        return if ((y0 == y1 && y2 == y3 && y0 != y2) || (y0 == y2 && y1 == y3 && y0 != y2))
+            formRectangle(x0, x1, y0, y1)
+        else null
+    }
+    return null
+}
+
+private fun formRectangle(lr1: Double, lr2: Double, tb1: Double, tb2: Double): Shape2d.Rectangle {
+    val left = min(lr1, lr2)
+    val right = max(lr1, lr2)
+    val top = max(tb1, tb2)
+    val bottom = min(tb1, tb2)
+    return Shape2d.Rectangle(Rectangle.fromBounds(top, left, right, bottom))
+}
+
 fun IPointArrayList.toShape2d(closed: Boolean = true): Shape2d {
     if (closed && this.size == 4) {
         val x0 = this.getX(0)
