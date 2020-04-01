@@ -139,7 +139,6 @@ inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Double, y: Double)
     flush()
 }
 
-@Suppress("DuplicatedCode")
 fun IPointArrayList.toRectangleOrNull(): Shape2d.Rectangle? {
     if (this.size != 4) return null
     //check there are only unique points
