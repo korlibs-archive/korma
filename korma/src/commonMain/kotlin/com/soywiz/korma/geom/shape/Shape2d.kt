@@ -139,6 +139,23 @@ inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Double, y: Double)
     flush()
 }
 
+fun IPointArrayList.toRectangleOrNull(): Shape2d.Rectangle? {
+    if (this.size != 4) return null
+    //check there are only unique points
+    val points = setOf(getX(0) to getY(0), getX(1) to getY(1), getX(2) to getY(2), getX(3) to getY(3))
+    if (points.size != 4) return null
+    //check there are exactly two unique x/y coordinates
+    val xs = setOf(getX(0), getX(1), getX(2), getX(3))
+    val ys = setOf(getY(0), getY(1), getY(2), getY(3))
+    if (xs.size != 2 || ys.size != 2) return null
+    //get coordinates
+    val left = xs.min() ?: return null
+    val right = xs.max() ?: return null
+    val top = ys.max() ?: return null
+    val bottom = ys.min() ?: return null
+    return Shape2d.Rectangle(Rectangle.fromBounds(top, left, right, bottom))
+}
+
 fun IPointArrayList.toShape2d(closed: Boolean = true): Shape2d {
     if (closed && this.size == 4) {
         val x0 = this.getX(0)
