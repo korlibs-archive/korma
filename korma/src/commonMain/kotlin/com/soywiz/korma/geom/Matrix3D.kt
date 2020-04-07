@@ -348,11 +348,16 @@ class Matrix3D {
         return this
     }
 
+    fun transform0(x: Float, y: Float, z: Float, w: Float = 1f): Float = (v00 * x) + (v01 * y) + (v02 * z) + (v03 * w)
+    fun transform1(x: Float, y: Float, z: Float, w: Float = 1f): Float = (v10 * x) + (v11 * y) + (v12 * z) + (v13 * w)
+    fun transform2(x: Float, y: Float, z: Float, w: Float = 1f): Float = (v20 * x) + (v21 * y) + (v22 * z) + (v23 * w)
+    fun transform3(x: Float, y: Float, z: Float, w: Float = 1f): Float = (v30 * x) + (v31 * y) + (v32 * z) + (v33 * w)
+
     fun transform(x: Float, y: Float, z: Float, w: Float = 1f, out: Vector3D = Vector3D(0, 0, 0, 0)): Vector3D = out.setTo(
-        (v00 * x) + (v01 * y) + (v02 * z) + (v03 * w),
-        (v10 * x) + (v11 * y) + (v12 * z) + (v13 * w),
-        (v20 * x) + (v21 * y) + (v22 * z) + (v23 * w),
-        (v30 * x) + (v31 * y) + (v32 * z) + (v33 * w)
+        transform0(x, y, z, w),
+        transform1(x, y, z, w),
+        transform2(x, y, z, w),
+        transform3(x, y, z, w)
     )
 
     fun transform(v: Vector3D, out: Vector3D = Vector3D()): Vector3D = transform(v.x, v.y, v.z, v.w, out)
