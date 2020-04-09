@@ -97,10 +97,10 @@ val Shape2d.bounds: Rectangle get() = BoundsBuilder().apply { add(this@bounds) }
 fun IRectangle.toShape() = Shape2d.Rectangle(x, y, width, height)
 
 // @TODO: Instead of use curveSteps, let's determine the maximum distance between points for the curve, or the maximum angle (so we have a quality factor instead)
-inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Double, y: Double) -> Unit, curveSteps: Int = 20) {
+inline fun VectorPath.emitPoints(flush: (close: Boolean) -> Unit, emit: (x: Double, y: Double) -> Unit, curveSteps: Int = 20) {
     var lx = 0.0
     var ly = 0.0
-    flush()
+    flush(false)
     this.visitCmds(
         moveTo = { x, y ->
             //kotlin.io.println("moveTo")
@@ -133,10 +133,10 @@ inline fun VectorPath.emitPoints(flush: () -> Unit, emit: (x: Double, y: Double)
             ly = y2
         },
         close = {
-            flush()
+            flush(true)
         }
     )
-    flush()
+    flush(false)
 }
 
 fun IPointArrayList.toRectangleOrNull(): Shape2d.Rectangle? {
