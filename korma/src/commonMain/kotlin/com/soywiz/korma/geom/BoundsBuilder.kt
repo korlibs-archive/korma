@@ -8,11 +8,11 @@ class BoundsBuilder {
         private val MAX = Double.POSITIVE_INFINITY
     }
 
-    private var npoints = 0
-    private var xmin = MAX
-    private var xmax = MIN
-    private var ymin = MAX
-    private var ymax = MIN
+    var npoints = 0; private set
+    var xmin = MAX; private set
+    var xmax = MIN; private set
+    var ymin = MAX; private set
+    var ymax = MIN; private set
 
     fun reset() {
         xmin = MAX
