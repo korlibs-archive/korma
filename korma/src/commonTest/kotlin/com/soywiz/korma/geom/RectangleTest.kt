@@ -30,4 +30,10 @@ class RectangleTest {
         //Assert.assertEquals(Rectangle(0, 0, 0, 0), r1)
         assertEquals(Rectangle(135, 20, 30, 10), ro)
     }
+
+    @Test
+    fun testPlace() {
+        val out = Rectangle(0, 0, 100, 100).place(Size(50, 25), Anchor.MIDDLE_CENTER, ScaleMode.SHOW_ALL)
+        assertEquals(Rectangle(0, 25, 100, 50), out)
+    }
 }

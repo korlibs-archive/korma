@@ -76,6 +76,18 @@ data class Rectangle(
     fun displaced(dx: Double, dy: Double) = Rectangle(this.x + dx, this.y + dy, width, height)
     fun displace(dx: Double, dy: Double) = setTo(this.x + dx, this.y + dy, this.width, this.height)
 
+
+    fun place(item: Size, anchor: Anchor, scale: ScaleMode, out: Rectangle = Rectangle()): Rectangle =
+        place(item.width, item.height, anchor, scale, out)
+
+    fun place(width: Double, height: Double, anchor: Anchor, scale: ScaleMode, out: Rectangle = Rectangle()): Rectangle {
+        val ow = scale.transformW(width, height, this.width, this.height)
+        val oh = scale.transformH(width, height, this.width, this.height)
+        val x = (this.width - ow) * anchor.sx
+        val y = (this.height - oh) * anchor.sy
+        return out.setTo(x, y, ow, oh)
+    }
+
     fun inflate(dx: Double, dy: Double) {
         x -= dx; width += 2 * dx
         y -= dy; height += 2 * dy

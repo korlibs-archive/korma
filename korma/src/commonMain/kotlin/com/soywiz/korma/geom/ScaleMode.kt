@@ -1,33 +1,57 @@
 package com.soywiz.korma.geom
 
-class ScaleMode(private val function: ScaleMode.(item: Size, container: Size, target: Size) -> Unit) {
-    operator fun invoke(item: Size, container: Size, target: Size = Size()): Size = target.apply {
-        function(item, container, target)
-    }
+import kotlin.native.concurrent.ThreadLocal
 
-    operator fun invoke(item: SizeInt, container: SizeInt, target: SizeInt = SizeInt()): SizeInt = target.apply {
-        function(item.asDouble(), container.asDouble(), target.asDouble())
-    }
+class ScaleMode(
+    val transform: (c: Int, iw: Double, ih: Double, cw: Double, ch: Double) -> Double
+) {
+    fun transformW(iw: Double, ih: Double, cw: Double, ch: Double) = transform(0, iw, ih, cw, ch)
+    fun transformH(iw: Double, ih: Double, cw: Double, ch: Double) = transform(1, iw, ih, cw, ch)
+    fun transform(iw: Double, ih: Double, cw: Double, ch: Double, target: Size = Size()) = target.setTo(
+        transformW(iw, ih, cw, ch),
+        transformH(iw, ih, cw, ch)
+    )
+
+    fun transformW(item: Size, container: Size) = transformW(item.width, item.height, container.width, container.height)
+    fun transformH(item: Size, container: Size) = transformH(item.width, item.height, container.width, container.height)
+
+    operator fun invoke(item: Size, container: Size, target: Size = Size()): Size =
+        transform(item.width, item.height, container.width, container.height, target)
+
+    operator fun invoke(item: SizeInt, container: SizeInt, target: SizeInt = SizeInt()): SizeInt = target.setTo(
+        transformW(item.width.toDouble(), item.height.toDouble(), container.width.toDouble(), container.height.toDouble()).toInt(),
+        transformH(item.width.toDouble(), item.height.toDouble(), container.width.toDouble(), container.height.toDouble()).toInt()
+    )
 
     companion object {
-        val COVER = ScaleMode { item, container, target ->
-            val s0 = container.width / item.width
-            val s1 = container.height / item.height
-            target.setTo(item).setToScaled(kotlin.math.max(s0, s1))
+        @Deprecated("")
+        operator fun invoke(function: (item: Size, container: Size, target: Size) -> Unit): ScaleMode {
+            val t1 = Size()
+            val t2 = Size()
+            val tt = Size()
+            return ScaleMode { c, iw, ih, cw, ch -> function(t1.setTo(iw, ih), t2.setTo(cw, ch), tt).let { if (c == 0) tt.width else tt.height } }
         }
 
-        val SHOW_ALL = ScaleMode { item, container, target ->
-            val s0 = container.width / item.width
-            val s1 = container.height / item.height
-            target.setTo(item).setToScaled(kotlin.math.min(s0, s1))
+        val COVER = ScaleMode { c, iw, ih, cw, ch ->
+            val s0 = cw / iw
+            val s1 = ch / ih
+            val s = kotlin.math.max(s0, s1)
+            if (c == 0) iw * s else ih * s
         }
 
-        val EXACT = ScaleMode { item, container, target ->
-            target.setTo(container)
+        val SHOW_ALL = ScaleMode { c, iw, ih, cw, ch ->
+            val s0 = cw / iw
+            val s1 = ch / ih
+            val s = kotlin.math.min(s0, s1)
+            if (c == 0) iw * s else ih * s
         }
 
-        val NO_SCALE = ScaleMode { item, container, target ->
-            target.setTo(item)
+        val EXACT = ScaleMode { c, iw, ih, cw, ch ->
+            if (c == 0) cw else ch
+        }
+
+        val NO_SCALE = ScaleMode { c, iw, ih, cw, ch ->
+            if (c == 0) iw else ih
         }
     }
 }
