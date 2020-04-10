@@ -272,6 +272,26 @@ open class VectorPath(
 inline fun VectorPath.containsPoint(x: Number, y: Number): Boolean = containsPoint(x.toDouble(), y.toDouble())
 inline fun VectorPath.numberOfIntersections(x: Number, y: Number): Int = numberOfIntersections(x.toDouble(), y.toDouble())
 
+fun BoundsBuilder.add(path: VectorPath, transform: Matrix) {
+    val bb = this
+    var lx = 0.0
+    var ly = 0.0
+
+    path.visitCmds(
+        moveTo = { x, y -> bb.add(x, y, transform).also { lx = x }.also { ly = y } },
+        lineTo = { x, y -> bb.add(x, y, transform).also { lx = x }.also { ly = y } },
+        quadTo = { cx, cy, ax, ay ->
+            bb.add(Bezier.quadBounds(lx, ly, cx, cy, ax, ay, bb.tempRect), transform)
+                .also { lx = ax }.also { ly = ay }
+        },
+        cubicTo = { cx1, cy1, cx2, cy2, ax, ay ->
+            bb.add(Bezier.cubicBounds(lx, ly, cx1, cy1, cx2, cy2, ax, ay, bb.tempRect, path.bezierTemp), transform)
+                .also { lx = ax }.also { ly = ay }
+        },
+        close = {}
+    )
+}
+
 fun BoundsBuilder.add(path: VectorPath) {
     val bb = this
     var lx = 0.0

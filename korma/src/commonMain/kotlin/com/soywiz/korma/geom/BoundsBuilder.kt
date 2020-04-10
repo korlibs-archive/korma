@@ -32,6 +32,9 @@ class BoundsBuilder {
         return this
     }
 
+    fun add(x: Double, y: Double, transform :Matrix): BoundsBuilder =
+        add(transform.transformX(x, y), transform.transformY(x, y))
+
     fun getBoundsOrNull(out: Rectangle = Rectangle()): Rectangle? = if (npoints == 0) null else out.setBounds(xmin, ymin, xmax, ymax)
 
     fun getBounds(out: Rectangle = Rectangle()): Rectangle {
@@ -50,5 +53,11 @@ fun BoundsBuilder.add(rect: Rectangle) = this.apply {
     if (rect.isNotEmpty) {
         add(rect.left, rect.top)
         add(rect.right, rect.bottom)
+    }
+}
+fun BoundsBuilder.add(rect: Rectangle, transform: Matrix) = this.apply {
+    if (rect.isNotEmpty) {
+        add(rect.left, rect.top, transform)
+        add(rect.right, rect.bottom, transform)
     }
 }
