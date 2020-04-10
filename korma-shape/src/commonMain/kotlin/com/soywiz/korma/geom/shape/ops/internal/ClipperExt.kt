@@ -47,14 +47,14 @@ internal fun Shape2d.clipperOp(other: Shape2d, op: Clipper.ClipType): Shape2d {
     return solution.toShape2d()
 }
 
-internal fun VectorPath.LineCap.toClipper(): Clipper.EndType = when (this) {
-    VectorPath.LineCap.BUTT -> Clipper.EndType.OPEN_BUTT
-    VectorPath.LineCap.SQUARE -> Clipper.EndType.OPEN_SQUARE
-    VectorPath.LineCap.ROUND -> Clipper.EndType.OPEN_ROUND
+internal fun LineCap.toClipper(): Clipper.EndType = when (this) {
+    LineCap.BUTT -> Clipper.EndType.OPEN_BUTT
+    LineCap.SQUARE -> Clipper.EndType.OPEN_SQUARE
+    LineCap.ROUND -> Clipper.EndType.OPEN_ROUND
 }
 
-internal fun VectorPath.LineJoin.toClipper(): Clipper.JoinType = when (this) {
-    VectorPath.LineJoin.SQUARE -> Clipper.JoinType.SQUARE
-    VectorPath.LineJoin.ROUND -> Clipper.JoinType.ROUND
-    VectorPath.LineJoin.MITER -> Clipper.JoinType.MITER
+internal fun LineJoin.toClipper(): Clipper.JoinType = when (this) {
+    LineJoin.SQUARE -> Clipper.JoinType.SQUARE
+    LineJoin.ROUND -> Clipper.JoinType.ROUND
+    LineJoin.MITER -> Clipper.JoinType.MITER
 }

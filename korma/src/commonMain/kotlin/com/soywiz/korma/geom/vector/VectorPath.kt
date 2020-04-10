@@ -257,19 +257,16 @@ open class VectorPath(
         const val CLOSE = 4
     }
 
-    enum class Winding(val str: String) {
-        EVEN_ODD("evenOdd"), NON_ZERO("nonZero");
-    }
-
-    enum class LineCap { BUTT, SQUARE, ROUND }
-    enum class LineJoin { SQUARE, ROUND, MITER }
-
     fun write(path: VectorPath) {
         this.commands += path.commands
         this.data += path.data
         this.lastX = path.lastX
         this.lastY = path.lastY
     }
+
+    //typealias Winding = com.soywiz.korma.geom.vector.Winding
+    //typealias LineJoin = com.soywiz.korma.geom.vector.LineJoin
+    //typealias LineCap = com.soywiz.korma.geom.vector.LineCap
 }
 
 inline fun VectorPath.containsPoint(x: Number, y: Number): Boolean = containsPoint(x.toDouble(), y.toDouble())
@@ -281,28 +278,16 @@ fun BoundsBuilder.add(path: VectorPath) {
     var ly = 0.0
 
     path.visitCmds(
-        moveTo = { x, y ->
-            bb.add(x, y)
-            lx = x
-            ly = y
-        },
-        lineTo = { x, y ->
-            bb.add(x, y)
-            lx = x
-            ly = y
-        },
+        moveTo = { x, y -> bb.add(x, y).also { lx = x }.also { ly = y } },
+        lineTo = { x, y -> bb.add(x, y).also { lx = x }.also { ly = y } },
         quadTo = { cx, cy, ax, ay ->
             bb.add(Bezier.quadBounds(lx, ly, cx, cy, ax, ay, bb.tempRect))
-            lx = ax
-            ly = ay
+                .also { lx = ax }.also { ly = ay }
         },
         cubicTo = { cx1, cy1, cx2, cy2, ax, ay ->
             bb.add(Bezier.cubicBounds(lx, ly, cx1, cy1, cx2, cy2, ax, ay, bb.tempRect, path.bezierTemp))
-            lx = ax
-            ly = ay
+                .also { lx = ax }.also { ly = ay }
         },
-        close = {
-
-        }
+        close = {}
     )
 }

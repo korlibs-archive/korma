@@ -102,39 +102,20 @@ inline fun VectorPath.emitPoints(flush: (close: Boolean) -> Unit, emit: (x: Doub
     var ly = 0.0
     flush(false)
     this.visitCmds(
-        moveTo = { x, y ->
-            //kotlin.io.println("moveTo")
-            emit(x, y)
-            lx = x
-            ly = y
-        },
-        lineTo = { x, y ->
-            //kotlin.io.println("lineTo")
-            emit(x, y)
-            lx = x
-            ly = y
-        },
+        moveTo = { x, y -> emit(x, y).also { lx = x }.also { ly = y } },
+        lineTo = { x, y -> emit(x, y).also { lx = x }.also { ly = y } },
         quadTo = { x0, y0, x1, y1 ->
-            //kotlin.io.println("quadTo")
             val dt = 1.0 / curveSteps
-            for (n in 1 until curveSteps) {
-                Bezier.quadCalc(lx, ly, x0, y0, x1, y1, n * dt, emit)
-            }
-            lx = x1
-            ly = y1
+            for (n in 1 until curveSteps) Bezier.quadCalc(lx, ly, x0, y0, x1, y1, n * dt, emit)
+            run { lx = x1 }.also { ly = y1 }
         },
         cubicTo = { x0, y0, x1, y1, x2, y2 ->
-            //kotlin.io.println("cubicTo")
             val dt = 1.0 / curveSteps
-            for (n in 1 until curveSteps) {
-                Bezier.cubicCalc(lx, ly, x0, y0, x1, y1, x2, y2, n * dt, emit)
-            }
-            lx = x2
-            ly = y2
+            for (n in 1 until curveSteps) Bezier.cubicCalc(lx, ly, x0, y0, x1, y1, x2, y2, n * dt, emit)
+            run { lx = x2 }.also { ly = y2 }
+
         },
-        close = {
-            flush(true)
-        }
+        close = { flush(true) }
     )
     flush(false)
 }
