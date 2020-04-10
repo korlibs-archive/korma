@@ -257,6 +257,8 @@ open class VectorPath(
         const val CLOSE = 4
     }
 
+    @Deprecated("")
+    // Can cause problems because we are not applying transforms at all that might be applied by the VectorBuilder
     fun write(path: VectorPath) {
         this.commands += path.commands
         this.data += path.data
@@ -267,6 +269,16 @@ open class VectorPath(
     //typealias Winding = com.soywiz.korma.geom.vector.Winding
     //typealias LineJoin = com.soywiz.korma.geom.vector.LineJoin
     //typealias LineCap = com.soywiz.korma.geom.vector.LineCap
+}
+
+fun VectorBuilder.write(path: VectorPath) {
+    path.visitCmds(
+        moveTo = { x, y -> moveTo(x, y) },
+        lineTo = { x, y -> lineTo(x, y) },
+        quadTo = { x0, y0, x1, y1 -> quadTo(x0, y0, x1, y1) },
+        cubicTo = { x0, y0, x1, y1, x2, y2 -> cubicTo(x0, y0, x1, y1, x2, y2) },
+        close = { close() }
+    )
 }
 
 inline fun VectorPath.containsPoint(x: Number, y: Number): Boolean = containsPoint(x.toDouble(), y.toDouble())
