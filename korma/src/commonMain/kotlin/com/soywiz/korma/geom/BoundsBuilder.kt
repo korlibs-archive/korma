@@ -14,6 +14,9 @@ class BoundsBuilder {
     var ymin = MAX; private set
     var ymax = MIN; private set
 
+    fun isEmpty() = npoints == 0
+    fun isNotEmpty() = npoints > 0
+
     fun reset() {
         xmin = MAX
         xmax = MIN
@@ -55,6 +58,10 @@ fun BoundsBuilder.add(rect: Rectangle) = this.apply {
         add(rect.right, rect.bottom)
     }
 }
+
+fun BoundsBuilder.add(p: IPoint, transform: Matrix) = add(p.x, p.y, transform)
+fun BoundsBuilder.add(ps: Iterable<IPoint>, transform: Matrix) = this.apply { for (p in ps) add(p, transform) }
+fun BoundsBuilder.add(ps: IPointArrayList, transform: Matrix) = run { for (n in 0 until ps.size) add(ps.getX(n), ps.getY(n), transform) }
 fun BoundsBuilder.add(rect: Rectangle, transform: Matrix) = this.apply {
     if (rect.isNotEmpty) {
         add(rect.left, rect.top, transform)
