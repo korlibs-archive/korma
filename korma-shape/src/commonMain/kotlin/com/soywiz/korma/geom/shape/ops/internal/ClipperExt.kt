@@ -54,7 +54,7 @@ internal fun LineCap.toClipper(): Clipper.EndType = when (this) {
 }
 
 internal fun LineJoin.toClipper(): Clipper.JoinType = when (this) {
-    LineJoin.SQUARE -> Clipper.JoinType.SQUARE
+    LineJoin.BEVEL -> Clipper.JoinType.SQUARE
     LineJoin.ROUND -> Clipper.JoinType.ROUND
     LineJoin.MITER -> Clipper.JoinType.MITER
 }
