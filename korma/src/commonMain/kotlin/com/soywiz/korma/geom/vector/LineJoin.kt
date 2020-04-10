@@ -1,7 +1,11 @@
 package com.soywiz.korma.geom.vector
 
 enum class LineJoin {
-    SQUARE,
+    BEVEL,
     ROUND,
     MITER;
+
+    companion object {
+        val SQUARE = BEVEL
+    }
 }
