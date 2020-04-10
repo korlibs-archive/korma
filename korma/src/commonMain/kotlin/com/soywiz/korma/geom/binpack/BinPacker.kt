@@ -34,6 +34,9 @@ class BinPacker(val width: Double, val height: Double, val algo: Algo = MaxRects
         return rect
     }
 
+    inline fun add(width: Number, height: Number): Rectangle = add(width.toDouble(), height.toDouble())
+    inline fun addOrNull(width: Number, height: Number): Rectangle? = addOrNull(width.toDouble(), height.toDouble())
+
     fun <T> addBatch(items: Iterable<T>, getSize: (T) -> Size): Result<T> {
         return Result(width, height, algo.addBatch(items, getSize))
     }
