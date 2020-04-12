@@ -266,6 +266,18 @@ open class VectorPath(
         this.lastY = path.lastY
     }
 
+    fun write(path: VectorPath, transform: Matrix) {
+        this.commands += path.commands
+        for (n in 0 until path.data.size step 2) {
+            val x = path.data[n + 0]
+            val y = path.data[n + 1]
+            this.data += transform.transformX(x, y)
+            this.data += transform.transformY(x, y)
+        }
+        this.lastX = transform.transformX(path.lastX, path.lastY)
+        this.lastY = transform.transformY(path.lastX, path.lastY)
+    }
+
     //typealias Winding = com.soywiz.korma.geom.vector.Winding
     //typealias LineJoin = com.soywiz.korma.geom.vector.LineJoin
     //typealias LineCap = com.soywiz.korma.geom.vector.LineCap
