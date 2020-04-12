@@ -28,6 +28,11 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     fun isEmpty() = size == 0
     fun isNotEmpty() = size != 0
 
+    fun clear() {
+        xList.clear()
+        yList.clear()
+    }
+
     companion object {
         operator fun invoke(capacity: Int = 7, callback: PointArrayList.() -> Unit): PointArrayList = PointArrayList(capacity).apply(callback)
         operator fun invoke(points: List<IPoint>): PointArrayList = PointArrayList(points.size) {
@@ -41,6 +46,18 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     fun add(x: Double, y: Double) = this.apply {
         xList += x
         yList += y
+    }
+
+    inline fun fastForEach(block: (x: Double, y: Double) -> Unit) {
+        for (n in 0 until size) {
+            block(getX(n), getY(n))
+        }
+    }
+
+    fun toList(): List<Point> {
+        val out = arrayListOf<Point>()
+        fastForEach { x, y -> out.add(Point(x, y)) }
+        return out
     }
 
     override fun getX(index: Int) = xList[index]
