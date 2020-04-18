@@ -8,7 +8,7 @@ import com.soywiz.korma.geom.shape.*
 open class VectorPath(
     val commands: IntArrayList = IntArrayList(),
     val data: DoubleArrayList = DoubleArrayList(),
-    val winding: Winding = Winding.EVEN_ODD
+    var winding: Winding = Winding.EVEN_ODD
 ) : VectorBuilder {
     open fun clone(): VectorPath = VectorPath(IntArrayList(commands), DoubleArrayList(data), winding)
 
