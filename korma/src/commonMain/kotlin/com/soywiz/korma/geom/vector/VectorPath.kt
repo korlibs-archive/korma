@@ -1,6 +1,7 @@
 package com.soywiz.korma.geom.vector
 
 import com.soywiz.kds.*
+import com.soywiz.kds.iterators.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.bezier.*
 import com.soywiz.korma.geom.shape.*
@@ -32,32 +33,32 @@ open class VectorPath(
         close: () -> Unit
     ) {
         var n = 0
-        for (cmd in commands) {
+        commands.fastForEach { cmd ->
             when (cmd) {
                 Command.MOVE_TO -> {
-                    val x = data[n++]
-                    val y = data[n++]
+                    val x = data.getAt(n++)
+                    val y = data.getAt(n++)
                     moveTo(x, y)
                 }
                 Command.LINE_TO -> {
-                    val x = data[n++]
-                    val y = data[n++]
+                    val x = data.getAt(n++)
+                    val y = data.getAt(n++)
                     lineTo(x, y)
                 }
                 Command.QUAD_TO -> {
-                    val x1 = data[n++]
-                    val y1 = data[n++]
-                    val x2 = data[n++]
-                    val y2 = data[n++]
+                    val x1 = data.getAt(n++)
+                    val y1 = data.getAt(n++)
+                    val x2 = data.getAt(n++)
+                    val y2 = data.getAt(n++)
                     quadTo(x1, y1, x2, y2)
                 }
                 Command.CUBIC_TO -> {
-                    val x1 = data[n++]
-                    val y1 = data[n++]
-                    val x2 = data[n++]
-                    val y2 = data[n++]
-                    val x3 = data[n++]
-                    val y3 = data[n++]
+                    val x1 = data.getAt(n++)
+                    val y1 = data.getAt(n++)
+                    val x2 = data.getAt(n++)
+                    val y2 = data.getAt(n++)
+                    val x3 = data.getAt(n++)
+                    val y3 = data.getAt(n++)
                     cubicTo(x1, y1, x2, y2, x3, y3)
                 }
                 Command.CLOSE -> {
@@ -269,8 +270,8 @@ open class VectorPath(
     fun write(path: VectorPath, transform: Matrix) {
         this.commands += path.commands
         for (n in 0 until path.data.size step 2) {
-            val x = path.data[n + 0]
-            val y = path.data[n + 1]
+            val x = path.data.getAt(n + 0)
+            val y = path.data.getAt(n + 1)
             this.data += transform.transformX(x, y)
             this.data += transform.transformY(x, y)
         }

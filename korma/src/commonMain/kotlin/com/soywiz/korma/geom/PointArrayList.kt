@@ -60,8 +60,8 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
         return out
     }
 
-    override fun getX(index: Int) = xList[index]
-    override fun getY(index: Int) = yList[index]
+    override fun getX(index: Int) = xList.getAt(index)
+    override fun getY(index: Int) = yList.getAt(index)
 
     fun setX(index: Int, x: Double) = run { xList[index] = x }
     fun setY(index: Int, y: Double) = run { yList[index] = y }
@@ -152,8 +152,8 @@ class PointIntArrayList(capacity: Int = 7) : IPointIntArrayList {
         yList += y
     }
 
-    override fun getX(index: Int) = xList[index]
-    override fun getY(index: Int) = yList[index]
+    override fun getX(index: Int) = xList.getAt(index)
+    override fun getY(index: Int) = yList.getAt(index)
 
     fun setX(index: Int, x: Int) = run { xList[index] = x }
     fun setY(index: Int, y: Int) = run { yList[index] = y }
@@ -214,13 +214,13 @@ fun IPointIntArrayList.contains(x: Int, y: Int): Boolean {
 //////////////////////////////////////
 
 private fun DoubleArrayList.swap(indexA: Int, indexB: Int) {
-    val tmp = this[indexA]
-    this[indexA] = this[indexB]
+    val tmp = this.getAt(indexA)
+    this[indexA] = this.getAt(indexB)
     this[indexB] = tmp
 }
 
 private fun IntArrayList.swap(indexA: Int, indexB: Int) {
-    val tmp = this[indexA]
-    this[indexA] = this[indexB]
+    val tmp = this.getAt(indexA)
+    this[indexA] = this.getAt(indexB)
     this[indexB] = tmp
 }
