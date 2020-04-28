@@ -1,6 +1,7 @@
 package com.soywiz.korma.geom.vector
 
 import com.soywiz.kds.*
+import com.soywiz.kds.iterators.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.bezier.*
 import com.soywiz.korma.geom.shape.*
@@ -32,8 +33,8 @@ open class VectorPath(
         close: () -> Unit
     ) {
         var n = 0
-        for (i in 0 until commands.size) {
-            when (commands.getAt(i)) {
+        commands.fastForEach { cmd ->
+            when (cmd) {
                 Command.MOVE_TO -> {
                     val x = data.getAt(n++)
                     val y = data.getAt(n++)
