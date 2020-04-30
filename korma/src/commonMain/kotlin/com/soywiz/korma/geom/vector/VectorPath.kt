@@ -117,6 +117,8 @@ open class VectorPath(
     fun clear() {
         commands.clear()
         data.clear()
+        lastX = 0.0
+        lastY = 0.0
     }
 
     fun setFrom(other: VectorPath) {
