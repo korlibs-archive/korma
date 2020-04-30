@@ -1,6 +1,7 @@
 package com.soywiz.korma.geom.bezier
 
 import com.soywiz.korma.geom.*
+import com.soywiz.korma.math.*
 import kotlin.math.*
 
 //(x0,y0) is start point; (x1,y1),(x2,y2) is control points; (x3,y3) is end point.
@@ -143,10 +144,10 @@ interface Bezier {
             temp.yvalues[temp.tvalues.size + 1] = y3
 
             return target.setBounds(
-                temp.xvalues.min() ?: 0.0,
-                temp.yvalues.min() ?: 0.0,
-                temp.xvalues.max() ?: 0.0,
-                temp.yvalues.max() ?: 0.0
+                temp.xvalues.minOrElse(0.0),
+                temp.yvalues.minOrElse(0.0),
+                temp.xvalues.maxOrElse(0.0),
+                temp.yvalues.maxOrElse(0.0)
             )
         }
 
