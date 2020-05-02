@@ -103,13 +103,8 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     }
 
     object PointSortOpts : SortOps<PointArrayList>() {
-        override fun compare(p: PointArrayList, l: Int, r: Int): Int {
-            return Point.compare(p.getX(l), p.getY(l), p.getX(r), p.getY(r))
-        }
-
-        override fun swap(subject: PointArrayList, indexL: Int, indexR: Int) {
-            subject.swap(indexL, indexR)
-        }
+        override fun compare(p: PointArrayList, l: Int, r: Int): Int = Point.compare(p.getX(l), p.getY(l), p.getX(r), p.getY(r))
+        override fun swap(subject: PointArrayList, indexL: Int, indexR: Int) = subject.swap(indexL, indexR)
     }
 }
 
@@ -137,6 +132,11 @@ class PointIntArrayList(capacity: Int = 7) : IPointIntArrayList {
     fun isEmpty() = size == 0
     fun isNotEmpty() = size != 0
 
+    fun clear() {
+        xList.clear()
+        yList.clear()
+    }
+
     companion object {
         operator fun invoke(capacity: Int = 7, callback: PointIntArrayList.() -> Unit): PointIntArrayList = PointIntArrayList(capacity).apply(callback)
         operator fun invoke(points: List<IPointInt>): PointIntArrayList = PointIntArrayList(points.size) {
@@ -150,6 +150,18 @@ class PointIntArrayList(capacity: Int = 7) : IPointIntArrayList {
     fun add(x: Int, y: Int) = this.apply {
         xList += x
         yList += y
+    }
+
+    inline fun fastForEach(block: (x: Int, y: Int) -> Unit) {
+        for (n in 0 until size) {
+            block(getX(n), getY(n))
+        }
+    }
+
+    fun toList(): List<PointInt> {
+        val out = arrayListOf<PointInt>()
+        fastForEach { x, y -> out.add(PointInt(x, y)) }
+        return out
     }
 
     override fun getX(index: Int) = xList.getAt(index)
