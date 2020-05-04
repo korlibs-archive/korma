@@ -8,6 +8,12 @@ fun Double.clamp(min: Double, max: Double): Double = if (this < min) min else if
 fun Float.clamp(min: Float, max: Float): Float = if (this < min) min else if (this > max) max else this
 fun Double.betweenInclusive(min: Double, max: Double): Boolean = (this >= min) && (this <= max)
 
+/** Clamps the integer value in the 0..255 range */
+fun Int.clampUByte(): Int {
+    val n = this and -(if (this >= 0) 1 else 0)
+    return (n or (255 - n shr 31)) and 0xFF
+}
+
 fun almostEquals(a: Float, b: Float) = almostZero(a - b)
 fun almostZero(a: Float) = abs(a) <= 0.0000001
 
