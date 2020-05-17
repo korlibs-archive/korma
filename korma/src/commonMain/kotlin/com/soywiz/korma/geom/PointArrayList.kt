@@ -28,7 +28,7 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     fun isEmpty() = size == 0
     fun isNotEmpty() = size != 0
 
-    fun clear() {
+    fun clear() = this.apply {
         xList.clear()
         yList.clear()
     }
@@ -48,11 +48,17 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
         yList += y
     }
 
+    fun add(p: Point) = add(p.x, p.y)
+    fun add(p: PointArrayList) = this.apply { p.fastForEach { x, y -> add(x, y) } }
+
     inline fun fastForEach(block: (x: Double, y: Double) -> Unit) {
         for (n in 0 until size) {
             block(getX(n), getY(n))
         }
     }
+
+    fun copyFrom(other: PointArrayList): PointArrayList = this.apply { clear() }.apply { add(other) }
+    fun clone(out: PointArrayList = PointArrayList()): PointArrayList = out.clear().add(this)
 
     fun toList(): List<Point> {
         val out = arrayListOf<Point>()
@@ -69,6 +75,16 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
         xList[index] = x
         yList[index] = y
     }
+
+    fun transform(matrix: IMatrix) {
+        for (n in 0 until size) {
+            val x = getX(n)
+            val y = getY(n)
+            setX(n, matrix.transformX(x, y))
+            setY(n, matrix.transformY(x, y))
+        }
+    }
+
 
     override fun toString(): String {
         val sb = StringBuilder()
