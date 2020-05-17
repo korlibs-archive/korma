@@ -1,10 +1,12 @@
 package com.soywiz.korma.geom.vector
 
+import com.soywiz.korma.annotations.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.internal.*
 import kotlin.math.*
 
 @Suppress("DuplicatedCode")
+@KormaExperimental
 internal class Edge {
     fun getX(n: Int) = if (n == 0) this.ax else this.bx
     fun getY(n: Int) = if (n == 0) this.ay else this.by
@@ -119,10 +121,10 @@ internal class Edge {
     val minY get() = min(ay, by)
     val maxY get() = max(ay, by)
 
-    //fun containsY(y: Int): Boolean = y >= ay && y < by
-    //fun containsYNear(y: Int, offset: Int): Boolean = y >= (ay - offset) && y < (by + offset)
-    fun containsY(y: Int): Boolean = y in ay..by
-    fun containsYNear(y: Int, offset: Int): Boolean = y >= (ay - offset) && y <= (by + offset)
+    fun containsY(y: Int): Boolean = y in ay until by
+    fun containsYNear(y: Int, offset: Int): Boolean = y >= (ay - offset) && y < (by + offset)
+    //fun containsY(y: Int): Boolean = y in ay..by
+    //fun containsYNear(y: Int, offset: Int): Boolean = y >= (ay - offset) && y <= (by + offset)
     fun intersectX(y: Int): Int = if (isCoplanarY) ax else ((y - h) * dx) / dy
     //fun intersectX(y: Double): Double = if (isCoplanarY) ax else ((y - h) * this.dx) / this.dy
 

@@ -2,6 +2,7 @@ package com.soywiz.korma.geom.vector
 
 import com.soywiz.kds.*
 import com.soywiz.kds.iterators.*
+import com.soywiz.korma.annotations.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.bezier.*
 import com.soywiz.korma.geom.shape.*
@@ -227,6 +228,7 @@ open class VectorPath(
     // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
     fun containsPoint(x: Double, y: Double): Boolean = containsPoint(x, y, this.winding)
 
+    @OptIn(KormaExperimental::class)
     private val scanline by lazy { PolygonScanline() }
     private fun ensureScanline() = scanline.also {
         if (it.version != this.version) {

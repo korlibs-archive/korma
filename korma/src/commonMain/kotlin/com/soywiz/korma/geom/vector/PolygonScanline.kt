@@ -2,6 +2,7 @@ package com.soywiz.korma.geom.vector
 
 import com.soywiz.kds.*
 import com.soywiz.kds.iterators.*
+import com.soywiz.korma.annotations.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.shape.*
 import com.soywiz.korma.segment.*
@@ -12,6 +13,7 @@ const val RAST_FIXED_SCALE = 20
 //const val RAST_FIXED_SCALE_HALF = (RAST_FIXED_SCALE / 2)
 const val RAST_FIXED_SCALE_HALF = 0
 
+@KormaExperimental
 open class RastScale {
     val sscale get() = RAST_FIXED_SCALE
     val hscale get() = RAST_FIXED_SCALE_HALF
@@ -25,6 +27,7 @@ open class RastScale {
 }
 
 // @TODO: Optimize this
+@KormaExperimental
 class PolygonScanline : RastScale() {
     var version = 0
     var winding = Winding.NON_ZERO

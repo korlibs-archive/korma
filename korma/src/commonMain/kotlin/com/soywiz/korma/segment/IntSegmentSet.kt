@@ -1,10 +1,12 @@
 package com.soywiz.korma.segment
 
 import com.soywiz.kds.*
+import com.soywiz.korma.annotations.*
 
 /**
  * Non-overlapping SegmentSet
  */
+@KormaExperimental
 class IntSegmentSet {
     @PublishedApi
     internal val min = IntArrayList(16)
