@@ -28,7 +28,7 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     fun isEmpty() = size == 0
     fun isNotEmpty() = size != 0
 
-    fun clear() {
+    fun clear() = this.apply {
         xList.clear()
         yList.clear()
     }
@@ -48,11 +48,17 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
         yList += y
     }
 
+    fun add(p: Point) = add(p.x, p.y)
+    fun add(p: PointArrayList) = this.apply { p.fastForEach { x, y -> add(x, y) } }
+
     inline fun fastForEach(block: (x: Double, y: Double) -> Unit) {
         for (n in 0 until size) {
             block(getX(n), getY(n))
         }
     }
+
+    fun copyFrom(other: PointArrayList): PointArrayList = this.apply { clear() }.apply { add(other) }
+    fun clone(out: PointArrayList = PointArrayList()): PointArrayList = out.clear().add(this)
 
     fun toList(): List<Point> {
         val out = arrayListOf<Point>()
@@ -63,11 +69,38 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     override fun getX(index: Int) = xList.getAt(index)
     override fun getY(index: Int) = yList.getAt(index)
 
+    fun insertAt(index: Int, p: PointArrayList) = this.apply {
+        val size = p.size
+        xList.insertAt(index, p.xList.data, 0, size)
+        yList.insertAt(index, p.yList.data, 0, size)
+    }
+
+    fun insertAt(index: Int, x: Double, y: Double) = this.apply {
+        xList.insertAt(index, x)
+        yList.insertAt(index, y)
+    }
+
+    fun insertAt(index: Int, point: IPoint) = insertAt(index, point.x, point.y)
+
+    fun removeAt(index: Int, count: Int = 1) = this.apply {
+        xList.removeAt(index, count)
+        yList.removeAt(index, count)
+    }
+
     fun setX(index: Int, x: Double) = run { xList[index] = x }
     fun setY(index: Int, y: Double) = run { yList[index] = y }
     fun setXY(index: Int, x: Double, y: Double) {
         xList[index] = x
         yList[index] = y
+    }
+
+    fun transform(matrix: IMatrix) {
+        for (n in 0 until size) {
+            val x = getX(n)
+            val y = getY(n)
+            setX(n, matrix.transformX(x, y))
+            setY(n, matrix.transformY(x, y))
+        }
     }
 
     override fun toString(): String {
@@ -90,8 +123,8 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     }
 
     fun swap(indexA: Int, indexB: Int) {
-        xList.swap(indexA, indexB)
-        yList.swap(indexA, indexB)
+        xList.swapIndices(indexA, indexB)
+        yList.swapIndices(indexA, indexB)
     }
 
     fun reverse() {
@@ -194,8 +227,8 @@ class PointIntArrayList(capacity: Int = 7) : IPointIntArrayList {
     }
 
     fun swap(indexA: Int, indexB: Int) {
-        xList.swap(indexA, indexB)
-        yList.swap(indexA, indexB)
+        xList.swapIndices(indexA, indexB)
+        yList.swapIndices(indexA, indexB)
     }
 
     fun reverse() {
@@ -221,18 +254,4 @@ fun IPointIntArrayList.toIPoints(): List<IPointInt> = (0 until size).map { getIP
 fun IPointIntArrayList.contains(x: Int, y: Int): Boolean {
     for (n in 0 until size) if (getX(n) == x && getY(n) == y) return true
     return false
-}
-
-//////////////////////////////////////
-
-private fun DoubleArrayList.swap(indexA: Int, indexB: Int) {
-    val tmp = this.getAt(indexA)
-    this[indexA] = this.getAt(indexB)
-    this[indexB] = tmp
-}
-
-private fun IntArrayList.swap(indexA: Int, indexB: Int) {
-    val tmp = this.getAt(indexA)
-    this[indexA] = this.getAt(indexB)
-    this[indexB] = tmp
 }
