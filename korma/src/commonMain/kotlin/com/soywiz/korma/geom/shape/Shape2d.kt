@@ -120,7 +120,7 @@ inline fun VectorPath.emitPoints(flush: (close: Boolean) -> Unit, emit: (x: Doub
     flush(false)
 }
 
-internal inline fun VectorPath.emitPoints2(
+inline fun VectorPath.emitPoints2(
     crossinline flush: (close: Boolean) -> Unit = {},
     crossinline joint: (close: Boolean) -> Unit = {},
     crossinline emit: (x: Double, y: Double, move: Boolean) -> Unit
@@ -161,16 +161,15 @@ internal inline fun VectorPath.emitPoints2(
     flush(false)
 }
 
-internal fun VectorPath.getPoints2(out: PointArrayList = PointArrayList()): PointArrayList {
+fun VectorPath.getPoints2(out: PointArrayList = PointArrayList()): PointArrayList {
     emitPoints2 { x, y, move -> out.add(x, y) }
     return out
 }
 
-internal fun buildPath(out: VectorPath = VectorPath(), block: VectorPath.() -> Unit): VectorPath = out.apply(block)
-internal inline fun buildPath(out: VectorPath = VectorPath(), winding: Winding = Winding.EVEN_ODD, block: VectorPath.() -> Unit): VectorPath = out.also { it.winding = winding }.apply(block)
+fun buildPath(out: VectorPath = VectorPath(), block: VectorPath.() -> Unit): VectorPath = out.apply(block)
+inline fun buildPath(out: VectorPath = VectorPath(), winding: Winding = Winding.EVEN_ODD, block: VectorPath.() -> Unit): VectorPath = out.also { it.winding = winding }.apply(block)
 
-@PublishedApi
-internal inline fun approximateCurve(
+inline fun approximateCurve(
     curveSteps: Int,
     crossinline compute: (ratio: Double, get: (x: Double, y: Double) -> Unit) -> Unit,
     crossinline emit: (x: Double, y: Double) -> Unit
