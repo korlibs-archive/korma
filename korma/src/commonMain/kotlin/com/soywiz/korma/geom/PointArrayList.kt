@@ -106,8 +106,8 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     }
 
     fun swap(indexA: Int, indexB: Int) {
-        xList.swap(indexA, indexB)
-        yList.swap(indexA, indexB)
+        xList.swapIndices(indexA, indexB)
+        yList.swapIndices(indexA, indexB)
     }
 
     fun reverse() {
@@ -210,8 +210,8 @@ class PointIntArrayList(capacity: Int = 7) : IPointIntArrayList {
     }
 
     fun swap(indexA: Int, indexB: Int) {
-        xList.swap(indexA, indexB)
-        yList.swap(indexA, indexB)
+        xList.swapIndices(indexA, indexB)
+        yList.swapIndices(indexA, indexB)
     }
 
     fun reverse() {
@@ -237,18 +237,4 @@ fun IPointIntArrayList.toIPoints(): List<IPointInt> = (0 until size).map { getIP
 fun IPointIntArrayList.contains(x: Int, y: Int): Boolean {
     for (n in 0 until size) if (getX(n) == x && getY(n) == y) return true
     return false
-}
-
-//////////////////////////////////////
-
-private fun DoubleArrayList.swap(indexA: Int, indexB: Int) {
-    val tmp = this.getAt(indexA)
-    this[indexA] = this.getAt(indexB)
-    this[indexB] = tmp
-}
-
-private fun IntArrayList.swap(indexA: Int, indexB: Int) {
-    val tmp = this.getAt(indexA)
-    this[indexA] = this.getAt(indexB)
-    this[indexB] = tmp
 }
