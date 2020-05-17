@@ -1,6 +1,7 @@
 package com.soywiz.korma.geom.vector
 
 import com.soywiz.korma.geom.*
+import com.soywiz.korma.geom.shape.*
 import com.soywiz.korma.geom.vector.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -69,5 +70,96 @@ class VectorPathTest {
         }
         assertEquals(true, vp.containsPoint(0, 0))
         assertEquals(false, vp.containsPoint(-51, 0))
+    }
+
+    @Test
+    fun testContainsPoint() {
+        buildPath { rect(0, 0, 10, 10) }.also {
+            assertEquals(true, it.containsPoint(5, 5))
+            assertEquals(false, it.containsPoint(-1, -1))
+            assertEquals(false, it.containsPoint(10, 10))
+        }
+        buildPath(winding = Winding.NON_ZERO) {
+            rect(0, 0, 10, 10)
+            rect(20, 0, 10, 10)
+        }.also {
+            assertEquals(true, it.containsPoint(5, 5))
+            assertEquals(true, it.containsPoint(25, 5))
+            assertEquals(false, it.containsPoint(-1, -1))
+            assertEquals(false, it.containsPoint(10, 10))
+            assertEquals(false, it.containsPoint(19, 5))
+        }
+        buildPath(winding = Winding.EVEN_ODD) {
+            rect(0, 0, 20, 10)
+            rect(10, 0, 20, 10)
+        }.also {
+            // [0-10] [10-20] [20-30]
+            assertEquals(true, it.containsPoint(5, 5))
+            assertEquals(false, it.containsPoint(15, 5))
+            assertEquals(true, it.containsPoint(25, 5))
+        }
+
+        buildPath(winding = Winding.NON_ZERO) {
+            rect(0, 0, 20, 10)
+            rect(10, 0, 20, 10)
+        }.also {
+            // [0-30]
+            assertEquals(true, it.containsPoint(5, 5))
+            assertEquals(true, it.containsPoint(15, 5))
+            assertEquals(true, it.containsPoint(25, 5))
+        }
+    }
+
+    @Test
+    fun testContainsPoint2() {
+        buildPath(winding = Winding.NON_ZERO) {
+            moveTo(1, 1)
+            lineTo(2, 1)
+            lineTo(2, 2)
+            lineTo(1, 2)
+            close()
+        }.also {
+            assertEquals(false, it.containsPoint(0.99, 0.99))
+            assertEquals(false, it.containsPoint(0.9999, 0.9999))
+            assertEquals(true, it.containsPoint(1, 1))
+            assertEquals(true, it.containsPoint(1.1, 1.1))
+            assertEquals(true, it.containsPoint(1.9, 1.9))
+            //assertEquals(true, it.containsPoint(2, 2)) // @TODO: This is true on JS
+            assertEquals(false, it.containsPoint(2.01, 2.01))
+            assertEquals(false, it.containsPoint(2.1, 2.1))
+            assertEquals(false, it.containsPoint(0, 0))
+        }
+
+        buildPath(winding = Winding.EVEN_ODD) {
+            moveTo(-1, -1)
+            lineTo(+1, -1)
+            lineTo(+1, 0)
+            lineTo(+1, +1)
+            lineTo(-1, +1)
+            lineTo(-1, 0)
+            close()
+        }.also {
+            assertEquals(true, it.containsPoint(0, 0))
+        }
+
+        // Verified on JS
+        //const canvas = document.querySelector("canvas")
+        //const ctx = canvas.getContext('2d')
+        //const path = new Path2D();
+        //path.moveTo(1, 1)
+        //path.lineTo(2, 1)
+        //path.lineTo(2, 2)
+        //path.lineTo(1, 2)
+        //path.closePath()
+        //ctx.fill(path)
+        //console.log(ctx.isPointInPath(path, 0.99, 0.99)) // false
+        //console.log(ctx.isPointInPath(path, 0.9999, 0.9999)) // false
+        //console.log(ctx.isPointInPath(path, 1, 1)) // true
+        //console.log(ctx.isPointInPath(path, 1.1, 1.1)) // true
+        //console.log(ctx.isPointInPath(path, 1.9, 1.9)) // true
+        //console.log(ctx.isPointInPath(path, 2, 2)) // true
+        //console.log(ctx.isPointInPath(path, 2.001, 2.001)) // false
+        //console.log(ctx.isPointInPath(path, 2.1, 2.1)) // false
+        //console.log(ctx.isPointInPath(path, 0, 0)) // false
     }
 }
