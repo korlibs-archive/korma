@@ -43,12 +43,17 @@ class PolygonScanline : RastScale() {
         inline fun fastForEach(block: (edge: Edge) -> Unit) = edges.fastForEach(block)
     }
 
-    class Buckets(private val pool: Pool<Bucket>, val size: Int) {
+    class Buckets(private val pool: Pool<Bucket>, val ySize: Int) {
         private val buckets = FastIntMap<Bucket>()
-        fun getIndex(y: Int) = y / size
+        val size get() = buckets.size
+        fun getIndex(y: Int) = y / ySize
         fun getForIndex(index: Int) = buckets.getOrPut(index) { pool.alloc() }
-        fun getForY(y: Int) = getForIndex(getIndex(y))
-        inline fun fastForEachY(y: Int, block: (edge: Edge) -> Unit) = getForY(y).fastForEach(block)
+        fun getForYOrNull(y: Int) = buckets[getIndex(y)]
+        inline fun fastForEachY(y: Int, block: (edge: Edge) -> Unit) {
+            if (size > 0) {
+                getForYOrNull(y)?.fastForEach(block)
+            }
+        }
         fun clear() {
             buckets.fastForEach { _, value -> pool.free(value.clear()) }
             buckets.clear()
