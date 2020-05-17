@@ -7,7 +7,7 @@ import kotlin.math.*
 
 @Suppress("DuplicatedCode")
 @KormaExperimental
-internal class Edge {
+class Edge {
     fun getX(n: Int) = if (n == 0) this.ax else this.bx
     fun getY(n: Int) = if (n == 0) this.ay else this.by
 

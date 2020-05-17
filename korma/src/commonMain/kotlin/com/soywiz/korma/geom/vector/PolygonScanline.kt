@@ -18,8 +18,7 @@ open class RastScale {
     val sscale get() = RAST_FIXED_SCALE
     val hscale get() = RAST_FIXED_SCALE_HALF
 
-    @PublishedApi
-    internal val Double.s: Int get() = ((this * sscale).toInt() + hscale)
+    val Double.s: Int get() = ((this * sscale).toInt() + hscale)
     //@PublishedApi
     //internal val Int.us: Double get() = (this.toDouble() - RAST_FIXED_SCALE_HALF) * scale / RAST_FIXED_SCALE
     //@PublishedApi

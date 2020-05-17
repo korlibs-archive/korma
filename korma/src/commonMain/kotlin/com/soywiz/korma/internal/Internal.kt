@@ -14,4 +14,5 @@ internal infix fun Double.umod(other: Double): Double {
     }
 }
 
+@PublishedApi
 internal fun floorCeil(v: Double): Double = if (v < 0.0) ceil(v) else floor(v)
