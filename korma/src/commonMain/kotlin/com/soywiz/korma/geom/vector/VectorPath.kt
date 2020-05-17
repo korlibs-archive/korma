@@ -11,6 +11,8 @@ open class VectorPath(
     val data: DoubleArrayList = DoubleArrayList(),
     var winding: Winding = Winding.EVEN_ODD
 ) : VectorBuilder {
+    var version: Int = 0
+
     open fun clone(): VectorPath = VectorPath(IntArrayList(commands), DoubleArrayList(data), winding)
 
     companion object {
@@ -119,6 +121,7 @@ open class VectorPath(
         data.clear()
         lastX = 0.0
         lastY = 0.0
+        version = 0
     }
 
     fun setFrom(other: VectorPath) {
@@ -131,6 +134,7 @@ open class VectorPath(
         this.data.add(other.data)
         this.lastX = other.lastX
         this.lastY = other.lastY
+        version++
     }
 
     override var lastX = 0.0
@@ -142,6 +146,7 @@ open class VectorPath(
         data += y
         lastX = x
         lastY = y
+        version++
     }
 
     override fun lineTo(x: Double, y: Double) {
@@ -151,6 +156,7 @@ open class VectorPath(
         data += y
         lastX = x
         lastY = y
+        version++
     }
 
     override fun quadTo(cx: Double, cy: Double, ax: Double, ay: Double) {
@@ -162,6 +168,7 @@ open class VectorPath(
         data += ay
         lastX = ax
         lastY = ay
+        version++
     }
 
     override fun cubicTo(cx1: Double, cy1: Double, cx2: Double, cy2: Double, ax: Double, ay: Double) {
@@ -175,10 +182,12 @@ open class VectorPath(
         data += ay
         lastX = ax
         lastY = ay
+        version++
     }
 
     override fun close() {
         commands += Command.CLOSE
+        version++
     }
 
     override val totalPoints: Int get() = data.size / 2
@@ -216,7 +225,17 @@ open class VectorPath(
     // https://www.particleincell.com/2013/cubic-line-intersection/
     // I run a semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
     // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
-    fun containsPoint(x: Double, y: Double): Boolean = (numberOfIntersections(x, y) % 2) != 0
+    fun containsPoint(x: Double, y: Double): Boolean = containsPoint(x, y, this.winding)
+
+    private val scanline by lazy { PolygonScanline() }
+    private fun ensureScanline() = scanline.also {
+        if (it.version != this.version) {
+            it.reset()
+            it.add(this)
+            it.version = this.version
+        }
+    }
+    fun containsPoint(x: Double, y: Double, winding: Winding): Boolean = ensureScanline().containsPoint(x, y, winding)
 
     fun numberOfIntersections(x: Double, y: Double): Int {
         val testx = x
@@ -267,6 +286,7 @@ open class VectorPath(
         this.data += path.data
         this.lastX = path.lastX
         this.lastY = path.lastY
+        version++
     }
 
     fun write(path: VectorPath, transform: Matrix) {
@@ -279,6 +299,7 @@ open class VectorPath(
         }
         this.lastX = transform.transformX(path.lastX, path.lastY)
         this.lastY = transform.transformY(path.lastX, path.lastY)
+        version++
     }
 
     //typealias Winding = com.soywiz.korma.geom.vector.Winding
@@ -297,6 +318,7 @@ fun VectorBuilder.write(path: VectorPath) {
 }
 
 inline fun VectorPath.containsPoint(x: Number, y: Number): Boolean = containsPoint(x.toDouble(), y.toDouble())
+inline fun VectorPath.containsPoint(x: Number, y: Number, winding: Winding): Boolean = containsPoint(x.toDouble(), y.toDouble(), winding)
 inline fun VectorPath.numberOfIntersections(x: Number, y: Number): Int = numberOfIntersections(x.toDouble(), y.toDouble())
 
 fun BoundsBuilder.add(path: VectorPath, transform: Matrix) {

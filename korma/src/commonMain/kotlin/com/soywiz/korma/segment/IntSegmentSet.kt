@@ -14,7 +14,7 @@ class IntSegmentSet {
     fun isEmpty() = size == 0
     fun isNotEmpty() = size > 0
 
-    fun clear() {
+    fun clear() = this.apply {
         min.clear()
         max.clear()
     }
@@ -23,19 +23,19 @@ class IntSegmentSet {
     val maxMax get() = if (isNotEmpty()) max.getAt(max.size - 1) else 0
 
     fun findNearIndex(x: Int): BSearchResult {
-        return BSearchResult(genericBinarySearch(0, size - 1) { v ->
+        return BSearchResult(genericBinarySearch(0, size) { v ->
             val min = this.min.getAt(v)
             val max = this.max.getAt(v)
             when {
-                x < min -> -1
-                x >= max -> +1
+                x < min -> +1
+                x > max -> -1
                 else -> 0
             }
         })
     }
 
-    fun findNearMinIndex(x: Int): BSearchResult = BSearchResult(genericBinarySearch(0, size - 1) { x.compareTo(this.min.getAt(it)) })
-    fun findNearMaxIndex(x: Int): BSearchResult = BSearchResult(genericBinarySearch(0, size - 1) { x.compareTo(this.max.getAt(it)) })
+    fun findNearMinIndex(x: Int): BSearchResult = BSearchResult(genericBinarySearch(0, size) { x.compareTo(this.min.getAt(it)) })
+    fun findNearMaxIndex(x: Int): BSearchResult = BSearchResult(genericBinarySearch(0, size) { x.compareTo(this.max.getAt(it)) })
 
     fun add(min: Int, max: Int) = this.apply {
         check(min <= max)
@@ -143,7 +143,10 @@ class IntSegmentSet {
         return false
     }
 
-    operator fun contains(v: Int): Boolean = findNearIndex(v).found
+    operator fun contains(v: Int): Boolean {
+        val result = findNearIndex(v)
+        return result.found
+    }
 
     inline fun fastForEach(block: (min: Int, max: Int) -> Unit) {
         for (n in 0 until size) {
