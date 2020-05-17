@@ -65,30 +65,30 @@ class PolygonScanline : RastScale() {
     }
 
     class AllBuckets {
-        private val bucketsPool = Pool(reset = { it.clear() }) { Bucket() }
+        private val pool = Pool(reset = { it.clear() }) { Bucket() }
         @PublishedApi
-        internal val smallBuckets = Buckets(bucketsPool, RAST_SMALL_BUCKET_SIZE)
+        internal val small = Buckets(pool, RAST_SMALL_BUCKET_SIZE)
         @PublishedApi
-        internal val mediumBuckets = Buckets(bucketsPool, RAST_MEDIUM_BUCKET_SIZE)
+        internal val medium = Buckets(pool, RAST_MEDIUM_BUCKET_SIZE)
         @PublishedApi
-        internal val bigBuckets = Buckets(bucketsPool, RAST_BIG_BUCKET_SIZE)
+        internal val big = Buckets(pool, RAST_BIG_BUCKET_SIZE)
 
         fun add(edge: Edge) {
-            if (smallBuckets.addThresold(edge, 4)) return
-            if (mediumBuckets.addThresold(edge, 4)) return
-            bigBuckets.addThresold(edge)
+            if (small.addThresold(edge, 4)) return
+            if (medium.addThresold(edge, 4)) return
+            big.addThresold(edge)
         }
 
         inline fun fastForEachY(y: Int, block: (edge: Edge) -> Unit) {
-            smallBuckets.fastForEachY(y) { block(it) }
-            mediumBuckets.fastForEachY(y) { block(it) }
-            bigBuckets.fastForEachY(y) { block(it) }
+            small.fastForEachY(y) { block(it) }
+            medium.fastForEachY(y) { block(it) }
+            big.fastForEachY(y) { block(it) }
         }
 
         fun clear() {
-            smallBuckets.clear()
-            mediumBuckets.clear()
-            bigBuckets.clear()
+            small.clear()
+            medium.clear()
+            big.clear()
         }
     }
 
