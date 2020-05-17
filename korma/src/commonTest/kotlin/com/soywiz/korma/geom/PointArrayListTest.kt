@@ -33,4 +33,19 @@ class PointArrayListTest {
         assertEquals("[(10, -10), (20, -20), (30, -30)]", list.clone().also { it.transform(Matrix().scale(10, -10)) }.toList().toString())
         assertEquals("[(1, 1), (2, 2), (3, 3)]", list.toList().toString())
     }
+
+    @Test
+    fun testInsert() {
+        val list = PointArrayList(Point(1, -1), Point(2, -2), Point(3, -3))
+        list.insertAt(1, Point(0, -1))
+        assertEquals("[(1, -1), (0, -1), (2, -2), (3, -3)]", list.toList().toString())
+        list.removeAt(1, 2)
+        assertEquals("[(1, -1), (3, -3)]", list.toList().toString())
+        list.removeAt(0, 2)
+        assertEquals("[]", list.toList().toString())
+        list.insertAt(0, Point(0, -1))
+        assertEquals("[(0, -1)]", list.toList().toString())
+        list.insertAt(1, PointArrayList(Point(2, -2), Point(4, -4)))
+        assertEquals("[(0, -1), (2, -2), (4, -4)]", list.toList().toString())
+    }
 }

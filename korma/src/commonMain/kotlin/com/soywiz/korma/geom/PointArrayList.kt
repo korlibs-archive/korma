@@ -69,6 +69,24 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     override fun getX(index: Int) = xList.getAt(index)
     override fun getY(index: Int) = yList.getAt(index)
 
+    fun insertAt(index: Int, p: PointArrayList) = this.apply {
+        val size = this.size
+        xList.insertAt(index, p.xList.data, 0, size)
+        yList.insertAt(index, p.yList.data, 0, size)
+    }
+
+    fun insertAt(index: Int, x: Double, y: Double) = this.apply {
+        xList.insertAt(index, x)
+        yList.insertAt(index, y)
+    }
+
+    fun insertAt(index: Int, point: IPoint) = insertAt(index, point.x, point.y)
+
+    fun removeAt(index: Int, count: Int = 1) = this.apply {
+        xList.removeAt(index, count)
+        yList.removeAt(index, count)
+    }
+
     fun setX(index: Int, x: Double) = run { xList[index] = x }
     fun setY(index: Int, y: Double) = run { yList[index] = y }
     fun setXY(index: Int, x: Double, y: Double) {
@@ -84,7 +102,6 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
             setY(n, matrix.transformY(x, y))
         }
     }
-
 
     override fun toString(): String {
         val sb = StringBuilder()
