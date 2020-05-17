@@ -70,7 +70,7 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     override fun getY(index: Int) = yList.getAt(index)
 
     fun insertAt(index: Int, p: PointArrayList) = this.apply {
-        val size = this.size
+        val size = p.size
         xList.insertAt(index, p.xList.data, 0, size)
         yList.insertAt(index, p.yList.data, 0, size)
     }
