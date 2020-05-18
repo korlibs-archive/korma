@@ -179,6 +179,7 @@ class IntSegmentSetTest {
 
     @Test
     fun testIntersection() {
+        assertEquals("[]", intersect(IntSegmentSet().add(1, 100), IntSegmentSet().add(101, 200)).str)
         assertEquals("[5-10]", intersect(segment1, IntSegmentSet().add(5, 15)).str)
         assertEquals("[5-10, 12-15]", intersect(segment2, IntSegmentSet().add(5, 15)).str)
         assertEquals("[5-10, 25-30, 45-50, 65-70, 85-90, 105-110, 125-130, 145-150, 165-170, 185-190, 205-210, 225-230, 245-250, 265-270, 285-290, 305-310]", intersect(segment16a, segment16b).str)
