@@ -21,77 +21,101 @@ class IntSegmentSet {
         max.clear()
     }
 
+    fun copyFrom(other: IntSegmentSet) = this.apply {
+        this.clear()
+        addUnsafe(other)
+    }
+
+    fun clone() = IntSegmentSet().copyFrom(this)
+
     val minMin get() = if (isNotEmpty()) min.getAt(0) else 0
     val maxMax get() = if (isNotEmpty()) max.getAt(max.size - 1) else 0
 
-    fun findNearIndex(x: Int): BSearchResult {
-        return BSearchResult(genericBinarySearch(0, size) { v ->
-            val min = this.min.getAt(v)
-            val max = this.max.getAt(v)
-            when {
-                x < min -> +1
-                x > max -> -1
-                else -> 0
-            }
-        })
+    fun findNearIndex(x: Int): BSearchResult = BSearchResult(genericBinarySearch(0, size) { v ->
+        val min = this.min.getAt(v)
+        val max = this.max.getAt(v)
+        when {
+            x < min -> +1
+            x > max -> -1
+            else -> 0
+        }
+    })
+
+    inline fun fastForEach(block: (n: Int, min: Int, max: Int) -> Unit) {
+        for (n in 0 until size) block(n, min.getAt(n), max.getAt(n))
     }
 
-    fun findNearMinIndex(x: Int): BSearchResult = BSearchResult(genericBinarySearch(0, size) { x.compareTo(this.min.getAt(it)) })
-    fun findNearMaxIndex(x: Int): BSearchResult = BSearchResult(genericBinarySearch(0, size) { x.compareTo(this.max.getAt(it)) })
+    fun findLeftBound(x: Int): Int {
+        //if (size < 8) return 0 // Do not invest time on binary search on small sets
+        return (genericBinarySearchLeft(0, size) { this.min.getAt(it).compareTo(x) }).coerceIn(0, size - 1)
+    }
+    fun findRightBound(x: Int): Int {
+        //if (size < 8) return size - 1 // Do not invest time on binary search on small sets
+        return (genericBinarySearchRight(0, size) { this.max.getAt(it).compareTo(x) }).coerceIn(0, size - 1)
+    }
+
+    inline fun fastForEachInterestingRange(min: Int, max: Int, block: (n: Int, x1: Int, x2: Int) -> Unit) {
+        if (isEmpty()) return
+        val nmin = findLeftBound(min)
+        val nmax = findRightBound(max)
+        for (n in nmin..nmax) block(n, this.min.getAt(n), this.max.getAt(n))
+    }
+
+    internal fun addUnsafe(min: Int, max: Int) = this.apply {
+        check(min <= max)
+        insertAt(size, min, max)
+    }
+
+    internal fun addUnsafe(other: IntSegmentSet) = this.apply {
+        this.min.add(other.min)
+        this.max.add(other.max)
+    }
+
+    fun add(other: IntSegmentSet) = this.apply {
+        other.fastForEach { n, min, max ->
+            add(min, max)
+        }
+    }
 
     fun add(min: Int, max: Int) = this.apply {
         check(min <= max)
         when {
-            isEmpty() -> run { this.min.add(min) }.also { this.max.add(max) }
+            isEmpty() -> insertAt(size, min, max)
             min == maxMax -> this.max[this.max.size - 1] = max
             max == minMin -> this.min[0] = min
             else -> {
-                //val res = findNearMinIndex(min).also { (if (it < 0) (-it - 1) else it).coerceAtLeast(0) }
-                //TODO()
-                var removeStart = 0
-                var removeEnd = -1
+                var removeStart = -1
                 var removeCount = -1
-                var n = 0
 
-                // @TODO: Do this with a binary search findNearMinIndex and findNearMaxIndex
-                fastForEach { x1, x2 ->
+                fastForEachInterestingRange(min, max) { n, x1, x2 ->
                     if (intersects(x1, x2, min, max)) {
                         if (removeStart == -1) removeStart = n
                         this.min[removeStart] = kotlin.math.min(this.min.getAt(removeStart), kotlin.math.min(x1, min))
                         this.max[removeStart] = kotlin.math.max(this.max.getAt(removeStart), kotlin.math.max(x2, max))
-                        removeEnd = n
                         removeCount++
                     }
-                    n++
                 }
 
                 when {
                     // Combined
-                    removeCount > 0 -> {
-                        this.min.removeAt(removeStart + 1, removeCount)
-                    }
+                    removeCount == 0 -> Unit
+                    removeCount > 0 -> removeAt(removeStart + 1, removeCount)
                     // Insert at the beginning
-                    min < minMin -> {
-                        this.min.insertAt(0, min)
-                        this.max.insertAt(0, max)
-                    }
+                    max < minMin -> insertAt(0, min, max)
                     // Insert at the end
-                    max > maxMax -> {
-                        this.min.add(min)
-                        this.max.add(max)
-                    }
+                    min > maxMax -> insertAt(size, min, max)
                     // Insert at a place
                     else -> {
-                        val index = findNearMaxIndex(min).nearIndex
-                        for (n in (index - 1) until (index + 2)) {
-                            if (n !in 0 until size) continue
-                            val x2 = this.max.getAt(n)
-                            if (min > x2) {
-                                this.min.insertAt(n + 1, min)
-                                this.max.insertAt(n + 1, max)
+                        for (m in findLeftBound(min).coerceAtLeast(1)..findRightBound(max)) {
+                        //for (m in 1..findRightBound(max)) {
+                            val prevMax = this.max.getAt(m - 1)
+                            val currMin = this.min.getAt(m)
+                            if (min > prevMax && max < currMin) {
+                                insertAt(m, min, max)
                                 return@apply
                             }
                         }
+                        
                         error("Unexpected")
                     }
                 }
@@ -99,30 +123,29 @@ class IntSegmentSet {
         }
     }
 
+    private fun insertAt(n: Int, min: Int, max: Int) {
+        this.min.insertAt(n, min)
+        this.max.insertAt(n, max)
+    }
+
+    private fun removeAt(n: Int, count: Int) {
+        this.min.removeAt(n, count)
+        this.max.removeAt(n, count)
+    }
+
     //fun remove(min: Int, max: Int) = this.apply { TODO() }
     //fun intersect(min: Int, max: Int) = this.apply { TODO() }
 
-    fun intersection(min: Int, max: Int): Pair<Int, Int>? {
-        var out: Pair<Int, Int>? = null
-        intersection(min, max) { x1, x2 -> out = x1 to x2 }
-        return out
-    }
-
     inline fun intersection(min: Int, max: Int, out: (min: Int, max: Int) -> Unit): Boolean {
-        val size = this.size
-        val nmin = findNearMinIndex(min).nearIndex - 1
-        val nmax = findNearMaxIndex(max).nearIndex + 1
-
-        for (n in nmin.coerceIn(0, size - 1) .. nmax.coerceIn(0, size - 1)) {
-            val x1 = this.min.getAt(n)
-            val x2 = this.max.getAt(n)
+        var count = 0
+        fastForEachInterestingRange(min, max) { n, x1, x2 ->
             if (intersects(x1, x2, min, max)) {
                 out(kotlin.math.max(x1, min), kotlin.math.min(x2, max))
-                return true
+                count++
             }
         }
 
-        return false
+        return count > 0
     }
 
     // Use for testing
@@ -136,33 +159,28 @@ class IntSegmentSet {
     // Use for testing
     // O(n^2)
     internal inline fun intersectionSlow(min: Int, max: Int, out: (min: Int, max: Int) -> Unit): Boolean {
-        fastForEach { x1, x2 ->
+        var count = 0
+        fastForEach { n, x1, x2 ->
             if (intersects(x1, x2, min, max)) {
                 out(kotlin.math.max(x1, min), kotlin.math.min(x2, max))
-                return true
+                count++
             }
         }
-        return false
+        return count > 0
     }
 
-    operator fun contains(v: Int): Boolean {
-        val result = findNearIndex(v)
-        return result.found
-    }
-
-    inline fun fastForEach(block: (min: Int, max: Int) -> Unit) {
-        for (n in 0 until size) {
-            block(min.getAt(n), max.getAt(n))
-        }
-    }
+    operator fun contains(v: Int): Boolean = findNearIndex(v).found
 
     fun setToIntersect(a: IntSegmentSet, b: IntSegmentSet) = this.apply {
-        clear().also { a.fastForEach { x1, x2 -> b.intersection(x1, x2) { min, max -> add(min, max) } } }
+        val aSmaller = a.size < b.size
+        val av = if (aSmaller) a else b
+        val bv = if (aSmaller) b else a
+        clear().also { av.fastForEach { n, x1, x2 -> bv.intersection(x1, x2) { min, max -> add(min, max) } } }
     }
 
     // Use for testing
     internal fun setToIntersectSlow(a: IntSegmentSet, b: IntSegmentSet) = this.apply {
-        clear().also { a.fastForEach { x1, x2 -> b.intersectionSlow(x1, x2) { min, max -> add(min, max) } } }
+        clear().also { a.fastForEach { n, x1, x2 -> b.intersectionSlow(x1, x2) { min, max -> add(min, max) } } }
     }
 
     @PublishedApi
@@ -177,14 +195,19 @@ class IntSegmentSet {
 
     override fun toString(): String = buildString {
         append("[")
-        var n = 0
-        fastForEach { min, max ->
+        fastForEach { n, min, max ->
             val first = (n == 0)
             if (!first) append(", ")
             append("$min-$max")
-            n++
         }
         append("]")
     }
 }
 
+// @TODO: In KDS latest versions
+@PublishedApi
+internal inline fun genericBinarySearchLeft(fromIndex: Int, toIndex: Int, check: (value: Int) -> Int): Int =
+    genericBinarySearch(fromIndex, toIndex, invalid = { from, to, low, high -> kotlin.math.min(low, high).coerceIn(from, to - 1) }, check = check)
+@PublishedApi
+internal inline fun genericBinarySearchRight(fromIndex: Int, toIndex: Int, check: (value: Int) -> Int): Int =
+    genericBinarySearch(fromIndex, toIndex, invalid = { from, to, low, high -> kotlin.math.max(low, high).coerceIn(from, to - 1) }, check = check)
