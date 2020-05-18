@@ -23,8 +23,7 @@ class IntSegmentSet {
 
     fun copyFrom(other: IntSegmentSet) = this.apply {
         this.clear()
-        this.min.add(other.min)
-        this.max.add(other.max)
+        addUnsafe(other)
     }
 
     fun clone() = IntSegmentSet().copyFrom(this)
@@ -42,39 +41,40 @@ class IntSegmentSet {
         }
     })
 
-    //fun findNearMinIndex(x: Int): BSearchResult = BSearchResult(genericBinarySearch(0, size) { x.compareTo(this.min.getAt(it)) })
-    //fun findNearMaxIndex(x: Int): BSearchResult = BSearchResult(genericBinarySearch(0, size) { x.compareTo(this.max.getAt(it)) })
-
-    //fun findNearMinIndex(x: Int): BSearchResult = BSearchResult(genericBinarySearch(0, size) { this.min.getAt(it).compareTo(x) })
-    //fun findNearMaxIndex(x: Int): BSearchResult = BSearchResult(genericBinarySearch(0, size) { this.max.getAt(it).compareTo(x) })
-
     inline fun fastForEach(block: (n: Int, min: Int, max: Int) -> Unit) {
         for (n in 0 until size) block(n, min.getAt(n), max.getAt(n))
     }
 
-    // @TODO: Binary search
     fun findLeftBound(x: Int): Int {
-        //return (findNearMinIndex(x).nearIndex - 1).coerceIn(0, size - 1)
-        for (n in 0 until size) if (this.min.getAt(n) >= x) return (n - 1).coerceIn(0, size - 1)
-        return 0
+        //if (size < 8) return 0 // Do not invest time on binary search on small sets
+        return (genericBinarySearchLeft(0, size) { this.min.getAt(it).compareTo(x) }).coerceIn(0, size - 1)
     }
     fun findRightBound(x: Int): Int {
-        for (n in size - 1 downTo 0) if (this.max.getAt(n) < x) return (n + 1).coerceIn(0, size - 1)
-        return size - 1
+        //if (size < 8) return size - 1 // Do not invest time on binary search on small sets
+        return (genericBinarySearchRight(0, size) { this.max.getAt(it).compareTo(x) }).coerceIn(0, size - 1)
     }
 
-    // @TODO: Do this with a binary search findNearMinIndex and findNearMaxIndex
     inline fun fastForEachInterestingRange(min: Int, max: Int, block: (n: Int, x1: Int, x2: Int) -> Unit) {
         if (isEmpty()) return
         val nmin = findLeftBound(min)
         val nmax = findRightBound(max)
         for (n in nmin..nmax) block(n, this.min.getAt(n), this.max.getAt(n))
-        //fastForEach { min, max -> block(min, max) }
     }
 
     internal fun addUnsafe(min: Int, max: Int) = this.apply {
         check(min <= max)
         insertAt(size, min, max)
+    }
+
+    internal fun addUnsafe(other: IntSegmentSet) = this.apply {
+        this.min.add(other.min)
+        this.max.add(other.max)
+    }
+
+    fun add(other: IntSegmentSet) = this.apply {
+        other.fastForEach { n, min, max ->
+            add(min, max)
+        }
     }
 
     fun add(min: Int, max: Int) = this.apply {
@@ -204,3 +204,10 @@ class IntSegmentSet {
     }
 }
 
+// @TODO: In KDS latest versions
+@PublishedApi
+internal inline fun genericBinarySearchLeft(fromIndex: Int, toIndex: Int, check: (value: Int) -> Int): Int =
+    genericBinarySearch(fromIndex, toIndex, invalid = { from, to, low, high -> kotlin.math.min(low, high).coerceIn(from, to - 1) }, check = check)
+@PublishedApi
+internal inline fun genericBinarySearchRight(fromIndex: Int, toIndex: Int, check: (value: Int) -> Int): Int =
+    genericBinarySearch(fromIndex, toIndex, invalid = { from, to, low, high -> kotlin.math.max(low, high).coerceIn(from, to - 1) }, check = check)

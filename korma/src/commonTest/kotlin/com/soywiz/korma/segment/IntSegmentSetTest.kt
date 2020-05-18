@@ -10,6 +10,9 @@ class IntSegmentSetTest {
     val segment2 get() = IntSegmentSet().addUnsafe(0, 10).addUnsafe(12, 20).clone()
     val segment3 get() = IntSegmentSet().addUnsafe(0, 10).addUnsafe(20, 30).addUnsafe(50, 60).clone()
     val segment4 get() = IntSegmentSet().addUnsafe(0, 10).addUnsafe(20, 30).addUnsafe(50, 60).addUnsafe(70, 80).clone()
+    val segment16a get() = IntSegmentSet().apply { for (n in 0 until 16) addUnsafe(n * 20, n * 20 + 10) }
+    val segment16b get() = IntSegmentSet().apply { for (n in 0 until 16) addUnsafe(n * 20 + 5, n * 20 + 15) }
+    val segment16c get() = IntSegmentSet().apply { for (n in 0 until 16) addUnsafe(n * 20 + 10, n * 20 + 20) }
 
     val IntSegmentSet.str get() = this.toString()
 
@@ -158,11 +161,28 @@ class IntSegmentSetTest {
         assertEquals("[-10-90]", segment4.add(-10, 90).str)
     }
 
+    @Test
+    fun testAddBigSegments() {
+        assertEquals("[0-10, 20-30, 40-50, 60-70, 80-90, 100-110, 120-130, 140-150, 160-170, 180-190, 200-210, 220-230, 240-250, 260-270, 280-290, 300-310]", segment16a.str)
+        assertEquals("[5-15, 25-35, 45-55, 65-75, 85-95, 105-115, 125-135, 145-155, 165-175, 185-195, 205-215, 225-235, 245-255, 265-275, 285-295, 305-315]", segment16b.str)
+        assertEquals("[10-20, 30-40, 50-60, 70-80, 90-100, 110-120, 130-140, 150-160, 170-180, 190-200, 210-220, 230-240, 250-260, 270-280, 290-300, 310-320]", segment16c.str)
+        assertEquals(segment16a.str, segment16a.add(segment16a).str)
+        assertEquals("[0-15, 20-35, 40-55, 60-75, 80-95, 100-115, 120-135, 140-155, 160-175, 180-195, 200-215, 220-235, 240-255, 260-275, 280-295, 300-315]", segment16a.add(segment16b).str)
+        assertEquals("[0-320]", segment16a.add(segment16c).str)
+        assertEquals("[0-320]", segment16a.add(0, 320).str)
+        assertEquals("[-10-330]", segment16a.add(-10, 330).str)
+        assertEquals("[0-10, 20-290, 300-310]", segment16a.add(25, 285).str)
+    }
+
     fun intersect(a: IntSegmentSet, b: IntSegmentSet) = IntSegmentSet().setToIntersect(a, b)
+    fun intersectSlow(a: IntSegmentSet, b: IntSegmentSet) = IntSegmentSet().setToIntersectSlow(a, b)
 
     @Test
     fun testIntersection() {
         assertEquals("[5-10]", intersect(segment1, IntSegmentSet().add(5, 15)).str)
         assertEquals("[5-10, 12-15]", intersect(segment2, IntSegmentSet().add(5, 15)).str)
+        assertEquals("[5-10, 25-30, 45-50, 65-70, 85-90, 105-110, 125-130, 145-150, 165-170, 185-190, 205-210, 225-230, 245-250, 265-270, 285-290, 305-310]", intersect(segment16a, segment16b).str)
+        assertEquals("[10-10, 20-20, 30-30, 40-40, 50-50, 60-60, 70-70, 80-80, 90-90, 100-100, 110-110, 120-120, 130-130, 140-140, 150-150, 160-160, 170-170, 180-180, 190-190, 200-200, 210-210, 220-220, 230-230, 240-240, 250-250, 260-260, 270-270, 280-280, 290-290, 300-300, 310-310]", intersect(segment16a, segment16c).str)
+        assertEquals("[10-15, 30-35, 50-55, 70-75, 90-95, 110-115, 130-135, 150-155, 170-175, 190-195, 210-215, 230-235, 250-255, 270-275, 290-295, 310-315]", intersect(segment16b, segment16c).str)
     }
 }
