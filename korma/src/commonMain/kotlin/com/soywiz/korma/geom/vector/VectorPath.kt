@@ -239,6 +239,7 @@ open class VectorPath(
     }
     fun containsPoint(x: Double, y: Double, winding: Winding): Boolean = ensureScanline().containsPoint(x, y, winding)
 
+    @Deprecated("Use containsPoint instead that work with both windings")
     fun numberOfIntersections(x: Double, y: Double): Int {
         val testx = x
         val testy = y
@@ -321,6 +322,7 @@ fun VectorBuilder.write(path: VectorPath) {
 
 inline fun VectorPath.containsPoint(x: Number, y: Number): Boolean = containsPoint(x.toDouble(), y.toDouble())
 inline fun VectorPath.containsPoint(x: Number, y: Number, winding: Winding): Boolean = containsPoint(x.toDouble(), y.toDouble(), winding)
+@Deprecated("Use containsPoint instead that work with both windings")
 inline fun VectorPath.numberOfIntersections(x: Number, y: Number): Int = numberOfIntersections(x.toDouble(), y.toDouble())
 
 fun BoundsBuilder.add(path: VectorPath, transform: Matrix) {

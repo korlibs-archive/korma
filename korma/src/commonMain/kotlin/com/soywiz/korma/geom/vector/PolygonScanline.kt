@@ -13,6 +13,10 @@ const val RAST_FIXED_SCALE = 20
 //const val RAST_FIXED_SCALE_HALF = (RAST_FIXED_SCALE / 2)
 const val RAST_FIXED_SCALE_HALF = 0
 
+const val RAST_SMALL_BUCKET_SIZE = 4 * RAST_FIXED_SCALE
+const val RAST_MEDIUM_BUCKET_SIZE = 16 * RAST_FIXED_SCALE
+const val RAST_BIG_BUCKET_SIZE = 64 * RAST_FIXED_SCALE
+
 @KormaExperimental
 open class RastScale {
     val sscale get() = RAST_FIXED_SCALE
@@ -25,17 +29,79 @@ open class RastScale {
     //internal val Int.us2: Double get() = this.toDouble() * scale/ RAST_FIXED_SCALE
 }
 
-// @TODO: Optimize this
+// @TODO: Further optimize this
+// @TODO: We shouldn't propagate the complexity of coordinate scaling here. We should just support integers here and do the conversions outside.
 @KormaExperimental
 class PolygonScanline : RastScale() {
     var version = 0
     var winding = Winding.NON_ZERO
     private val boundsBuilder = BoundsBuilder()
 
+    class Bucket {
+        val edges = arrayListOf<Edge>()
+        fun clear() = this.apply { edges.clear() }
+        inline fun fastForEach(block: (edge: Edge) -> Unit) = edges.fastForEach(block)
+    }
+
+    class Buckets(private val pool: Pool<Bucket>, val ySize: Int) {
+        private val buckets = FastIntMap<Bucket>()
+        val size get() = buckets.size
+        fun getIndex(y: Int) = y / ySize
+        fun getForIndex(index: Int) = buckets.getOrPut(index) { pool.alloc() }
+        fun getForYOrNull(y: Int) = buckets[getIndex(y)]
+        inline fun fastForEachY(y: Int, block: (edge: Edge) -> Unit) {
+            if (size > 0) {
+                getForYOrNull(y)?.fastForEach(block)
+            }
+        }
+        fun clear() {
+            buckets.fastForEach { _, value -> pool.free(value.clear()) }
+            buckets.clear()
+        }
+        fun addThresold(edge: Edge, threshold: Int = Int.MAX_VALUE): Boolean {
+            val min = getIndex(edge.minY)
+            val max = getIndex(edge.maxY)
+            if (max - min < threshold) {
+                for (n in min..max) getForIndex(n).edges.add(edge)
+                return true
+            }
+            return false
+        }
+    }
+
+    class AllBuckets {
+        private val pool = Pool(reset = { it.clear() }) { Bucket() }
+        @PublishedApi
+        internal val small = Buckets(pool, RAST_SMALL_BUCKET_SIZE)
+        @PublishedApi
+        internal val medium = Buckets(pool, RAST_MEDIUM_BUCKET_SIZE)
+        @PublishedApi
+        internal val big = Buckets(pool, RAST_BIG_BUCKET_SIZE)
+
+        fun add(edge: Edge) {
+            if (small.addThresold(edge, 4)) return
+            if (medium.addThresold(edge, 4)) return
+            big.addThresold(edge)
+        }
+
+        inline fun fastForEachY(y: Int, block: (edge: Edge) -> Unit) {
+            small.fastForEachY(y) { block(it) }
+            medium.fastForEachY(y) { block(it) }
+            big.fastForEachY(y) { block(it) }
+        }
+
+        fun clear() {
+            small.clear()
+            medium.clear()
+            big.clear()
+        }
+    }
+
     private val edgesPool = Pool { Edge() }
 
     @PublishedApi
     internal val edges = arrayListOf<Edge>()
+    private val buckets = AllBuckets()
 
     fun getBounds(out: Rectangle = Rectangle()) = boundsBuilder.getBounds(out)
 
@@ -45,6 +111,7 @@ class PolygonScanline : RastScale() {
         boundsBuilder.reset()
         edges.fastForEach { edgesPool.free(it) }
         edges.clear()
+        buckets.clear()
         moveToX = 0.0
         moveToY = 0.0
         lastX = 0.0
@@ -54,7 +121,14 @@ class PolygonScanline : RastScale() {
     private fun addEdge(ax: Double, ay: Double, bx: Double, by: Double) {
         if (ax == bx && ay == by) return
         if (ay == by) return // Do not add coplanar to X edges
-        edges.add(if (ay < by) edgesPool.alloc().setTo(ax.s, ay.s, bx.s, by.s, +1) else edgesPool.alloc().setTo(bx.s, by.s, ax.s, ay.s, -1))
+        val iax = ax.s
+        val ibx = bx.s
+        val iay = ay.s
+        val iby = by.s
+        val edge = if (ay < by) edgesPool.alloc().setTo(iax, iay, ibx, iby, +1) else edgesPool.alloc().setTo(ibx, iby, iax, iay, -1)
+        edges.add(edge)
+        buckets.add(edge)
+
         boundsBuilder.add(ax, ay)
         boundsBuilder.add(bx, by)
     }
@@ -86,27 +160,10 @@ class PolygonScanline : RastScale() {
     inline fun add(x: Number, y: Number, move: Boolean) = if (move) moveTo(x.toDouble(), y.toDouble()) else lineTo(x.toDouble(), y.toDouble())
 
     internal inline fun forEachActiveEdgeAtY(y: Int, block: (Edge) -> Unit): Int {
-        // @TODO: Optimize this. We can sort edges by Y and perform a binary search?
         var edgesChecked = 0
-        for (n in 0 until edges.size) {
-            val edge = edges[n]
+        buckets.fastForEachY(y) { edge ->
             edgesChecked++
-            if (edge.containsY(y)) {
-                block(edge)
-            }
-        }
-        return edgesChecked
-    }
-
-    internal inline fun forEachActiveEdgeAtY(y: Int, near: Int, block: (Edge) -> Unit): Int {
-        // @TODO: Optimize this. We can sort edges by Y and perform a binary search?
-        var edgesChecked = 0
-        for (n in 0 until edges.size) {
-            val edge = edges[n]
-            edgesChecked++
-            if (edge.containsYNear(y, near)) {
-                block(edge)
-            }
+            if (edge.containsY(y)) block(edge)
         }
         return edgesChecked
     }
@@ -234,15 +291,8 @@ class PolygonScanline : RastScale() {
     private object IntArrayListSort : SortOps<XWithWind>() {
         override fun compare(subject: XWithWind, l: Int, r: Int): Int = subject.x.getAt(l).compareTo(subject.x.getAt(r))
         override fun swap(subject: XWithWind, indexL: Int, indexR: Int) {
-            subject.x.swap(indexL, indexR)
-            subject.w.swap(indexL, indexR)
+            subject.x.swapIndices(indexL, indexR)
+            subject.w.swapIndices(indexL, indexR)
         }
     }
-}
-
-private fun IntArrayList.swap(x: Int, y: Int) {
-    val l = this.getAt(x)
-    val r = this.getAt(y)
-    this[x] = r
-    this[y] = l
 }
