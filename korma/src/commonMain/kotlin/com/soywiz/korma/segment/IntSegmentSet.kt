@@ -112,17 +112,18 @@ class IntSegmentSet {
         val size = this.size
         val nmin = findNearMinIndex(min).nearIndex - 1
         val nmax = findNearMaxIndex(max).nearIndex + 1
+        var count = 0
 
         for (n in nmin.coerceIn(0, size - 1) .. nmax.coerceIn(0, size - 1)) {
             val x1 = this.min.getAt(n)
             val x2 = this.max.getAt(n)
             if (intersects(x1, x2, min, max)) {
                 out(kotlin.math.max(x1, min), kotlin.math.min(x2, max))
-                return true
+                count++
             }
         }
 
-        return false
+        return count > 0
     }
 
     // Use for testing
@@ -136,13 +137,14 @@ class IntSegmentSet {
     // Use for testing
     // O(n^2)
     internal inline fun intersectionSlow(min: Int, max: Int, out: (min: Int, max: Int) -> Unit): Boolean {
+        var any = false
         fastForEach { x1, x2 ->
             if (intersects(x1, x2, min, max)) {
                 out(kotlin.math.max(x1, min), kotlin.math.min(x2, max))
-                return true
+                any = true
             }
         }
-        return false
+        return any
     }
 
     operator fun contains(v: Int): Boolean {
@@ -157,7 +159,10 @@ class IntSegmentSet {
     }
 
     fun setToIntersect(a: IntSegmentSet, b: IntSegmentSet) = this.apply {
-        clear().also { a.fastForEach { x1, x2 -> b.intersection(x1, x2) { min, max -> add(min, max) } } }
+        val aSmaller = a.size < b.size
+        val av = if (aSmaller) a else b
+        val bv = if (aSmaller) b else a
+        clear().also { av.fastForEach { x1, x2 -> bv.intersection(x1, x2) { min, max -> add(min, max) } } }
     }
 
     // Use for testing
