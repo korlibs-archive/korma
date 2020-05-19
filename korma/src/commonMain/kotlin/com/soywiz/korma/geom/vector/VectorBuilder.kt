@@ -182,6 +182,22 @@ inline fun VectorBuilder.arc(x: Number, y: Number, r: Number, start: Number, end
 inline fun VectorBuilder.circle(x: Number, y: Number, radius: Number) = circle(x.toDouble(), y.toDouble(), radius.toDouble())
 inline fun VectorBuilder.ellipse(x: Number, y: Number, rw: Number, rh: Number) = ellipse(x.toDouble(), y.toDouble(), rw.toDouble(), rh.toDouble())
 
+// Variants supporting relative and absolute modes
+
+inline fun VectorBuilder.rCubicTo(cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number, relative: Boolean) = if (relative) rCubicTo(cx1, cy1, cx2, cy2, ax, ay) else cubicTo(cx1, cy1, cx2, cy2, ax, ay)
+inline fun VectorBuilder.rQuadTo(cx: Number, cy: Number, ax: Number, ay: Number, relative: Boolean) = if (relative) rQuadTo(cx, cy, ax, ay) else quadTo(cx, cy, ax, ay)
+inline fun VectorBuilder.rLineTo(ax: Number, ay: Number, relative: Boolean) = if (relative) rLineTo(ax, ay) else lineTo(ax, ay)
+inline fun VectorBuilder.rMoveTo(ax: Number, ay: Number, relative: Boolean) = if (relative) rMoveTo(ax, ay) else moveTo(ax, ay)
+inline fun VectorBuilder.rMoveToH(ax: Number, relative: Boolean) = if (relative) rMoveToH(ax) else moveToH(ax)
+inline fun VectorBuilder.rMoveToV(ay: Number, relative: Boolean) = if (relative) rMoveToV(ay) else moveToV(ay)
+
+private inline fun VectorBuilder.rLineToH(ax: Number, relative: Boolean) =
+    if (relative) rLineToH(ax) else lineToH(ax)
+
+private inline fun VectorBuilder.rLineToV(ay: Number, relative: Boolean) =
+    if (relative) rLineToV(ay) else lineToV(ay)
+
+
 fun VectorBuilder.transformed(m: Matrix): VectorBuilder {
     val im = m.inverted()
     val parent = this
