@@ -121,7 +121,10 @@ class Edge {
     val minY get() = min(ay, by)
     val maxY get() = max(ay, by)
 
-    fun containsY(y: Int): Boolean = y in ay until by
+    @Suppress("ConvertTwoComparisonsToRangeCheck")
+    fun containsY(y: Int): Boolean = y >= ay && y < by
+    //fun containsY(y: Int): Boolean = y in ay until by // @TODO: Kotlin/Native at least on Debug doesn't optimize this
+
     @Deprecated("")
     fun containsYNear(y: Int, offset: Int): Boolean = y >= (ay - offset) && y < (by + offset)
     //fun containsY(y: Int): Boolean = y in ay..by
