@@ -24,6 +24,9 @@ abstract class Shape2d {
 
     data class Line(val x0: Double, val y0: Double, val x1: Double, val y1: Double) : Shape2d(), WithArea {
         companion object {
+            operator fun invoke(x0: Float, y0: Float, x1: Float, y1: Float) = Line(x0.toDouble(), y0.toDouble(), x1.toDouble(), y1.toDouble())
+            operator fun invoke(x0: Int, y0: Int, x1: Int, y1: Int) = Line(x0.toDouble(), y0.toDouble(), x1.toDouble(), y1.toDouble())
+            @Deprecated("Kotlin/Native boxes inline + Number")
             inline operator fun invoke(x0: Number, y0: Number, x1: Number, y1: Number) = Line(x0.toDouble(), y0.toDouble(), x1.toDouble(), y1.toDouble())
         }
 
@@ -35,6 +38,9 @@ abstract class Shape2d {
 
     data class Circle(val x: Double, val y: Double, val radius: Double, val totalPoints: Int = 32) : Shape2d(), WithArea {
         companion object {
+            operator fun invoke(x: Float, y: Float, radius: Float, totalPoints: Int = 32) = Circle(x.toDouble(), y.toDouble(), radius.toDouble(), totalPoints)
+            operator fun invoke(x: Int, y: Int, radius: Int, totalPoints: Int = 32) = Circle(x.toDouble(), y.toDouble(), radius.toDouble(), totalPoints)
+            @Deprecated("Kotlin/Native boxes inline + Number")
             inline operator fun invoke(x: Number, y: Number, radius: Number, totalPoints: Int = 32) = Circle(x.toDouble(), y.toDouble(), radius.toDouble(), totalPoints)
         }
 
@@ -55,6 +61,9 @@ abstract class Shape2d {
 
     data class Rectangle(val rect: com.soywiz.korma.geom.Rectangle) : Shape2d(), WithArea, IRectangle by rect {
         companion object {
+            inline operator fun invoke(x: Double, y: Double, width: Double, height: Double) = Rectangle(com.soywiz.korma.geom.Rectangle(x, y, width, height))
+            inline operator fun invoke(x: Float, y: Float, width: Float, height: Float) = Rectangle(com.soywiz.korma.geom.Rectangle(x, y, width, height))
+            @Deprecated("Kotlin/Native boxes inline + Number")
             inline operator fun invoke(x: Number, y: Number, width: Number, height: Number) = Rectangle(com.soywiz.korma.geom.Rectangle(x, y, width, height))
         }
 

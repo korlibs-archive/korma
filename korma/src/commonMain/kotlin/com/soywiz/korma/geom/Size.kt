@@ -8,6 +8,9 @@ interface ISize {
     val height: Double
 
     companion object {
+        operator fun invoke(width: Double, height: Double): ISize = Size(Point(width, height))
+        operator fun invoke(width: Int, height: Int): ISize = Size(Point(width, height))
+        @Deprecated("Kotlin/Native boxes Number in inline")
         inline operator fun invoke(width: Number, height: Number): ISize = Size(Point(width, height))
     }
 }
@@ -15,6 +18,9 @@ interface ISize {
 inline class Size(val p: Point) : MutableInterpolable<Size>, Interpolable<Size>, ISize, Sizeable {
     companion object {
         operator fun invoke(): Size = Size(Point(0, 0))
+        operator fun invoke(width: Double, height: Double): Size = Size(Point(width, height))
+        operator fun invoke(width: Int, height: Int): Size = Size(Point(width, height))
+        @Deprecated("Kotlin/Native boxes Number in inline")
         inline operator fun invoke(width: Number, height: Number): Size = Size(Point(width, height))
     }
 
@@ -27,10 +33,12 @@ inline class Size(val p: Point) : MutableInterpolable<Size>, Interpolable<Size>,
         set(value) = run { p.y = value }
         get() = p.y
 
-    fun setTo(width: Double, height: Double) = this.apply {
+    fun setTo(width: Double, height: Double): Size {
         this.width = width
         this.height = height
+        return this
     }
+    fun setTo(width: Int, height: Int) = setTo(width.toDouble(), height.toDouble())
 
     fun clone() = Size(width, height)
 
@@ -44,9 +52,13 @@ inline class Size(val p: Point) : MutableInterpolable<Size>, Interpolable<Size>,
     override fun toString(): String = "Size(width=${width.niceStr}, height=${height.niceStr})"
 }
 
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun Size.setTo(width: Number, height: Number) = setTo(width.toDouble(), height.toDouble())
+
 fun Size.setTo(that: ISize) = setTo(that.width, that.height)
 fun Size.setToScaled(sx: Double, sy: Double) = setTo((this.width * sx), (this.height * sy))
+
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun Size.setToScaled(sx: Number, sy: Number = sx) = setToScaled(sx.toDouble(), sy.toDouble())
 
 
@@ -85,6 +97,8 @@ fun SizeInt.setTo(width: Int, height: Int) = this.apply {
 fun SizeInt.setTo(that: SizeInt) = setTo(that.width, that.height)
 
 fun SizeInt.setToScaled(sx: Double, sy: Double) = setTo((this.width * sx).toInt(), (this.height * sy).toInt())
+
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun SizeInt.setToScaled(sx: Number, sy: Number = sx) = setToScaled(sx.toDouble(), sy.toDouble())
 
 fun SizeInt.anchoredIn(container: RectangleInt, anchor: Anchor, out: RectangleInt = RectangleInt()): RectangleInt {
@@ -98,7 +112,10 @@ fun SizeInt.anchoredIn(container: RectangleInt, anchor: Anchor, out: RectangleIn
 
 operator fun SizeInt.contains(v: SizeInt): Boolean = (v.width <= width) && (v.height <= height)
 operator fun SizeInt.times(v: Double) = SizeInt(Size((width * v).toInt(), (height * v).toInt()))
-inline operator fun SizeInt.times(v: Number) = times(v.toDouble())
+operator fun SizeInt.times(v: Int) = this * v.toDouble()
+
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline operator fun SizeInt.times(v: Number) = this * v.toDouble()
 
 fun SizeInt.getAnchorPosition(anchor: Anchor, out: PointInt = PointInt(0, 0)): PointInt =
     out.setTo((width * anchor.sx).toInt(), (height * anchor.sy).toInt())

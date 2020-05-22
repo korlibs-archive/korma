@@ -13,8 +13,13 @@ interface IPointArrayList {
 fun IPointArrayList.getPoint(index: Int): Point = Point(getX(index), getY(index))
 fun IPointArrayList.getIPoint(index: Int): IPoint = IPoint(getX(index), getY(index))
 fun IPointArrayList.toPoints(): List<Point> = (0 until size).map { getPoint(it) }
+@Deprecated("Use Point instead")
 fun IPointArrayList.toIPoints(): List<IPoint> = (0 until size).map { getIPoint(it) }
+
+@Deprecated("Kotlin/Native boxes inline + Number")
 inline fun IPointArrayList.contains(x: Number, y: Number): Boolean = contains(x.toDouble(), y.toDouble())
+fun IPointArrayList.contains(x: Float, y: Float): Boolean = contains(x.toDouble(), y.toDouble())
+fun IPointArrayList.contains(x: Int, y: Int): Boolean = contains(x.toDouble(), y.toDouble())
 fun IPointArrayList.contains(x: Double, y: Double): Boolean {
     for (n in 0 until size) if (getX(n) == x && getY(n) == y) return true
     return false
@@ -141,13 +146,26 @@ class PointArrayList(capacity: Int = 7) : IPointArrayList {
     }
 }
 
+@Deprecated("Kotlin/Native boxes inline + Number")
 inline fun PointArrayList.add(x: Number, y: Number) = add(x.toDouble(), y.toDouble())
-fun PointArrayList.add(p: IPoint) = add(p.x, p.y)
+@Deprecated("Use Point instead")
+fun PointArrayList.add(p: IPoint) = add(p._x, p._y)
 fun PointArrayList.add(other: IPointArrayList) = this.apply { for (n in 0 until other.size) add(other.getX(n), other.getY(n)) }
+
+@Deprecated("Kotlin/Native boxes inline + Number")
 inline fun PointArrayList.setX(index: Int, x: Number) = setX(index, x.toDouble())
+@Deprecated("Kotlin/Native boxes inline + Number")
 inline fun PointArrayList.setY(index: Int, y: Number) = setY(index, y.toDouble())
+@Deprecated("Kotlin/Native boxes inline + Number")
 inline fun PointArrayList.setXY(index: Int, x: Number, y: Number) = setXY(index, x.toDouble(), y.toDouble())
 
+fun PointArrayList.setX(index: Int, x: Float) = setX(index, x.toDouble())
+fun PointArrayList.setY(index: Int, y: Float) = setY(index, y.toDouble())
+fun PointArrayList.setXY(index: Int, x: Float, y: Float) = setXY(index, x.toDouble(), y.toDouble())
+
+fun PointArrayList.setX(index: Int, x: Int) = setX(index, x.toDouble())
+fun PointArrayList.setY(index: Int, y: Int) = setY(index, y.toDouble())
+fun PointArrayList.setXY(index: Int, x: Int, y: Int) = setXY(index, x.toDouble(), y.toDouble())
 
 //////////////////////////////////////
 
