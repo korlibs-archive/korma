@@ -58,6 +58,12 @@ data class Matrix(
     override val _ty: Double get() = ty
 
     companion object {
+        inline operator fun invoke(a: Float, b: Float = 0f, c: Float = 0f, d: Float = 1f, tx: Float = 0f, ty: Float = 0f) =
+            Matrix(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
+
+        inline operator fun invoke(a: Int, b: Int = 0, c: Int = 0, d: Int = 1, tx: Int = 0, ty: Int = 0) =
+            Matrix(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
+
         @Deprecated("Kotlin/Native boxes inline + Number")
         inline operator fun invoke(a: Number, b: Number = 0.0, c: Number = 0.0, d: Number = 1.0, tx: Number = 0.0, ty: Number = 0.0) =
             Matrix(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
@@ -96,14 +102,11 @@ data class Matrix(
         this.ty = ty
     }
 
+    fun setTo(a: Float, b: Float, c: Float, d: Float, tx: Float, ty: Float): Matrix = setTo(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
+    fun setTo(a: Int, b: Int, c: Int, d: Int, tx: Int, ty: Int): Matrix = setTo(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
+
     fun copyFrom(that: Matrix): Matrix {
         setTo(that.a, that.b, that.c, that.d, that.tx, that.ty)
-        return this
-    }
-
-    @Deprecated("Use Matrix instead")
-    fun copyFrom(that: IMatrix): Matrix {
-        setTo(that._a, that._b, that._c, that._d, that._tx, that._ty)
         return this
     }
 
@@ -159,8 +162,6 @@ data class Matrix(
     }
 
     fun premultiply(m: Matrix) = this.premultiply(m.a, m.b, m.c, m.d, m.tx, m.ty)
-    @Deprecated("Use Matrix instead")
-    fun premultiply(m: IMatrix) = this.premultiply(m._a, m._b, m._c, m._d, m._tx, m._ty)
 
     fun premultiply(la: Double, lb: Double, lc: Double, ld: Double, ltx: Double, lty: Double): Matrix = setTo(
         la * a + lb * c,
@@ -169,16 +170,6 @@ data class Matrix(
         lc * b + ld * d,
         ltx * a + lty * c + tx,
         ltx * b + lty * d + ty
-    )
-
-    @Deprecated("Use Matrix instead")
-    fun multiply(l: IMatrix, r: IMatrix): Matrix = setTo(
-        l._a * r._a + l._b * r._c,
-        l._a * r._b + l._b * r._d,
-        l._c * r._a + l._d * r._c,
-        l._c * r._b + l._d * r._d,
-        l._tx * r._a + l._ty * r._c + r._tx,
-        l._tx * r._b + l._ty * r._d + r._ty
     )
 
     fun multiply(l: Matrix, r: Matrix): Matrix = setTo(
@@ -209,26 +200,6 @@ data class Matrix(
             val b = src.b * -inorm
             val c = src.c * -inorm
             dst.setTo(a, b, c, d, -a * src.tx - c * src.ty, -b * src.tx - d * src.ty)
-        }
-
-        return this
-    }
-
-    @Deprecated("Use Matrix instead")
-    fun invert(matrixToInvert: IMatrix = this): Matrix {
-        val src = matrixToInvert
-        val dst = this
-        val norm = src._a * src._d - src._b * src._c
-
-        if (norm == 0.0) {
-            dst.setTo(0.0, 0.0, 0.0, 0.0, -src._tx, -src._ty)
-        } else {
-            val inorm = 1.0 / norm
-            val d = src._a * inorm
-            val a = src._d * inorm
-            val b = src._b * -inorm
-            val c = src._c * -inorm
-            dst.setTo(a, b, c, d, -a * src._tx - c * src._ty, -b * src._tx - d * src._ty)
         }
 
         return this
@@ -496,3 +467,41 @@ inline fun IMatrix.transformY(px: Number, py: Number): Double = transformY(px.to
 inline fun IMatrix.transformX(p: IPoint): Double = transformX(p.x, p.y)
 @Deprecated("Use Matrix instead")
 inline fun IMatrix.transformY(p: IPoint): Double = transformY(p.x, p.y)
+
+@Deprecated("Use Matrix instead")
+fun Matrix.invert(matrixToInvert: IMatrix = this): Matrix {
+    val src = matrixToInvert
+    val dst = this
+    val norm = src._a * src._d - src._b * src._c
+
+    if (norm == 0.0) {
+        dst.setTo(0.0, 0.0, 0.0, 0.0, -src._tx, -src._ty)
+    } else {
+        val inorm = 1.0 / norm
+        val d = src._a * inorm
+        val a = src._d * inorm
+        val b = src._b * -inorm
+        val c = src._c * -inorm
+        dst.setTo(a, b, c, d, -a * src._tx - c * src._ty, -b * src._tx - d * src._ty)
+    }
+
+    return this
+}
+
+@Deprecated("Use Matrix instead")
+fun Matrix.multiply(l: IMatrix, r: IMatrix): Matrix = setTo(
+    l._a * r._a + l._b * r._c,
+    l._a * r._b + l._b * r._d,
+    l._c * r._a + l._d * r._c,
+    l._c * r._b + l._d * r._d,
+    l._tx * r._a + l._ty * r._c + r._tx,
+    l._tx * r._b + l._ty * r._d + r._ty
+)
+@Deprecated("Use Matrix instead")
+fun Matrix.premultiply(m: IMatrix) = this.premultiply(m._a, m._b, m._c, m._d, m._tx, m._ty)
+
+@Deprecated("Use Matrix instead")
+fun Matrix.copyFrom(that: IMatrix): Matrix {
+    setTo(that._a, that._b, that._c, that._d, that._tx, that._ty)
+    return this
+}
