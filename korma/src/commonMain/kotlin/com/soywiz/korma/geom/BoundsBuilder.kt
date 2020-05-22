@@ -48,7 +48,11 @@ class BoundsBuilder {
     }
 }
 
+fun BoundsBuilder.add(x: Int, y: Int) = add(x.toDouble(), y.toDouble())
+
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun BoundsBuilder.add(x: Number, y: Number) = add(x.toDouble(), y.toDouble())
+
 fun BoundsBuilder.add(p: IPoint) = add(p.x, p.y)
 fun BoundsBuilder.add(ps: Iterable<IPoint>) = this.apply { for (p in ps) add(p) }
 fun BoundsBuilder.add(ps: IPointArrayList) = run { for (n in 0 until ps.size) add(ps.getX(n), ps.getY(n)) }

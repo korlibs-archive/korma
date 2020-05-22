@@ -34,7 +34,12 @@ class BinPacker(val width: Double, val height: Double, val algo: Algo = MaxRects
         return rect
     }
 
+    fun add(width: Int, height: Int): Rectangle = add(width.toDouble(), height.toDouble())
+    fun addOrNull(width: Int, height: Int): Rectangle? = addOrNull(width.toDouble(), height.toDouble())
+
+    @Deprecated("Kotlin/Native boxes Number in inline")
     inline fun add(width: Number, height: Number): Rectangle = add(width.toDouble(), height.toDouble())
+    @Deprecated("Kotlin/Native boxes Number in inline")
     inline fun addOrNull(width: Number, height: Number): Rectangle? = addOrNull(width.toDouble(), height.toDouble())
 
     fun <T> addBatch(items: Iterable<T>, getSize: (T) -> Size): Result<T> {
@@ -44,19 +49,20 @@ class BinPacker(val width: Double, val height: Double, val algo: Algo = MaxRects
     fun addBatch(items: Iterable<Size>): List<Rectangle?> = algo.addBatch(items) { it }.map { it.second }
 
     companion object {
+        operator fun invoke(width: Int, height: Int, algo: Algo = MaxRects(width.toDouble(), height.toDouble())) = BinPacker(width.toDouble(), height.toDouble(), algo)
+
+        @Deprecated("Kotlin/Native boxes Number in inline")
         inline operator fun invoke(width: Number, height: Number, algo: Algo = MaxRects(width.toDouble(), height.toDouble())) = BinPacker(width.toDouble(), height.toDouble(), algo)
 
-        fun <T> pack(width: Double, height: Double, items: Iterable<T>, getSize: (T) -> Size): Result<T> =
-            BinPacker(width, height).addBatch(items, getSize)
+        fun <T> pack(width: Double, height: Double, items: Iterable<T>, getSize: (T) -> Size): Result<T> = BinPacker(width, height).addBatch(items, getSize)
+        fun <T> pack(width: Int, height: Int, items: Iterable<T>, getSize: (T) -> Size): Result<T> = pack(width.toDouble(), height.toDouble(), items, getSize)
 
-        inline fun <T> pack(width: Number, height: Number, items: Iterable<T>, noinline getSize: (T) -> Size): Result<T> =
-            pack(width.toDouble(), height.toDouble(), items, getSize)
+        @Deprecated("Kotlin/Native boxes Number in inline")
+        inline fun <T> pack(width: Number, height: Number, items: Iterable<T>, noinline getSize: (T) -> Size): Result<T> = pack(width.toDouble(), height.toDouble(), items, getSize)
 
-        inline fun <T : Sizeable> packSeveral(
-            maxWidth: Number,
-            maxHeight: Number,
-            items: Iterable<T>
-        ): List<Result<T>> = packSeveral(maxWidth.toDouble(), maxHeight.toDouble(), items) { it.size }
+        @Deprecated("Kotlin/Native boxes Number in inline")
+        inline fun <T : Sizeable> packSeveral(maxWidth: Number, maxHeight: Number, items: Iterable<T>): List<Result<T>> = packSeveral(maxWidth.toDouble(), maxHeight.toDouble(), items) { it.size }
+        fun <T : Sizeable> packSeveral(maxWidth: Int, maxHeight: Int, items: Iterable<T>): List<Result<T>> = packSeveral(maxWidth.toDouble(), maxHeight.toDouble(), items) { it.size }
 
         fun <T> packSeveral(
             maxWidth: Double,

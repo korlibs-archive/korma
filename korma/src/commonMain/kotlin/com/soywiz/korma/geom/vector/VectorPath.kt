@@ -320,7 +320,14 @@ fun VectorBuilder.write(path: VectorPath) {
     )
 }
 
+inline fun VectorPath.containsPoint(x: Int, y: Int): Boolean = containsPoint(x.toDouble(), y.toDouble())
+inline fun VectorPath.containsPoint(x: Int, y: Int, winding: Winding): Boolean = containsPoint(x.toDouble(), y.toDouble(), winding)
+inline fun VectorPath.containsPoint(x: Float, y: Float): Boolean = containsPoint(x.toDouble(), y.toDouble())
+inline fun VectorPath.containsPoint(x: Float, y: Float, winding: Winding): Boolean = containsPoint(x.toDouble(), y.toDouble(), winding)
+
+@Deprecated("Kotlin/Native boxes inline + Number")
 inline fun VectorPath.containsPoint(x: Number, y: Number): Boolean = containsPoint(x.toDouble(), y.toDouble())
+@Deprecated("Kotlin/Native boxes inline + Number")
 inline fun VectorPath.containsPoint(x: Number, y: Number, winding: Winding): Boolean = containsPoint(x.toDouble(), y.toDouble(), winding)
 @Deprecated("Use containsPoint instead that work with both windings")
 inline fun VectorPath.numberOfIntersections(x: Number, y: Number): Int = numberOfIntersections(x.toDouble(), y.toDouble())

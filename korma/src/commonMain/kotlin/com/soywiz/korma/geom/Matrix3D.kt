@@ -57,6 +57,10 @@ class Matrix3D {
 
     operator fun get(row: Int, column: Int): Float = data[columnMajorIndex(row, column)]
     operator fun set(row: Int, column: Int, value: Float) = run { data[columnMajorIndex(row, column)] = value }
+    operator fun set(row: Int, column: Int, value: Double) = this.set(row, column, value.toFloat())
+    operator fun set(row: Int, column: Int, value: Int) = this.set(row, column, value.toFloat())
+
+    @Deprecated("Kotlin/Native boxes Number in inline")
     inline operator fun set(row: Int, column: Int, value: Number) = set(row, column, value.toFloat())
 
     inline var v00: Float get() = data[M00]; set(v) = run { data[M00] = v }
