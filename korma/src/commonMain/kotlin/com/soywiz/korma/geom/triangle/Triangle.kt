@@ -1,7 +1,6 @@
 package com.soywiz.korma.geom.triangle
 
-import com.soywiz.korma.geom.Orientation
-import com.soywiz.korma.geom.IPoint
+import com.soywiz.korma.geom.*
 import kotlin.math.*
 
 interface Triangle {

@@ -24,6 +24,13 @@ data class Quaternion(
         else -> Double.NaN
     }
     inline fun setToFunc(callback: (Int) -> Double) = setTo(callback(0), callback(1), callback(2), callback(3))
+    fun setTo(x: Double, y: Double, z: Double, w: Double): Quaternion {
+        this.x = x
+        this.y = y
+        this.z = z
+        this.w = w
+        return this
+    }
 
     companion object {
         fun dotProduct(l: Quaternion, r: Quaternion): Double = l.x * r.x + l.y * r.y + l.z * r.z + l.w * r.w
@@ -35,9 +42,17 @@ data class Quaternion(
     }
 }
 
-fun Quaternion(x: Number, y: Number, z: Number, w: Number) = Quaternion(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
+@Deprecated("Kotlin/Native boxes inline + Number")
+inline fun Quaternion(x: Number, y: Number, z: Number, w: Number) = Quaternion(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
+fun Quaternion(x: Float, y: Float, z: Float, w: Float) = Quaternion(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
+fun Quaternion(x: Int, y: Int, z: Int, w: Int) = Quaternion(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
 
-fun EulerRotation.setQuaternion(x: Number, y: Number, z: Number, w: Number): EulerRotation = quaternionToEuler(x, y, z, w, this)
+@Deprecated("Kotlin/Native boxes inline + Number")
+inline fun EulerRotation.setQuaternion(x: Number, y: Number, z: Number, w: Number): EulerRotation = quaternionToEuler(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat(), this)
+fun EulerRotation.setQuaternion(x: Double, y: Double, z: Double, w: Double): EulerRotation = quaternionToEuler(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat(), this)
+fun EulerRotation.setQuaternion(x: Int, y: Int, z: Int, w: Int): EulerRotation = quaternionToEuler(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat(), this)
+fun EulerRotation.setQuaternion(x: Float, y: Float, z: Float, w: Float): EulerRotation = quaternionToEuler(x, y, z, w, this)
+
 fun EulerRotation.setQuaternion(quaternion: Quaternion): EulerRotation = quaternionToEuler(quaternion.x, quaternion.y, quaternion.z, quaternion.w, this)
 fun EulerRotation.setTo(x: Angle, y: Angle, z: Angle): EulerRotation = this
     .apply { this.x = x }
@@ -49,11 +64,11 @@ fun EulerRotation.setTo(other: EulerRotation): EulerRotation = setTo(other.x, ot
 fun Quaternion.setEuler(x: Angle, y: Angle, z: Angle): Quaternion = eulerToQuaternion(x, y, z, this)
 fun Quaternion.setEuler(euler: EulerRotation): Quaternion = eulerToQuaternion(euler, this)
 fun Quaternion.setTo(euler: EulerRotation): Quaternion = eulerToQuaternion(euler, this)
-inline fun Quaternion.setTo(x: Number, y: Number, z: Number, w: Number): Quaternion = this
-    .apply { this.x = x.toDouble() }
-    .apply { this.y = y.toDouble() }
-    .apply { this.z = z.toDouble() }
-    .apply { this.w = w.toDouble() }
+
+@Deprecated("Kotlin/Native boxes inline + Number")
+inline fun Quaternion.setTo(x: Number, y: Number, z: Number, w: Number): Quaternion = setTo(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
+fun Quaternion.setTo(x: Int, y: Int, z: Int, w: Int): Quaternion = setTo(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
+fun Quaternion.setTo(x: Float, y: Float, z: Float, w: Float): Quaternion = setTo(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
 
 inline fun Quaternion.copyFrom(other: Quaternion): Quaternion = this.setTo(other)
 
@@ -67,9 +82,14 @@ fun eulerToQuaternion(euler: EulerRotation, quaternion: Quaternion = Quaternion(
 
 fun quaternionToEuler(q: Quaternion, euler: EulerRotation = EulerRotation()): EulerRotation = quaternionToEuler(q.x, q.y, q.z, q.w, euler)
 
-inline fun quaternionToEuler(x: Number, y: Number, z: Number, w: Number, euler: EulerRotation = EulerRotation()): EulerRotation {
-    return quaternionToEuler(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat(), euler)
-}
+fun quaternionToEuler(x: Double, y: Double, z: Double, w: Double, euler: EulerRotation = EulerRotation()): EulerRotation =
+    quaternionToEuler(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat(), euler)
+fun quaternionToEuler(x: Int, y: Int, z: Int, w: Int, euler: EulerRotation = EulerRotation()): EulerRotation =
+    quaternionToEuler(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat(), euler)
+
+@Deprecated("Kotlin/Native boxes inline + Number")
+inline fun quaternionToEuler(x: Number, y: Number, z: Number, w: Number, euler: EulerRotation = EulerRotation()): EulerRotation =
+    quaternionToEuler(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat(), euler)
 
 // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 

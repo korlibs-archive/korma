@@ -137,66 +137,125 @@ fun VectorBuilder.lineTo(p: Point) = lineTo(p.x, p.y)
 fun VectorBuilder.quadTo(c: Point, a: Point) = quadTo(c.x, c.y, a.x, a.y)
 fun VectorBuilder.cubicTo(c1: Point, c2: Point, a: Point) = cubicTo(c1.x, c1.y, c2.x, c2.y, a.x, a.y)
 
-inline fun VectorBuilder.moveTo(x: Number, y: Number) = moveTo(x.toDouble(), y.toDouble())
-inline fun VectorBuilder.lineTo(x: Number, y: Number) = lineTo(x.toDouble(), y.toDouble())
-inline fun VectorBuilder.quadTo(controlX: Number, controlY: Number, anchorX: Number, anchorY: Number) = quadTo(controlX.toDouble(), controlY.toDouble(), anchorX.toDouble(), anchorY.toDouble())
-inline fun VectorBuilder.cubicTo(cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number) = cubicTo(cx1.toDouble(), cy1.toDouble(), cx2.toDouble(), cy2.toDouble(), ax.toDouble(), ay.toDouble())
 
-inline fun VectorBuilder.moveToH(x: Number) = moveTo(x, lastY)
-inline fun VectorBuilder.rMoveToH(x: Number) = moveTo(lastX + x.toDouble(), lastY)
+fun VectorBuilder.moveToH(x: Double) = moveTo(x, lastY)
+fun VectorBuilder.rMoveToH(x: Double) = rMoveTo(x, 0.0)
 
-inline fun VectorBuilder.moveToV(y: Number) = moveTo(lastX, y)
-inline fun VectorBuilder.rMoveToV(y: Number) = moveTo(lastX, lastY + y.toDouble())
+fun VectorBuilder.moveToV(y: Double) = moveTo(lastX, y)
+fun VectorBuilder.rMoveToV(y: Double) = rMoveTo(0.0, y)
 
-inline fun VectorBuilder.lineToH(x: Number) = lineTo(x, lastY)
-inline fun VectorBuilder.rLineToH(x: Number) = lineTo(lastX + x.toDouble(), lastY)
+fun VectorBuilder.lineToH(x: Double) = lineTo(x, lastY)
+fun VectorBuilder.rLineToH(x: Double) = rLineTo(x, 0.0)
 
-inline fun VectorBuilder.lineToV(y: Number) = lineTo(lastX, y)
-inline fun VectorBuilder.rLineToV(y: Number) = lineTo(lastX, lastY + y.toDouble())
+fun VectorBuilder.lineToV(y: Double) = lineTo(lastX, y)
+fun VectorBuilder.rLineToV(y: Double) = rLineTo(0.0, y)
 
-inline fun VectorBuilder.rMoveTo(x: Number, y: Number) = moveTo(this.lastX + x.toDouble(), this.lastY + y.toDouble())
-inline fun VectorBuilder.rLineTo(x: Number, y: Number) = lineTo(this.lastX + x.toDouble(), this.lastY + y.toDouble())
+fun VectorBuilder.rMoveTo(x: Double, y: Double) = moveTo(this.lastX + x, this.lastY + y)
+fun VectorBuilder.rLineTo(x: Double, y: Double) = lineTo(this.lastX + x, this.lastY + y)
 
-inline fun VectorBuilder.rQuadTo(cx: Number, cy: Number, ax: Number, ay: Number) = quadTo(this.lastX + cx.toDouble(), this.lastY + cy.toDouble(), this.lastX + ax.toDouble(), this.lastY + ay.toDouble())
+fun VectorBuilder.rQuadTo(cx: Double, cy: Double, ax: Double, ay: Double) = quadTo(this.lastX + cx, this.lastY + cy, this.lastX + ax, this.lastY + ay)
 
-inline fun VectorBuilder.rCubicTo(cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number) = cubicTo(
-    this.lastX + cx1.toDouble(), this.lastY + cy1.toDouble(),
-    this.lastX + cx2.toDouble(), this.lastY + cy2.toDouble(),
-    this.lastX + ax.toDouble(), this.lastY + ay.toDouble()
+fun VectorBuilder.rCubicTo(cx1: Double, cy1: Double, cx2: Double, cy2: Double, ax: Double, ay: Double) = cubicTo(
+    this.lastX + cx1, this.lastY + cy1, this.lastX + cx2, this.lastY + cy2, this.lastX + ax, this.lastY + ay
 )
 
+
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.moveTo(x: Number, y: Number) = moveTo(x.toDouble(), y.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.lineTo(x: Number, y: Number) = lineTo(x.toDouble(), y.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.quadTo(controlX: Number, controlY: Number, anchorX: Number, anchorY: Number) = quadTo(controlX.toDouble(), controlY.toDouble(), anchorX.toDouble(), anchorY.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.cubicTo(cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number) = cubicTo(cx1.toDouble(), cy1.toDouble(), cx2.toDouble(), cy2.toDouble(), ax.toDouble(), ay.toDouble())
+
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.moveToH(x: Number) = moveToH(x.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.rMoveToH(x: Number) = rMoveToH(x.toDouble())
+
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.moveToV(y: Number) = moveToV(y.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.rMoveToV(y: Number) = rMoveToV(y.toDouble())
+
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.lineToH(x: Number) = lineToH(x.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.rLineToH(x: Number) = rLineToH(x.toDouble())
+
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.lineToV(y: Number) = lineToV(y.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.rLineToV(y: Number) = rLineToV(y.toDouble())
+
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.rMoveTo(x: Number, y: Number) = rMoveTo(x.toDouble(), y.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.rLineTo(x: Number, y: Number) = rLineTo(x.toDouble(), y.toDouble())
+
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.rQuadTo(cx: Number, cy: Number, ax: Number, ay: Number) = rQuadTo(cx.toDouble(), cy.toDouble(), ax.toDouble(), ay.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.rCubicTo(cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number) = rCubicTo(cx1.toDouble(), cy1.toDouble(), cx2.toDouble(), cy2.toDouble(), ax.toDouble(), ay.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.arcTo(ax: Number, ay: Number, cx: Number, cy: Number, r: Number) = arcTo(ax.toDouble(), ay.toDouble(), cx.toDouble(), cy.toDouble(), r.toDouble())
 
-fun VectorBuilder.line(p0: Point, p1: Point) = moveTo(p0).also { lineTo(p1) }
-fun VectorBuilder.quad(o: Point, c: Point, a: Point) = moveTo(o).also { quadTo(c, a) }
-fun VectorBuilder.cubic(o: Point, c1: Point, c2: Point, a: Point) = moveTo(o).also { cubicTo(c1, c2, a) }
+fun VectorBuilder.line(x0: Double, y0: Double, x1: Double, y1: Double) = moveTo(x0, y0).also { lineTo(x1, y1) }
+fun VectorBuilder.quad(x0: Double, y0: Double, controlX: Double, controlY: Double, anchorX: Double, anchorY: Double) = moveTo(x0, y0).also { quadTo(controlX, controlY, anchorX, anchorY) }
+fun VectorBuilder.cubic(x0: Double, y0: Double, cx1: Double, cy1: Double, cx2: Double, cy2: Double, ax: Double, ay: Double) = moveTo(x0, y0).also { cubicTo(cx1, cy1, cx2, cy2, ax, ay) }
 
-inline fun VectorBuilder.line(x0: Number, y0: Number, x1: Number, y1: Number) = moveTo(x0, y0).also { lineTo(x1, y1) }
-inline fun VectorBuilder.quad(x0: Number, y0: Number, controlX: Number, controlY: Number, anchorX: Number, anchorY: Number) = moveTo(x0, y0).also { quadTo(controlX.toDouble(), controlY.toDouble(), anchorX.toDouble(), anchorY.toDouble()) }
-inline fun VectorBuilder.cubic(x0: Number, y0: Number, cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number) = moveTo(x0, y0).also { cubicTo(cx1.toDouble(), cy1.toDouble(), cx2.toDouble(), cy2.toDouble(), ax.toDouble(), ay.toDouble()) }
+fun VectorBuilder.line(p0: Point, p1: Point) = line(p0.x, p0.y, p1.x, p1.y)
+fun VectorBuilder.quad(o: Point, c: Point, a: Point) = quad(o.x, o.y, c.x, c.y, a.x, a.y)
+fun VectorBuilder.cubic(o: Point, c1: Point, c2: Point, a: Point) = cubic(o.x, o.y, c1.x, c1.y, c2.x, c2.y, a.x, a.y)
 
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.line(x0: Number, y0: Number, x1: Number, y1: Number) = line(x0.toDouble(), y0.toDouble(), x1.toDouble(), y1.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.quad(x0: Number, y0: Number, controlX: Number, controlY: Number, anchorX: Number, anchorY: Number) = quad(x0.toDouble(), y0.toDouble(), controlX.toDouble(), controlY.toDouble(), anchorX.toDouble(), anchorY.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.cubic(x0: Number, y0: Number, cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number) = cubic(x0.toDouble(), y0.toDouble(), cx1.toDouble(), cy1.toDouble(), cx2.toDouble(), cy2.toDouble(), ax.toDouble(), ay.toDouble())
+
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.rect(x: Number, y: Number, width: Number, height: Number) = rect(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.rectHole(x: Number, y: Number, width: Number, height: Number) = rectHole(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.roundRect(x: Number, y: Number, w: Number, h: Number, rx: Number, ry: Number = rx) = roundRect(x.toDouble(), y.toDouble(), w.toDouble(), h.toDouble(), rx.toDouble(), ry.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.arc(x: Number, y: Number, r: Number, start: Number, end: Number) = arc(x.toDouble(), y.toDouble(), r.toDouble(), start.toDouble(), end.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.circle(x: Number, y: Number, radius: Number) = circle(x.toDouble(), y.toDouble(), radius.toDouble())
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.ellipse(x: Number, y: Number, rw: Number, rh: Number) = ellipse(x.toDouble(), y.toDouble(), rw.toDouble(), rh.toDouble())
 
 // Variants supporting relative and absolute modes
 
+fun VectorBuilder.rCubicTo(cx1: Double, cy1: Double, cx2: Double, cy2: Double, ax: Double, ay: Double, relative: Boolean) = if (relative) rCubicTo(cx1, cy1, cx2, cy2, ax, ay) else cubicTo(cx1, cy1, cx2, cy2, ax, ay)
+fun VectorBuilder.rQuadTo(cx: Double, cy: Double, ax: Double, ay: Double, relative: Boolean) = if (relative) rQuadTo(cx, cy, ax, ay) else quadTo(cx, cy, ax, ay)
+fun VectorBuilder.rLineTo(ax: Double, ay: Double, relative: Boolean) = if (relative) rLineTo(ax, ay) else lineTo(ax, ay)
+fun VectorBuilder.rMoveTo(ax: Double, ay: Double, relative: Boolean) = if (relative) rMoveTo(ax, ay) else moveTo(ax, ay)
+fun VectorBuilder.rMoveToH(ax: Double, relative: Boolean) = if (relative) rMoveToH(ax) else moveToH(ax)
+fun VectorBuilder.rMoveToV(ay: Double, relative: Boolean) = if (relative) rMoveToV(ay) else moveToV(ay)
+fun VectorBuilder.rLineToH(ax: Double, relative: Boolean) = if (relative) rLineToH(ax) else lineToH(ax)
+fun VectorBuilder.rLineToV(ay: Double, relative: Boolean) = if (relative) rLineToV(ay) else lineToV(ay)
+
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.rCubicTo(cx1: Number, cy1: Number, cx2: Number, cy2: Number, ax: Number, ay: Number, relative: Boolean) = if (relative) rCubicTo(cx1, cy1, cx2, cy2, ax, ay) else cubicTo(cx1, cy1, cx2, cy2, ax, ay)
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.rQuadTo(cx: Number, cy: Number, ax: Number, ay: Number, relative: Boolean) = if (relative) rQuadTo(cx, cy, ax, ay) else quadTo(cx, cy, ax, ay)
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.rLineTo(ax: Number, ay: Number, relative: Boolean) = if (relative) rLineTo(ax, ay) else lineTo(ax, ay)
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.rMoveTo(ax: Number, ay: Number, relative: Boolean) = if (relative) rMoveTo(ax, ay) else moveTo(ax, ay)
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.rMoveToH(ax: Number, relative: Boolean) = if (relative) rMoveToH(ax) else moveToH(ax)
+@Deprecated("Kotlin/Native boxes Number in inline")
 inline fun VectorBuilder.rMoveToV(ay: Number, relative: Boolean) = if (relative) rMoveToV(ay) else moveToV(ay)
-
-private inline fun VectorBuilder.rLineToH(ax: Number, relative: Boolean) =
-    if (relative) rLineToH(ax) else lineToH(ax)
-
-private inline fun VectorBuilder.rLineToV(ay: Number, relative: Boolean) =
-    if (relative) rLineToV(ay) else lineToV(ay)
-
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.rLineToH(ax: Number, relative: Boolean) = if (relative) rLineToH(ax) else lineToH(ax)
+@Deprecated("Kotlin/Native boxes Number in inline")
+inline fun VectorBuilder.rLineToV(ay: Number, relative: Boolean) = if (relative) rLineToV(ay) else lineToV(ay)
 
 fun VectorBuilder.transformed(m: Matrix): VectorBuilder {
     val im = m.inverted()
