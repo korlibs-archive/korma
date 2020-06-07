@@ -6,6 +6,8 @@ import com.soywiz.korma.annotations.*
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.bezier.*
 import com.soywiz.korma.geom.shape.*
+import com.soywiz.korma.internal.niceStr
+import kotlin.native.concurrent.ThreadLocal
 
 open class VectorPath(
     val commands: IntArrayList = IntArrayList(),
@@ -18,6 +20,11 @@ open class VectorPath(
 
     companion object {
         inline operator fun invoke(winding: Winding = Winding.EVEN_ODD, callback: VectorPath.() -> Unit): VectorPath = VectorPath(winding = winding).apply(callback)
+
+        fun intersects(left: VectorPath, leftTransform: Matrix, right: VectorPath, rightTransform: Matrix): Boolean =
+            left.intersectsWith(leftTransform, right, rightTransform)
+
+        fun intersects(left: VectorPath, right: VectorPath): Boolean = left.intersectsWith(right)
     }
 
     interface Visitor {
@@ -239,6 +246,40 @@ open class VectorPath(
     }
     fun containsPoint(x: Double, y: Double, winding: Winding): Boolean = ensureScanline().containsPoint(x, y, winding)
 
+    @ThreadLocal
+    private val tempMatrix: Matrix = Matrix()
+
+    @ThreadLocal
+    private val identityMatrix: Matrix = Matrix()
+
+    fun intersectsWith(right: VectorPath): Boolean = intersectsWith(identityMatrix, right, identityMatrix)
+
+    fun intersectsWith(leftMatrix: Matrix, right: VectorPath, rightMatrix: Matrix): Boolean {
+        val left = this
+        val leftScanline = left.ensureScanline()
+        val rightScanline = right.ensureScanline()
+
+        tempMatrix.invert(rightMatrix)
+        tempMatrix.premultiply(leftMatrix)
+
+        leftScanline.forEachPoint { x, y ->
+            val tx = tempMatrix.transformX(x, y)
+            val ty = tempMatrix.transformY(x, y)
+            //println("LEFT: $tx, $ty")
+            if (rightScanline.containsPoint(tx, ty)) return true
+        }
+
+        tempMatrix.invert(leftMatrix)
+        tempMatrix.premultiply(rightMatrix)
+
+        rightScanline.forEachPoint { x, y ->
+            val tx = tempMatrix.transformX(x, y)
+            val ty = tempMatrix.transformY(x, y)
+            if (leftScanline.containsPoint(tx, ty)) return true
+        }
+        return false
+    }
+
     @Deprecated("Use containsPoint instead that work with both windings")
     fun numberOfIntersections(x: Double, y: Double): Int {
         val testx = x
@@ -308,6 +349,17 @@ open class VectorPath(
     //typealias Winding = com.soywiz.korma.geom.vector.Winding
     //typealias LineJoin = com.soywiz.korma.geom.vector.LineJoin
     //typealias LineCap = com.soywiz.korma.geom.vector.LineCap
+
+    fun toSvgString(): String = buildString {
+        visitCmds(
+            moveTo = { x, y -> append("M${x.niceStr},${y.niceStr} ") },
+            lineTo = { x, y -> append("L${x.niceStr},${y.niceStr} ") },
+            quadTo = { x1, y1, x2, y2 -> append("Q${x1.niceStr},${y1.niceStr},${x2.niceStr},${y2.niceStr} ") },
+            cubicTo = { x1, y1, x2, y2, x3, y3 -> append("C${x1.niceStr},${y1.niceStr},${x2.niceStr},${y2.niceStr},${x3.niceStr},${y3.niceStr} ") },
+            close = { append("Z ") }
+        )
+    }.trimEnd()
+    override fun toString(): String = "VectorPath(${toSvgString()})"
 }
 
 fun VectorBuilder.write(path: VectorPath) {
@@ -370,4 +422,14 @@ fun BoundsBuilder.add(path: VectorPath) {
         },
         close = {}
     )
+}
+
+fun VectorPath.applyTransform(m: Matrix): VectorPath {
+    for (n in 0 until data.size step 2) {
+        val x = data.getAt(n + 0)
+        val y = data.getAt(n + 1)
+        data[n + 0] = m.transformX(x, y)
+        data[n + 1] = m.transformY(x, y)
+    }
+    return this
 }

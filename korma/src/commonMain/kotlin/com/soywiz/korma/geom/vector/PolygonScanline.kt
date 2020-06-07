@@ -111,11 +111,26 @@ class PolygonScanline : RastScale() {
         boundsBuilder.reset()
         edges.fastForEach { edgesPool.free(it) }
         edges.clear()
+        points.clear()
         buckets.clear()
         moveToX = 0.0
         moveToY = 0.0
         lastX = 0.0
         lastY = 0.0
+        lastMoveTo = false
+    }
+
+    @PublishedApi
+    internal val points = PointArrayList()
+
+    private fun addPoint(x: Double, y: Double) {
+        points.add(x, y)
+    }
+
+    inline fun forEachPoint(callback: (x: Double, y: Double) -> Unit) {
+        points.fastForEach { x, y ->
+            callback(x, y)
+        }
     }
 
     private fun addEdge(ax: Double, ay: Double, bx: Double, by: Double) {
@@ -140,17 +155,24 @@ class PolygonScanline : RastScale() {
     val edgesSize get() = edges.size
     fun isNotEmpty() = edgesSize > 0
 
+    var lastMoveTo = false
     fun moveTo(x: Double, y: Double) {
         lastX = x
         lastY = y
         moveToX = x
         moveToY = y
+        lastMoveTo = true
     }
 
     fun lineTo(x: Double, y: Double) {
+        if (lastMoveTo) {
+            addPoint(lastX, lastY)
+        }
         addEdge(lastX, lastY, x, y)
+        addPoint(x, y)
         lastX = x
         lastY = y
+        lastMoveTo = false
     }
 
     fun add(path: VectorPath) {

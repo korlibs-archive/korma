@@ -162,4 +162,36 @@ class VectorPathTest {
         //console.log(ctx.isPointInPath(path, 2.1, 2.1)) // false
         //console.log(ctx.isPointInPath(path, 0, 0)) // false
     }
+
+    val path1 = buildPath { rect(0, 0, 100, 100) }
+    val path2 = buildPath { rect(10, 10, 150, 80) }
+    val path3 = buildPath { rect(110, 0, 100, 100) }
+
+    val path2b = path2.clone().applyTransform(Matrix().scale(2.0))
+
+    @Test
+    fun testToString() {
+        assertEquals("VectorPath(M20,20 L320,20 L320,180 L20,180 Z)", path2b.toString())
+    }
+
+    @Test
+    fun testCollides() {
+        assertEquals(true, path1.intersectsWith(path2))
+        assertEquals(true, path2.intersectsWith(path3))
+        assertEquals(false, path1.intersectsWith(path3))
+    }
+
+    @Test
+    fun testCollidesTransformed() {
+        assertEquals(false, buildPath { rect(0, 0, 15, 15) }.intersectsWith(Matrix(), path2, Matrix().scale(2.0)))
+        assertEquals(true, buildPath { rect(0, 0, 15, 15) }.intersectsWith(Matrix().scale(2.0, 2.0), path2, Matrix().scale(2.0)))
+        assertEquals(true, buildPath { rect(0, 0, 15, 15) }.intersectsWith(Matrix().scale(2.0, 2.0), path2, Matrix()))
+
+        assertEquals(true, VectorPath.intersects(path1, Matrix(), path1, Matrix()))
+        assertEquals(true, VectorPath.intersects(path1, Matrix().translate(101.0, 0.0), path1, Matrix().translate(101.0, 0.0)))
+        assertEquals(true, VectorPath.intersects(path1, Matrix().translate(50.0, 0.0), path1, Matrix().translate(100.0, 0.0)))
+        assertEquals(true, VectorPath.intersects(path1, Matrix().translate(100.0, 0.0), path1, Matrix().translate(50.0, 0.0)))
+        assertEquals(false, VectorPath.intersects(path1, Matrix().translate(101.0, 0.0), path1, Matrix()))
+        assertEquals(false, VectorPath.intersects(path1, Matrix(), path1, Matrix().translate(101.0, 0.0)))
+    }
 }
