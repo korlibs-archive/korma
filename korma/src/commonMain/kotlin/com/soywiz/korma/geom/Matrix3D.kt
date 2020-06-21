@@ -542,6 +542,17 @@ fun Matrix3D.setRows(
     a20.toFloat(), a21.toFloat(), a22.toFloat(), a23.toFloat(),
     a30.toFloat(), a31.toFloat(), a32.toFloat(), a33.toFloat()
 )
+fun Matrix3D.setRows(
+    a00: Float, a01: Float, a02: Float, a03: Float,
+    a10: Float, a11: Float, a12: Float, a13: Float,
+    a20: Float, a21: Float, a22: Float, a23: Float,
+    a30: Float, a31: Float, a32: Float, a33: Float
+): Matrix3D = setRows(
+    a00, a01, a02, a03,
+    a10, a11, a12, a13,
+    a20, a21, a22, a23,
+    a30, a31, a32, a33
+)
 
 @Deprecated("Kotlin/Native boxes inline + Number")
 inline fun Matrix3D.setColumns(
@@ -566,6 +577,17 @@ fun Matrix3D.setColumns(
     a02.toFloat(), a12.toFloat(), a22.toFloat(), a32.toFloat(),
     a03.toFloat(), a13.toFloat(), a23.toFloat(), a33.toFloat()
 )
+fun Matrix3D.setColumns(
+    a00: Float, a10: Float, a20: Float, a30: Float,
+    a01: Float, a11: Float, a21: Float, a31: Float,
+    a02: Float, a12: Float, a22: Float, a32: Float,
+    a03: Float, a13: Float, a23: Float, a33: Float
+): Matrix3D = setColumns(
+    a00, a10, a20, a30,
+    a01, a11, a21, a31,
+    a02, a12, a22, a32,
+    a03, a13, a23, a33
+)
 
 @Deprecated("Kotlin/Native boxes inline + Number")
 inline fun Matrix3D.setRows3x3(
@@ -586,6 +608,16 @@ fun Matrix3D.setRows3x3(
     a00.toFloat(), a01.toFloat(), a02.toFloat(), 0f,
     a10.toFloat(), a11.toFloat(), a12.toFloat(), 0f,
     a20.toFloat(), a21.toFloat(), a22.toFloat(), 0f,
+    0f, 0f, 0f, 1f
+)
+fun Matrix3D.setRows3x3(
+    a00: Float, a01: Float, a02: Float,
+    a10: Float, a11: Float, a12: Float,
+    a20: Float, a21: Float, a22: Float
+): Matrix3D = setRows(
+    a00, a01, a02, 0f,
+    a10, a11, a12, 0f,
+    a20, a21, a22, 0f,
     0f, 0f, 0f, 1f
 )
 
@@ -610,6 +642,16 @@ fun Matrix3D.setColumns3x3(
     a02.toFloat(), a12.toFloat(), a22.toFloat(), 0f,
     0f, 0f, 0f, 1f
 )
+fun Matrix3D.setColumns3x3(
+    a00: Float, a10: Float, a20: Float,
+    a01: Float, a11: Float, a21: Float,
+    a02: Float, a12: Float, a22: Float
+): Matrix3D = setColumns(
+    a00, a10, a20, 0f,
+    a01, a11, a21, 0f,
+    a02, a12, a22, 0f,
+    0f, 0f, 0f, 1f
+)
 
 @Deprecated("Kotlin/Native boxes inline + Number")
 inline fun Matrix3D.setRows2x2(
@@ -627,6 +669,15 @@ fun Matrix3D.setRows2x2(
 ): Matrix3D = setRows(
     a00.toFloat(), a01.toFloat(), 0f, 0f,
     a10.toFloat(), a11.toFloat(), 0f, 0f,
+    0f, 0f, 1f, 0f,
+    0f, 0f, 0f, 1f
+)
+fun Matrix3D.setRows2x2(
+    a00: Float, a01: Float,
+    a10: Float, a11: Float
+): Matrix3D = setRows(
+    a00, a01, 0f, 0f,
+    a10, a11, 0f, 0f,
     0f, 0f, 1f, 0f,
     0f, 0f, 0f, 1f
 )
@@ -654,6 +705,17 @@ fun Matrix3D.Companion.fromRows(
     a20.toFloat(), a21.toFloat(), a22.toFloat(), a23.toFloat(),
     a30.toFloat(), a31.toFloat(), a32.toFloat(), a33.toFloat()
 )
+fun Matrix3D.Companion.fromRows(
+    a00: Float, a01: Float, a02: Float, a03: Float,
+    a10: Float, a11: Float, a12: Float, a13: Float,
+    a20: Float, a21: Float, a22: Float, a23: Float,
+    a30: Float, a31: Float, a32: Float, a33: Float
+): Matrix3D = Matrix3D().setRows(
+    a00, a01, a02, a03,
+    a10, a11, a12, a13,
+    a20, a21, a22, a23,
+    a30, a31, a32, a33
+)
 
 @Deprecated("Kotlin/Native boxes inline + Number")
 inline fun Matrix3D.Companion.fromColumns(
@@ -678,6 +740,17 @@ fun Matrix3D.Companion.fromColumns(
     a02.toFloat(), a12.toFloat(), a22.toFloat(), a32.toFloat(),
     a03.toFloat(), a13.toFloat(), a23.toFloat(), a33.toFloat()
 )
+fun Matrix3D.Companion.fromColumns(
+    a00: Float, a10: Float, a20: Float, a30: Float,
+    a01: Float, a11: Float, a21: Float, a31: Float,
+    a02: Float, a12: Float, a22: Float, a32: Float,
+    a03: Float, a13: Float, a23: Float, a33: Float
+): Matrix3D = Matrix3D().setColumns(
+    a00, a10, a20, a30,
+    a01, a11, a21, a31,
+    a02, a12, a22, a32,
+    a03, a13, a23, a33
+)
 
 @Deprecated("Kotlin/Native boxes inline + Number")
 inline fun Matrix3D.setColumns2x2(
@@ -695,6 +768,15 @@ fun Matrix3D.setColumns2x2(
 ): Matrix3D = setColumns(
     a00.toFloat(), a10.toFloat(), 0f, 0f,
     a01.toFloat(), a11.toFloat(), 0f, 0f,
+    0f, 0f, 1f, 0f,
+    0f, 0f, 0f, 1f
+)
+fun Matrix3D.setColumns2x2(
+    a00: Float, a10: Float,
+    a01: Float, a11: Float
+): Matrix3D = setColumns(
+    a00, a10, 0f, 0f,
+    a01, a11, 0f, 0f,
     0f, 0f, 1f, 0f,
     0f, 0f, 0f, 1f
 )
@@ -718,6 +800,15 @@ fun Matrix3D.Companion.fromRows3x3(
     a10.toFloat(), a11.toFloat(), a12.toFloat(),
     a20.toFloat(), a21.toFloat(), a22.toFloat()
 )
+fun Matrix3D.Companion.fromRows3x3(
+    a00: Float, a01: Float, a02: Float,
+    a10: Float, a11: Float, a12: Float,
+    a20: Float, a21: Float, a22: Float
+): Matrix3D = Matrix3D().setRows3x3(
+    a00, a01, a02,
+    a10, a11, a12,
+    a20, a21, a22
+)
 
 @Deprecated("Kotlin/Native boxes inline + Number")
 inline fun Matrix3D.Companion.fromColumns3x3(
@@ -738,6 +829,15 @@ fun Matrix3D.Companion.fromColumns3x3(
     a01.toFloat(), a11.toFloat(), a21.toFloat(),
     a02.toFloat(), a12.toFloat(), a22.toFloat()
 )
+fun Matrix3D.Companion.fromColumns3x3(
+    a00: Double, a10: Double, a20: Double,
+    a01: Double, a11: Double, a21: Double,
+    a02: Double, a12: Double, a22: Double
+): Matrix3D = Matrix3D().setColumns3x3(
+    a00, a10, a20,
+    a01, a11, a21,
+    a02, a12, a22
+)
 
 @Deprecated("Kotlin/Native boxes inline + Number")
 inline fun Matrix3D.Companion.fromRows2x2(
@@ -754,6 +854,13 @@ fun Matrix3D.Companion.fromRows2x2(
     a00.toFloat(), a01.toFloat(),
     a10.toFloat(), a11.toFloat()
 )
+fun Matrix3D.Companion.fromRows2x2(
+    a00: Double, a01: Double,
+    a10: Double, a11: Double
+): Matrix3D = Matrix3D().setRows2x2(
+    a00, a01,
+    a10, a11
+)
 
 @Deprecated("Kotlin/Native boxes inline + Number")
 inline fun Matrix3D.Companion.fromColumns2x2(
@@ -769,6 +876,13 @@ fun Matrix3D.Companion.fromColumns2x2(
 ): Matrix3D = Matrix3D().setColumns2x2(
     a00.toFloat(), a10.toFloat(),
     a01.toFloat(), a11.toFloat()
+)
+fun Matrix3D.Companion.fromColumns2x2(
+    a00: Double, a10: Double,
+    a01: Double, a11: Double
+): Matrix3D = Matrix3D().setColumns2x2(
+    a00, a10,
+    a01, a11
 )
 
 operator fun Matrix3D.times(that: Matrix3D): Matrix3D = Matrix3D().multiply(this, that)
