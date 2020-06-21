@@ -815,6 +815,7 @@ inline fun Matrix3D.Companion.fromColumns3x3(
     a00: Number, a10: Number, a20: Number,
     a01: Number, a11: Number, a21: Number,
     a02: Number, a12: Number, a22: Number
+): Matrix3D = Matrix3D().setColumns3x3(
     a00.toFloat(), a10.toFloat(), a20.toFloat(),
     a01.toFloat(), a11.toFloat(), a21.toFloat(),
     a02.toFloat(), a12.toFloat(), a22.toFloat()
