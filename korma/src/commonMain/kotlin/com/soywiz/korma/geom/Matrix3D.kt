@@ -815,7 +815,6 @@ inline fun Matrix3D.Companion.fromColumns3x3(
     a00: Number, a10: Number, a20: Number,
     a01: Number, a11: Number, a21: Number,
     a02: Number, a12: Number, a22: Number
-): Matrix3D = Matrix3D().setColumns3x3(
     a00.toFloat(), a10.toFloat(), a20.toFloat(),
     a01.toFloat(), a11.toFloat(), a21.toFloat(),
     a02.toFloat(), a12.toFloat(), a22.toFloat()
@@ -830,9 +829,9 @@ fun Matrix3D.Companion.fromColumns3x3(
     a02.toFloat(), a12.toFloat(), a22.toFloat()
 )
 fun Matrix3D.Companion.fromColumns3x3(
-    a00: Double, a10: Double, a20: Double,
-    a01: Double, a11: Double, a21: Double,
-    a02: Double, a12: Double, a22: Double
+    a00: Float, a10: Float, a20: Float,
+    a01: Float, a11: Float, a21: Float,
+    a02: Float, a12: Float, a22: Float
 ): Matrix3D = Matrix3D().setColumns3x3(
     a00, a10, a20,
     a01, a11, a21,
@@ -855,8 +854,8 @@ fun Matrix3D.Companion.fromRows2x2(
     a10.toFloat(), a11.toFloat()
 )
 fun Matrix3D.Companion.fromRows2x2(
-    a00: Double, a01: Double,
-    a10: Double, a11: Double
+    a00: Float, a01: Float,
+    a10: Float, a11: Float
 ): Matrix3D = Matrix3D().setRows2x2(
     a00, a01,
     a10, a11
@@ -878,8 +877,8 @@ fun Matrix3D.Companion.fromColumns2x2(
     a01.toFloat(), a11.toFloat()
 )
 fun Matrix3D.Companion.fromColumns2x2(
-    a00: Double, a10: Double,
-    a01: Double, a11: Double
+    a00: Float, a10: Float,
+    a01: Float, a11: Float
 ): Matrix3D = Matrix3D().setColumns2x2(
     a00, a10,
     a01, a11
