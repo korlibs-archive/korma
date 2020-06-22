@@ -130,6 +130,7 @@ open class VectorPath(
         lastX = 0.0
         lastY = 0.0
         version = 0
+        scanline.version = version - 1  // ensure scanline will be updated after this "clear" operation
     }
 
     fun setFrom(other: VectorPath) {

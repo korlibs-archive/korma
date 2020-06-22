@@ -165,7 +165,6 @@ class VectorPathTest {
 
     val path1 = buildPath { rect(0, 0, 100, 100) }
     val path2 = buildPath { rect(10, 10, 150, 80) }
-    val path2clone = path2.clone()  // here VectorPath.version == 0
     val path3 = buildPath { rect(110, 0, 100, 100) }
 
     val path2b = path2.clone().applyTransform(Matrix().scale(2.0))
@@ -178,9 +177,13 @@ class VectorPathTest {
     @Test
     fun testCollides() {
         assertEquals(true, path1.intersectsWith(path2))
-        assertEquals(true, path1.intersectsWith(path2clone))
         assertEquals(true, path2.intersectsWith(path3))
         assertEquals(false, path1.intersectsWith(path3))
+
+        val path2clone = path2.clone()  // here VectorPath.version == 0
+        assertEquals(true, path1.intersectsWith(path2clone))
+        path2clone.clear()
+        assertEquals(false, path1.intersectsWith(path2clone))
     }
 
     @Test
