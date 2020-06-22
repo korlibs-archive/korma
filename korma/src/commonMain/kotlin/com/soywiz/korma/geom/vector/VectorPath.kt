@@ -236,7 +236,10 @@ open class VectorPath(
     fun containsPoint(x: Double, y: Double): Boolean = containsPoint(x, y, this.winding)
 
     @OptIn(KormaExperimental::class)
-    private val scanline by lazy { PolygonScanline() }
+    private val scanline by lazy { PolygonScanline().also {
+        it.add(this)
+        it.version = this.version
+    } }
     private fun ensureScanline() = scanline.also {
         if (it.version != this.version) {
             it.reset()
