@@ -152,6 +152,10 @@ data class Point(
         inline operator fun invoke(xy: Float): Point = Point(xy.toDouble(), xy.toDouble())
         inline operator fun invoke(xy: Double): Point = Point(xy, xy)
 
+        inline operator fun invoke(angle: Angle, length: Double = 1.0): Point = fromPolar(angle, length)
+
+        fun fromPolar(angle: Angle, length: Double = 1.0): Point = Point(angle.cosine * length, angle.sine * length)
+
         @Deprecated("Kotlin/Native boxes inline + Number")
         inline operator fun invoke(x: Number, y: Number): Point = Point(x.toDouble(), y.toDouble())
         @Deprecated("Kotlin/Native boxes inline + Number")
@@ -197,6 +201,8 @@ data class Point(
         this.y = y
         return this
     }
+
+    fun setToPolar(angle: Angle, length: Double = 1.0): Point = setTo(angle.cosine * length, angle.sine * length)
 
     fun neg() = setTo(-x, -y)
     fun mul(s: Double) = setTo(x * s, y * s)
