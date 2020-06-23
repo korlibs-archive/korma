@@ -152,8 +152,10 @@ data class Point(
         inline operator fun invoke(xy: Float): Point = Point(xy.toDouble(), xy.toDouble())
         inline operator fun invoke(xy: Double): Point = Point(xy, xy)
 
+        /** Constructs a point from polar coordinates determined by an [angle] and a [length]. Angle 0 is pointing to the right, and the direction is counter-clock-wise */
         inline operator fun invoke(angle: Angle, length: Double = 1.0): Point = fromPolar(angle, length)
 
+        /** Constructs a point from polar coordinates determined by an [angle] and a [length]. Angle 0 is pointing to the right, and the direction is counter-clock-wise */
         fun fromPolar(angle: Angle, length: Double = 1.0): Point = Point(angle.cosine * length, angle.sine * length)
 
         @Deprecated("Kotlin/Native boxes inline + Number")
@@ -202,6 +204,7 @@ data class Point(
         return this
     }
 
+    /** Updates a point from polar coordinates determined by an [angle] and a [length]. Angle 0 is pointing to the right, and the direction is counter-clock-wise */
     fun setToPolar(angle: Angle, length: Double = 1.0): Point = setTo(angle.cosine * length, angle.sine * length)
 
     fun neg() = setTo(-x, -y)
