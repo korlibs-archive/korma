@@ -179,6 +179,11 @@ class VectorPathTest {
         assertEquals(true, path1.intersectsWith(path2))
         assertEquals(true, path2.intersectsWith(path3))
         assertEquals(false, path1.intersectsWith(path3))
+
+        val path2clone = path2.clone()  // here VectorPath.version == 0
+        assertEquals(true, path1.intersectsWith(path2clone))
+        path2clone.clear()
+        assertEquals(false, path1.intersectsWith(path2clone))
     }
 
     @Test

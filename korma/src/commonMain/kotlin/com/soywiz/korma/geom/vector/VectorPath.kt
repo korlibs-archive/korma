@@ -130,6 +130,7 @@ open class VectorPath(
         lastX = 0.0
         lastY = 0.0
         version = 0
+        scanline.version = version - 1  // ensure scanline will be updated after this "clear" operation
     }
 
     fun setFrom(other: VectorPath) {
@@ -236,7 +237,10 @@ open class VectorPath(
     fun containsPoint(x: Double, y: Double): Boolean = containsPoint(x, y, this.winding)
 
     @OptIn(KormaExperimental::class)
-    private val scanline by lazy { PolygonScanline() }
+    private val scanline by lazy { PolygonScanline().also {
+        it.add(this)
+        it.version = this.version
+    } }
     private fun ensureScanline() = scanline.also {
         if (it.version != this.version) {
             it.reset()
