@@ -6,107 +6,107 @@ import com.soywiz.korma.internal.*
 import com.soywiz.korma.interpolation.*
 import kotlin.math.*
 
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 interface IPoint {
     val _x: Double
     val _y: Double
 
     companion object {
-        @Deprecated("Use Point instead")
+        //@Deprecated("Use Point instead")
         operator fun invoke(): IPoint = Point(0.0, 0.0)
         @Deprecated("Kotlin/Native boxes inline + Number")
         inline operator fun invoke(x: Number, y: Number): IPoint = Point(x.toDouble(), y.toDouble())
     }
 }
 
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 val IPoint.x: Double get() = _x
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 val IPoint.y: Double get() = _y
 
 @Deprecated("Kotlin/Native boxes inline + Number")
 operator fun Point.Companion.invoke(v: IPoint): Point = Point(v._x, v._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.Companion.middle(a: IPoint, b: IPoint): Point = Point((a._x + b._x) * 0.5, (a._y + b._y) * 0.5)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.Companion.angle(a: IPoint, b: IPoint): Angle = Angle.fromRadians(acos((a.dot(b)) / (a.length * b.length)))
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.Companion.compare(l: IPoint, r: IPoint): Int = Point.compare(l._x, l._y, r._x, r._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.Companion.distance(a: IPoint, b: IPoint): Double = Point.distance(a._x, a._y, b._x, b._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.copyFrom(that: IPoint) = setTo(that._x, that._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.add(p: IPoint) = this.setToAdd(this, p)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.sub(p: IPoint) = this.setToSub(this, p)
 // @TODO: mul instead of dot
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 operator fun IPoint.plus(that: IPoint): IPoint = IPoint(_x + that._x, _y + that._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 operator fun IPoint.minus(that: IPoint): IPoint = IPoint(_x - that._x, _y - that._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 operator fun IPoint.times(that: IPoint): IPoint = IPoint(_x * that._x, _y * that._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 operator fun IPoint.div(that: IPoint): IPoint = IPoint(_x / that._x, _y / that._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 inline operator fun IPoint.times(scale: Number): IPoint = IPoint(_x * scale.toDouble(), _y * scale.toDouble())
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 inline operator fun IPoint.div(scale: Number): IPoint = IPoint(_x / scale.toDouble(), _y / scale.toDouble())
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 infix fun IPoint.dot(that: IPoint): Double = this._x * that._x + this._y * that._y
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 inline fun IPoint.distanceTo(x: Number, y: Number): Double = hypot(x.toDouble() - this._x, y.toDouble() - this._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun IPoint.distanceTo(that: IPoint): Double = distanceTo(that._x, that._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun IPoint.angleTo(other: IPoint): Angle = Angle.between(this._x, this._y, other._x, other._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun IPoint.transformed(mat: IMatrix, out: Point = Point()): Point = out.setToTransform(mat, this)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 operator fun IPoint.get(index: Int) = when (index) {
     0 -> _x; 1 -> _y
     else -> throw IndexOutOfBoundsException("IPoint doesn't have $index component")
 }
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 val IPoint.unit: IPoint get() = this / this.length
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 val IPoint.length: Double get() = hypot(_x, _y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 val IPoint.magnitude: Double get() = hypot(_x, _y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 val IPoint.normalized: IPoint
     get() {
         val imag = 1.0 / magnitude
         return IPoint(_x * imag, _y * imag)
     }
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 val IPoint.mutable: Point get() = Point(_x, _y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 val IPoint.immutable: IPoint get() = IPoint(_x, _y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun IPoint.copy() = IPoint(_x, _y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.setToTransform(mat: IMatrix, p: IPoint): Point = setToTransform(mat, p._x, p._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.setToTransform(mat: IMatrix, x: Double, y: Double): Point = setTo(mat.transformX(x, y), mat.transformY(x, y))
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.setToAdd(a: IPoint, b: IPoint): Point = setTo(a._x + b._x, a._y + b._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.setToSub(a: IPoint, b: IPoint): Point = setTo(a._x - b._x, a._y - b._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.setToMul(a: IPoint, b: IPoint): Point = setTo(a._x * b._x, a._y * b._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.setToMul(a: IPoint, s: Double): Point = setTo(a._x * s, a._y * s)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 inline fun Point.setToMul(a: IPoint, s: Number): Point = setToMul(a, s.toDouble())
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.setToDiv(a: IPoint, b: IPoint): Point = setTo(a._x / b._x, a._y / b._y)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Point.setToDiv(a: IPoint, s: Double): Point = setTo(a._x / s, a._y / s)
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 inline fun Point.setToDiv(a: IPoint, s: Number): Point = setToDiv(a, s.toDouble())
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 operator fun Point.plusAssign(that: IPoint): Unit = run { setTo(this.x + that._x, this.y + that._y) }
 
 data class Point(
@@ -340,7 +340,7 @@ fun Point.asInt(): PointInt = PointInt(this)
 fun PointInt.asDouble(): Point = this.p
 
 val Point.int get() = PointInt(x.toInt(), y.toInt())
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 val IPoint.int get() = PointInt(_x.toInt(), _y.toInt())
 val IPointInt.float get() = IPoint(x.toDouble(), y.toDouble())
 
@@ -355,7 +355,7 @@ fun List<Point>.getPolylineLength(): Double {
 }
 fun List<Point>.bounds(out: Rectangle = Rectangle(), bb: BoundsBuilder = BoundsBuilder()): Rectangle = bb.add(this).getBounds(out)
 
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Iterable<IPoint>.getPolylineLength(): Double {
     var out = 0.0
     var prev: IPoint? = null
@@ -365,5 +365,5 @@ fun Iterable<IPoint>.getPolylineLength(): Double {
     }
     return out
 }
-@Deprecated("Use Point instead")
+//@Deprecated("Use Point instead")
 fun Iterable<IPoint>.bounds(out: Rectangle = Rectangle(), bb: BoundsBuilder = BoundsBuilder()): Rectangle = bb.add(this).getBounds(out)
