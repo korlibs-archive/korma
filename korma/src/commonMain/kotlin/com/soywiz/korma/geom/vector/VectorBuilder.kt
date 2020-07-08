@@ -1,8 +1,10 @@
 package com.soywiz.korma.geom.vector
 
+import com.soywiz.korma.annotations.KorDslMarker
 import com.soywiz.korma.geom.*
 import kotlin.math.*
 
+@KorDslMarker
 interface VectorBuilder {
     val totalPoints: Int
     val lastX: Double
