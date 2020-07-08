@@ -7,18 +7,20 @@ import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.shape.*
 import com.soywiz.korma.segment.*
 
-//const val RAST_FIXED_SCALE = 32 // Important NOTE: Power of two so divisions are >> and remaining &
-const val RAST_FIXED_SCALE = 20
-//const val RAST_FIXED_SCALE_HALF = (RAST_FIXED_SCALE / 2) - 1
-//const val RAST_FIXED_SCALE_HALF = (RAST_FIXED_SCALE / 2)
-const val RAST_FIXED_SCALE_HALF = 0
-
-const val RAST_SMALL_BUCKET_SIZE = 4 * RAST_FIXED_SCALE
-const val RAST_MEDIUM_BUCKET_SIZE = 16 * RAST_FIXED_SCALE
-const val RAST_BIG_BUCKET_SIZE = 64 * RAST_FIXED_SCALE
-
 @KormaExperimental
 open class RastScale {
+    companion object {
+        //internal const val RAST_FIXED_SCALE = 32 // Important NOTE: Power of two so divisions are >> and remaining &
+        internal const val RAST_FIXED_SCALE = 20
+        //internal const val RAST_FIXED_SCALE_HALF = (RAST_FIXED_SCALE / 2) - 1
+        //internal const val RAST_FIXED_SCALE_HALF = (RAST_FIXED_SCALE / 2)
+        internal const val RAST_FIXED_SCALE_HALF = 0
+
+        internal const val RAST_SMALL_BUCKET_SIZE = 4 * RAST_FIXED_SCALE
+        internal const val RAST_MEDIUM_BUCKET_SIZE = 16 * RAST_FIXED_SCALE
+        internal const val RAST_BIG_BUCKET_SIZE = 64 * RAST_FIXED_SCALE
+    }
+
     val sscale get() = RAST_FIXED_SCALE
     val hscale get() = RAST_FIXED_SCALE_HALF
 

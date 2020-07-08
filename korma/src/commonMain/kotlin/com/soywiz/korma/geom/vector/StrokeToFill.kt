@@ -214,8 +214,8 @@ class StrokeToFill {
         stroke: VectorPath,
         lineWidth: Double, joins: LineJoin, startCap: LineCap, endCap: LineCap, miterLimit: Double, outFill: VectorPath
     ) {
-        val scale = RAST_FIXED_SCALE
-        val iscale = 1.0 / RAST_FIXED_SCALE
+        val scale = RastScale.RAST_FIXED_SCALE
+        val iscale = 1.0 / RastScale.RAST_FIXED_SCALE
         set(outFill, (lineWidth * scale).toInt(), startCap, endCap, joins, miterLimit)
         stroke.emitPoints2(
             flush = { close ->
