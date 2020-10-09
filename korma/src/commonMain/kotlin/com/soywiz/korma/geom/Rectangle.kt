@@ -11,8 +11,8 @@ interface IRectangle {
 
     companion object {
         inline operator fun invoke(x: Double, y: Double, width: Double, height: Double): IRectangle = Rectangle(x, y, width, height)
-        @Deprecated("Kotlin/Native boxes inline + Number")
-        inline operator fun invoke(x: Number, y: Number, width: Number, height: Number): IRectangle = Rectangle(x, y, width, height)
+        inline operator fun invoke(x: Float, y: Float, width: Float, height: Float): IRectangle = Rectangle(x, y, width, height)
+        inline operator fun invoke(x: Int, y: Int, width: Int, height: Int): IRectangle = Rectangle(x, y, width, height)
     }
 }
 
@@ -30,6 +30,11 @@ data class Rectangle(
     var x: Double, var y: Double,
     var width: Double, var height: Double
 ) : MutableInterpolable<Rectangle>, Interpolable<Rectangle>, IRectangle, Sizeable {
+    val topLeft get() = Point(left, top)
+    val topRight get() = Point(right, top)
+    val bottomLeft get() = Point(left, bottom)
+    val bottomRight get() = Point(right, bottom)
+
     override val _x: Double get() = x
     override val _y: Double get() = y
     override val _width: Double get() = width
@@ -37,15 +42,14 @@ data class Rectangle(
 
     companion object {
         operator fun invoke(): Rectangle = Rectangle(0.0, 0.0, 0.0, 0.0)
+        operator fun invoke(x: Int, y: Int, width: Int, height: Int): Rectangle = Rectangle(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+        operator fun invoke(x: Float, y: Float, width: Float, height: Float): Rectangle = Rectangle(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
+        operator fun invoke(topLeft: IPoint, size: ISize): Rectangle = Rectangle(topLeft.x, topLeft.y, size.width, size.height)
 
-        inline operator fun invoke(x: Int, y: Int, width: Int, height: Int): Rectangle = Rectangle(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
-        inline fun fromBounds(left: Double, top: Double, right: Double, bottom: Double): Rectangle = Rectangle().setBounds(left, top, right, bottom)
-        inline fun fromBounds(left: Int, top: Int, right: Int, bottom: Int): Rectangle = Rectangle().setBounds(left, top, right, bottom)
-
-        @Deprecated("Kotlin/Native boxes inline + Number")
-        inline operator fun invoke(x: Number, y: Number, width: Number, height: Number): Rectangle = Rectangle(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
-        @Deprecated("Kotlin/Native boxes inline + Number")
-        inline fun fromBounds(left: Number, top: Number, right: Number, bottom: Number): Rectangle = Rectangle().setBounds(left, top, right, bottom)
+        fun fromBounds(left: Double, top: Double, right: Double, bottom: Double): Rectangle = Rectangle().setBounds(left, top, right, bottom)
+        fun fromBounds(left: Int, top: Int, right: Int, bottom: Int): Rectangle = Rectangle().setBounds(left, top, right, bottom)
+        fun fromBounds(left: Float, top: Float, right: Float, bottom: Float): Rectangle = Rectangle().setBounds(left, top, right, bottom)
+        fun fromBounds(topLeft: Point, bottomRight: Point): Rectangle = Rectangle().setBounds(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y)
 
         fun isContainedIn(a: Rectangle, b: Rectangle): Boolean = a.x >= b.x && a.y >= b.y && a.x + a.width <= b.x + b.width && a.y + a.height <= b.y + b.height
     }
@@ -78,16 +82,16 @@ data class Rectangle(
     fun setBounds(left: Float, top: Float, right: Float, bottom: Float) = setBounds(left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble())
 
     operator fun times(scale: Double) = Rectangle(x * scale, y * scale, width * scale, height * scale)
-    operator fun div(scale: Double) = Rectangle(x / scale, y / scale, width / scale, height / scale)
-
     operator fun times(scale: Float) = this * scale.toDouble()
-    operator fun div(scale: Float) = this / scale.toDouble()
-
     operator fun times(scale: Int) = this * scale.toDouble()
+
+    operator fun div(scale: Double) = Rectangle(x / scale, y / scale, width / scale, height / scale)
+    operator fun div(scale: Float) = this / scale.toDouble()
     operator fun div(scale: Int) = this / scale.toDouble()
 
     operator fun contains(that: Rectangle) = isContainedIn(that, this)
     operator fun contains(that: Point) = contains(that.x, that.y)
+    operator fun contains(that: IPoint) = contains(that.x, that.y)
     fun contains(x: Double, y: Double) = (x >= left && x < right) && (y >= top && y < bottom)
     fun contains(x: Float, y: Float) = contains(x.toDouble(), y.toDouble())
     fun contains(x: Int, y: Int) = contains(x.toDouble(), y.toDouble())
@@ -107,12 +111,11 @@ data class Rectangle(
     ) else null
 
     fun displaced(dx: Double, dy: Double) = Rectangle(this.x + dx, this.y + dy, width, height)
-    fun displace(dx: Double, dy: Double) = setTo(this.x + dx, this.y + dy, this.width, this.height)
-
     fun displaced(dx: Float, dy: Float) = displaced(dx.toDouble(), dy.toDouble())
-    fun displace(dx: Float, dy: Float) = displace(dx.toDouble(), dy.toDouble())
-
     fun displaced(dx: Int, dy: Int) = displaced(dx.toDouble(), dy.toDouble())
+
+    fun displace(dx: Double, dy: Double) = setTo(this.x + dx, this.y + dy, this.width, this.height)
+    fun displace(dx: Float, dy: Float) = displace(dx.toDouble(), dy.toDouble())
     fun displace(dx: Int, dy: Int) = displace(dx.toDouble(), dy.toDouble())
 
     fun place(item: Size, anchor: Anchor, scale: ScaleMode, out: Rectangle = Rectangle()): Rectangle =
@@ -145,11 +148,8 @@ data class Rectangle(
     )
 
     //override fun toString(): String = "Rectangle([${left.niceStr}, ${top.niceStr}]-[${right.niceStr}, ${bottom.niceStr}])"
-    override fun toString(): String =
-        "Rectangle(x=${x.niceStr}, y=${y.niceStr}, width=${width.niceStr}, height=${height.niceStr})"
-
-    fun toStringBounds(): String =
-        "Rectangle([${left.niceStr},${top.niceStr}]-[${right.niceStr},${bottom.niceStr}])"
+    override fun toString(): String = "Rectangle(x=${x.niceStr}, y=${y.niceStr}, width=${width.niceStr}, height=${height.niceStr})"
+    fun toStringBounds(): String = "Rectangle([${left.niceStr},${top.niceStr}]-[${right.niceStr},${bottom.niceStr}])"
 
     override fun interpolateWith(ratio: Double, other: Rectangle): Rectangle =
         Rectangle().setToInterpolated(ratio, this, other)
@@ -167,28 +167,10 @@ data class Rectangle(
     fun toInt() = RectangleInt(x, y, width, height)
 }
 
-@Deprecated("Use Point instead")
-operator fun Rectangle.contains(that: IPoint) = contains(that.x, that.y)
-
 inline fun Rectangle.setTo(x: Number, y: Number, width: Number, height: Number) =
     this.setTo(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 
 inline fun Rectangle.setBounds(left: Number, top: Number, right: Number, bottom: Number) = setBounds(left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble())
-
-@Deprecated("Kotlin/Native boxes Number in inline")
-inline operator fun Rectangle.times(scale: Number) = this * scale.toDouble()
-@Deprecated("Kotlin/Native boxes Number in inline")
-inline operator fun Rectangle.div(scale: Number) = this / scale.toDouble()
-
-@Deprecated("Kotlin/Native boxes Number in inline")
-inline fun Rectangle.contains(x: Number, y: Number) = contains(x.toDouble(), y.toDouble())
-
-@Deprecated("Kotlin/Native boxes Number in inline")
-inline fun Rectangle.displaced(dx: Number, dy: Number) = displaced(dx.toDouble(), dy.toDouble())
-@Deprecated("Kotlin/Native boxes Number in inline")
-inline fun Rectangle.displace(dx: Number, dy: Number) = displace(dx.toDouble(), dy.toDouble())
-@Deprecated("Kotlin/Native boxes Number in inline")
-inline fun Rectangle.inflate(dx: Number, dy: Number) = inflate(dx.toDouble(), dy.toDouble())
 
 //////////// INT
 
@@ -200,8 +182,8 @@ interface IRectangleInt {
 
     companion object {
         operator fun invoke(x: Int, y: Int, width: Int, height: Int): IRectangleInt = RectangleInt(x, y, width, height)
-        @Deprecated("Kotlin/Native boxes Number in inline")
-        inline operator fun invoke(x: Number, y: Number, width: Number, height: Number): IRectangleInt = RectangleInt(x.toInt(), y.toInt(), width.toInt(), height.toInt())
+        operator fun invoke(x: Float, y: Float, width: Float, height: Float): IRectangleInt = RectangleInt(x.toInt(), y.toInt(), width.toInt(), height.toInt())
+        operator fun invoke(x: Double, y: Double, width: Double, height: Double): IRectangleInt = RectangleInt(x.toInt(), y.toInt(), width.toInt(), height.toInt())
     }
 }
 
@@ -246,8 +228,8 @@ inline class RectangleInt(val rect: Rectangle) : IRectangleInt {
     companion object {
         operator fun invoke() = RectangleInt(Rectangle())
         operator fun invoke(x: Int, y: Int, width: Int, height: Int) = RectangleInt(Rectangle(x, y, width, height))
-        @Deprecated("Kotlin/Native boxes Number in inline")
-        inline operator fun invoke(x: Number, y: Number, width: Number, height: Number) = RectangleInt(Rectangle(x, y, width, height))
+        operator fun invoke(x: Float, y: Float, width: Float, height: Float) = RectangleInt(Rectangle(x, y, width, height))
+        operator fun invoke(x: Double, y: Double, width: Double, height: Double) = RectangleInt(Rectangle(x, y, width, height))
 
         fun fromBounds(left: Int, top: Int, right: Int, bottom: Int): RectangleInt =
             RectangleInt(left, top, right - left, bottom - top)
@@ -271,6 +253,12 @@ fun RectangleInt.setSize(width: Int, height: Int) = this.apply {
     this.width = width
     this.height = height
 }
+
+fun RectangleInt.getPosition(out: PointInt = PointInt()): PointInt = out.setTo(x, y)
+fun RectangleInt.getSize(out: SizeInt = SizeInt()): SizeInt = out.setTo(width, height)
+
+val RectangleInt.position get() = getPosition()
+val RectangleInt.size get() = getSize()
 
 fun RectangleInt.setBoundsTo(left: Int, top: Int, right: Int, bottom: Int) = setTo(left, top, right - left, bottom - top)
 

@@ -184,8 +184,6 @@ class PolygonScanline : RastScale() {
     fun add(x: Double, y: Double, move: Boolean) = if (move) moveTo(x, y) else lineTo(x, y)
     fun add(x: Float, y: Float, move: Boolean) = add(x.toDouble(), y.toDouble(), move)
     fun add(x: Int, y: Int, move: Boolean) = add(x.toDouble(), y.toDouble(), move)
-    @Deprecated("Kotlin/Native boxes inline + Number")
-    inline fun add(x: Number, y: Number, move: Boolean) = add(x.toDouble(), y.toDouble(), move)
 
     internal inline fun forEachActiveEdgeAtY(y: Int, block: (Edge) -> Unit): Int {
         var edgesChecked = 0
@@ -319,8 +317,8 @@ class PolygonScanline : RastScale() {
     private object IntArrayListSort : SortOps<XWithWind>() {
         override fun compare(subject: XWithWind, l: Int, r: Int): Int = subject.x.getAt(l).compareTo(subject.x.getAt(r))
         override fun swap(subject: XWithWind, indexL: Int, indexR: Int) {
-            subject.x.swapIndices(indexL, indexR)
-            subject.w.swapIndices(indexL, indexR)
+            subject.x.swap(indexL, indexR)
+            subject.w.swap(indexL, indexR)
         }
     }
 }

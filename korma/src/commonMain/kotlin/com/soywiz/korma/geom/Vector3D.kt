@@ -27,9 +27,6 @@ class Vector3D {
         operator fun invoke(x: Double, y: Double, z: Double, w: Double = 1.0): Vector3D = Vector3D().setTo(x, y, z, w)
         operator fun invoke(x: Int, y: Int, z: Int, w: Int = 1): Vector3D = Vector3D().setTo(x, y, z, w)
 
-        @Deprecated("Kotlin/Native boxes Number in inline")
-        inline operator fun invoke(x: Number, y: Number, z: Number, w: Number = 1f): Vector3D = Vector3D().setTo(x, y, z, w)
-
         fun length(x: Double, y: Double, z: Double, w: Double): Double = sqrt(lengthSq(x, y, z, w))
         fun length(x: Double, y: Double, z: Double): Double = sqrt(lengthSq(x, y, z))
         fun length(x: Float, y: Float, z: Float, w: Float): Float = sqrt(lengthSq(x, y, z, w))
@@ -39,16 +36,6 @@ class Vector3D {
         fun lengthSq(x: Double, y: Double, z: Double): Double = x * x + y * y + z * z
         fun lengthSq(x: Float, y: Float, z: Float, w: Float): Float = x * x + y * y + z * z + w * w
         fun lengthSq(x: Float, y: Float, z: Float): Float = x * x + y * y + z * z
-
-        @Deprecated("Kotlin/Native boxes Number in inline")
-        inline fun length(x: Number, y: Number, z: Number, w: Number) = length(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
-        @Deprecated("Kotlin/Native boxes Number in inline")
-        inline fun lengthSq(x: Number, y: Number, z: Number, w: Number) = lengthSq(x.toDouble(), y.toDouble(), z.toDouble(), w.toDouble())
-        @Deprecated("Kotlin/Native boxes Number in inline")
-        inline fun length(x: Number, y: Number, z: Number) = length(x.toDouble(), y.toDouble(), z.toDouble())
-        @Deprecated("Kotlin/Native boxes Number in inline")
-        inline fun lengthSq(x: Number, y: Number, z: Number) = lengthSq(x.toDouble(), y.toDouble(), z.toDouble())
-
     }
 
     fun copyFrom(other: Vector3D) = setTo(other.x, other.y, other.z, other.w)
@@ -62,19 +49,37 @@ class Vector3D {
     fun setTo(x: Int, y: Int, z: Int): Vector3D = setTo(x, y, z, 1)
 
     inline fun setToFunc(func: (index: Int) -> Float): Vector3D = setTo(func(0), func(1), func(2), func(3))
+    inline fun setToFunc(l: Vector3D, r: Vector3D, func: (l: Float, r: Float) -> Float) = setTo(
+        func(l.x, r.x),
+        func(l.y, r.y),
+        func(l.z, r.z),
+        func(l.w, r.w)
+    )
+    fun setToInterpolated(left: Vector3D, right: Vector3D, t: Double): Vector3D = setToFunc { t.interpolate(left[it], right[it]) }
+
+    fun scale(scale: Float) = this.setTo(this.x * scale, this.y * scale, this.z * scale, this.w * scale)
+    fun scale(scale: Int) = scale(scale.toFloat())
+    fun scale(scale: Double) = scale(scale.toFloat())
 
     fun transform(mat: Matrix3D) = mat.transform(this, this)
 
     fun normalize(vector: Vector3D = this): Vector3D = this.apply {
         val norm = 1.0 / vector.length3
-        setTo(vector.x * norm, vector.y * norm, vector.z * norm, 1)
+        setTo(vector.x * norm, vector.y * norm, vector.z * norm, 1.0)
     }
 
     fun normalized(out: Vector3D = Vector3D()): Vector3D = out.copyFrom(this).normalize()
 
-    @Deprecated("Kotlin/Native boxes Number in inline")
-    inline fun setTo(x: Number, y: Number, z: Number, w: Number): Vector3D = setTo(x.toFloat(), y.toFloat(), z.toFloat(), w.toFloat())
+    fun dot(v2: Vector3D): Float = this.x*v2.x + this.y*v2.y + this.z*v2.y
 
+    fun sub(l: Vector3D, r: Vector3D): Vector3D = setTo(l.x - r.x, l.y - r.y, l.z - r.z, l.w - r.w)
+    fun add(l: Vector3D, r: Vector3D): Vector3D = setTo(l.x + r.x, l.y + r.y, l.z + r.z, l.w + r.w)
+    fun cross(a: Vector3D, b: Vector3D): Vector3D = setTo(
+        (a.y * b.z - a.z * b.y),
+        (a.z * b.x - a.x * b.z),
+        (a.x * b.y - a.y * b.x),
+        1f
+    )
     override fun equals(other: Any?): Boolean = (other is Vector3D) && almostEquals(this.x, other.x) && almostEquals(this.y, other.y) && almostEquals(this.z, other.z) && almostEquals(this.w, other.w)
     override fun hashCode(): Int = data.contentHashCode()
 
@@ -89,16 +94,6 @@ inline class IntVector3(val v: Vector3D) {
 }
 
 fun Vector3D.asIntVector3D() = IntVector3(this)
-fun Vector3D.setToInterpolated(left: Vector3D, right: Vector3D, t: Double): Vector3D = setToFunc { t.interpolate(left[it], right[it]) }
-
-fun Vector3D.scale(scale: Float) = this.setTo(this.x * scale, this.y * scale, this.z * scale, this.w * scale)
-fun Vector3D.scale(scale: Int) = scale(scale.toFloat())
-fun Vector3D.scale(scale: Double) = scale(scale.toFloat())
-
-@Deprecated("Kotlin/Native boxes Number in inline")
-inline fun Vector3D.scale(scale: Number) = scale(scale.toFloat())
-@Deprecated("Kotlin/Native boxes Number in inline")
-inline fun Vector3D.setTo(x: Number, y: Number, z: Number) = setTo(x.toFloat(), y.toFloat(), z.toFloat(), 1f)
 
 typealias Position3D = Vector3D
 typealias Scale3D = Vector3D

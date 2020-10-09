@@ -9,6 +9,12 @@ import com.soywiz.korma.geom.shape.*
 import com.soywiz.korma.internal.niceStr
 import kotlin.native.concurrent.ThreadLocal
 
+// @TODO: ThreadLocal on JVM
+@ThreadLocal
+private val tempMatrix: Matrix = Matrix()
+@ThreadLocal
+private val identityMatrix: Matrix = Matrix()
+
 open class VectorPath(
     val commands: IntArrayList = IntArrayList(),
     val data: DoubleArrayList = DoubleArrayList(),
@@ -19,6 +25,8 @@ open class VectorPath(
     open fun clone(): VectorPath = VectorPath(IntArrayList(commands), DoubleArrayList(data), winding)
 
     companion object {
+        private val identityMatrix = Matrix()
+
         inline operator fun invoke(winding: Winding = Winding.EVEN_ODD, callback: VectorPath.() -> Unit): VectorPath = VectorPath(winding = winding).apply(callback)
 
         fun intersects(left: VectorPath, leftTransform: Matrix, right: VectorPath, rightTransform: Matrix): Boolean =
@@ -226,15 +234,14 @@ open class VectorPath(
         return points
     }
 
-    private val p1 = Point()
-    private val p2 = Point()
-
     // http://erich.realtimerendering.com/ptinpoly/
     // http://stackoverflow.com/questions/217578/how-can-i-determine-whether-a-2d-point-is-within-a-polygon/2922778#2922778
     // https://www.particleincell.com/2013/cubic-line-intersection/
     // I run a semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
     // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
     fun containsPoint(x: Double, y: Double): Boolean = containsPoint(x, y, this.winding)
+    fun containsPoint(x: Int, y: Int): Boolean = containsPoint(x.toDouble(), y.toDouble())
+    fun containsPoint(x: Float, y: Float): Boolean = containsPoint(x.toDouble(), y.toDouble())
 
     @OptIn(KormaExperimental::class)
     private val scanline by lazy { PolygonScanline().also {
@@ -249,12 +256,8 @@ open class VectorPath(
         }
     }
     fun containsPoint(x: Double, y: Double, winding: Winding): Boolean = ensureScanline().containsPoint(x, y, winding)
-
-    @ThreadLocal
-    private val tempMatrix: Matrix = Matrix()
-
-    @ThreadLocal
-    private val identityMatrix: Matrix = Matrix()
+    fun containsPoint(x: Int, y: Int, winding: Winding): Boolean = containsPoint(x.toDouble(), y.toDouble(), winding)
+    fun containsPoint(x: Float, y: Float, winding: Winding): Boolean = containsPoint(x.toDouble(), y.toDouble(), winding)
 
     fun intersectsWith(right: VectorPath): Boolean = intersectsWith(identityMatrix, right, identityMatrix)
 
@@ -284,21 +287,22 @@ open class VectorPath(
         return false
     }
 
-    @Deprecated("Use containsPoint instead that work with both windings")
-    fun numberOfIntersections(x: Double, y: Double): Int {
-        val testx = x
-        val testy = y
-
-        var intersections = 0
-
-        visitEdges(
-            line = { x0, y0, x1, y1 -> intersections += HorizontalLine.intersectionsWithLine(testx, testy, x0, y0, x1, y1) },
-            quad = { x0, y0, x1, y1, x2, y2 -> intersections += HorizontalLine.interesectionsWithQuadBezier(testx, testy, x0, y0, x1, y1, x2, y2, p1, p2) },
-            cubic = { x0, y0, x1, y1, x2, y2, x3, y3 -> intersections += HorizontalLine.intersectionsWithCubicBezier(testx, testy, x0, y0, x1, y1, x2, y2, x3, y3, p1, p2) },
-            close = {}
-        )
-        return intersections
-    }
+    //private val p1 = Point()
+    //private val p2 = Point()
+    //fun numberOfIntersections(x: Double, y: Double): Int {
+    //    val testx = x
+    //    val testy = y
+    //    var intersections = 0
+    //    visitEdges(
+    //        line = { x0, y0, x1, y1 -> intersections += HorizontalLine.intersectionsWithLine(testx, testy, x0, y0, x1, y1) },
+    //        quad = { x0, y0, x1, y1, x2, y2 -> intersections += HorizontalLine.interesectionsWithQuadBezier(testx, testy, x0, y0, x1, y1, x2, y2, p1, p2) },
+    //        cubic = { x0, y0, x1, y1, x2, y2, x3, y3 -> intersections += HorizontalLine.intersectionsWithCubicBezier(testx, testy, x0, y0, x1, y1, x2, y2, x3, y3, p1, p2) },
+    //        close = {}
+    //    )
+    //    return intersections
+    //}
+    //fun numberOfIntersections(x: Float, y: Float): Int = numberOfIntersections(x.toDouble(), y.toDouble())
+    //fun numberOfIntersections(x: Int, y: Int): Int = numberOfIntersections(x.toDouble(), y.toDouble())
 
     class Stats {
         val stats = IntArray(5)
@@ -327,26 +331,22 @@ open class VectorPath(
         const val CLOSE = 4
     }
 
-    @Deprecated("")
-    // Can cause problems because we are not applying transforms at all that might be applied by the VectorBuilder
-    fun write(path: VectorPath) {
+    fun write(path: VectorPath, transform: Matrix = identityMatrix) {
         this.commands += path.commands
-        this.data += path.data
-        this.lastX = path.lastX
-        this.lastY = path.lastY
-        version++
-    }
-
-    fun write(path: VectorPath, transform: Matrix) {
-        this.commands += path.commands
-        for (n in 0 until path.data.size step 2) {
-            val x = path.data.getAt(n + 0)
-            val y = path.data.getAt(n + 1)
-            this.data += transform.transformX(x, y)
-            this.data += transform.transformY(x, y)
+        if (transform.isIdentity()) {
+            this.data += path.data
+            this.lastX = path.lastX
+            this.lastY = path.lastY
+        } else {
+            for (n in 0 until path.data.size step 2) {
+                val x = path.data.getAt(n + 0)
+                val y = path.data.getAt(n + 1)
+                this.data += transform.transformX(x, y)
+                this.data += transform.transformY(x, y)
+            }
+            this.lastX = transform.transformX(path.lastX, path.lastY)
+            this.lastY = transform.transformY(path.lastX, path.lastY)
         }
-        this.lastX = transform.transformX(path.lastX, path.lastY)
-        this.lastY = transform.transformY(path.lastX, path.lastY)
         version++
     }
 
@@ -375,18 +375,6 @@ fun VectorBuilder.write(path: VectorPath) {
         close = { close() }
     )
 }
-
-inline fun VectorPath.containsPoint(x: Int, y: Int): Boolean = containsPoint(x.toDouble(), y.toDouble())
-inline fun VectorPath.containsPoint(x: Int, y: Int, winding: Winding): Boolean = containsPoint(x.toDouble(), y.toDouble(), winding)
-inline fun VectorPath.containsPoint(x: Float, y: Float): Boolean = containsPoint(x.toDouble(), y.toDouble())
-inline fun VectorPath.containsPoint(x: Float, y: Float, winding: Winding): Boolean = containsPoint(x.toDouble(), y.toDouble(), winding)
-
-@Deprecated("Kotlin/Native boxes inline + Number")
-inline fun VectorPath.containsPoint(x: Number, y: Number): Boolean = containsPoint(x.toDouble(), y.toDouble())
-@Deprecated("Kotlin/Native boxes inline + Number")
-inline fun VectorPath.containsPoint(x: Number, y: Number, winding: Winding): Boolean = containsPoint(x.toDouble(), y.toDouble(), winding)
-@Deprecated("Use containsPoint instead that work with both windings")
-inline fun VectorPath.numberOfIntersections(x: Number, y: Number): Int = numberOfIntersections(x.toDouble(), y.toDouble())
 
 fun BoundsBuilder.add(path: VectorPath, transform: Matrix) {
     val bb = this
