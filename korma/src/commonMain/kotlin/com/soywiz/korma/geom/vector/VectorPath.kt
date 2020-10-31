@@ -15,6 +15,7 @@ private val tempMatrix: Matrix = Matrix()
 @ThreadLocal
 private val identityMatrix: Matrix = Matrix()
 
+@OptIn(KormaExperimental::class)
 open class VectorPath(
     val commands: IntArrayList = IntArrayList(),
     val data: DoubleArrayList = DoubleArrayList(),
@@ -53,35 +54,11 @@ open class VectorPath(
         var n = 0
         commands.fastForEach { cmd ->
             when (cmd) {
-                Command.MOVE_TO -> {
-                    val x = data.getAt(n++)
-                    val y = data.getAt(n++)
-                    moveTo(x, y)
-                }
-                Command.LINE_TO -> {
-                    val x = data.getAt(n++)
-                    val y = data.getAt(n++)
-                    lineTo(x, y)
-                }
-                Command.QUAD_TO -> {
-                    val x1 = data.getAt(n++)
-                    val y1 = data.getAt(n++)
-                    val x2 = data.getAt(n++)
-                    val y2 = data.getAt(n++)
-                    quadTo(x1, y1, x2, y2)
-                }
-                Command.CUBIC_TO -> {
-                    val x1 = data.getAt(n++)
-                    val y1 = data.getAt(n++)
-                    val x2 = data.getAt(n++)
-                    val y2 = data.getAt(n++)
-                    val x3 = data.getAt(n++)
-                    val y3 = data.getAt(n++)
-                    cubicTo(x1, y1, x2, y2, x3, y3)
-                }
-                Command.CLOSE -> {
-                    close()
-                }
+                Command.MOVE_TO -> moveTo(data[n++], data[n++])
+                Command.LINE_TO -> lineTo(data[n++], data[n++])
+                Command.QUAD_TO -> quadTo(data[n++], data[n++], data[n++], data[n++])
+                Command.CUBIC_TO -> cubicTo(data[n++], data[n++], data[n++], data[n++], data[n++], data[n++])
+                Command.CLOSE -> close()
             }
         }
     }
@@ -135,8 +112,7 @@ open class VectorPath(
     fun clear() {
         commands.clear()
         data.clear()
-        lastX = 0.0
-        lastY = 0.0
+        lastXY(0.0, 0.0)
         version = 0
         scanline.version = version - 1  // ensure scanline will be updated after this "clear" operation
     }
@@ -149,61 +125,51 @@ open class VectorPath(
     fun appendFrom(other: VectorPath) {
         this.commands.add(other.commands)
         this.data.add(other.data)
-        this.lastX = other.lastX
-        this.lastY = other.lastY
+        lastXY(other.lastX, other.lastY)
         version++
     }
 
     override var lastX = 0.0
     override var lastY = 0.0
 
+    fun lastXY(x: Double, y: Double) {
+        this.lastX = x
+        this.lastY = y
+    }
+
     override fun moveTo(x: Double, y: Double) {
-        commands += Command.MOVE_TO
-        data += x
-        data += y
-        lastX = x
-        lastY = y
+        commands.add(Command.MOVE_TO)
+        data.add(x, y)
+        lastXY(x, y)
         version++
     }
 
     override fun lineTo(x: Double, y: Double) {
         ensureMoveTo(x, y)
-        commands += Command.LINE_TO
-        data += x
-        data += y
-        lastX = x
-        lastY = y
+        commands.add(Command.LINE_TO)
+        data.add(x, y)
+        lastXY(x, y)
         version++
     }
 
     override fun quadTo(cx: Double, cy: Double, ax: Double, ay: Double) {
         ensureMoveTo(cx, cy)
-        commands += Command.QUAD_TO
-        data += cx
-        data += cy
-        data += ax
-        data += ay
-        lastX = ax
-        lastY = ay
+        commands.add(Command.QUAD_TO)
+        data.add(cx, cy, ax, ay)
+        lastXY(ax, ay)
         version++
     }
 
     override fun cubicTo(cx1: Double, cy1: Double, cx2: Double, cy2: Double, ax: Double, ay: Double) {
         ensureMoveTo(cx1, cy1)
-        commands += Command.CUBIC_TO
-        data += cx1
-        data += cy1
-        data += cx2
-        data += cy2
-        data += ax
-        data += ay
-        lastX = ax
-        lastY = ay
+        commands.add(Command.CUBIC_TO)
+        data.add(cx1, cy1, cx2, cy2, ax, ay)
+        lastXY(ax, ay)
         version++
     }
 
     override fun close() {
-        commands += Command.CLOSE
+        commands.add(Command.CLOSE)
         version++
     }
 
@@ -243,7 +209,6 @@ open class VectorPath(
     fun containsPoint(x: Int, y: Int): Boolean = containsPoint(x.toDouble(), y.toDouble())
     fun containsPoint(x: Float, y: Float): Boolean = containsPoint(x.toDouble(), y.toDouble())
 
-    @OptIn(KormaExperimental::class)
     private val scanline by lazy { PolygonScanline().also {
         it.add(this)
         it.version = this.version
@@ -335,17 +300,19 @@ open class VectorPath(
         this.commands += path.commands
         if (transform.isIdentity()) {
             this.data += path.data
-            this.lastX = path.lastX
-            this.lastY = path.lastY
+            lastXY(path.lastX, path.lastY)
         } else {
+            @Suppress("ReplaceManualRangeWithIndicesCalls")
             for (n in 0 until path.data.size step 2) {
-                val x = path.data.getAt(n + 0)
-                val y = path.data.getAt(n + 1)
+                val x = path.data[n + 0]
+                val y = path.data[n + 1]
                 this.data += transform.transformX(x, y)
                 this.data += transform.transformY(x, y)
             }
-            this.lastX = transform.transformX(path.lastX, path.lastY)
-            this.lastY = transform.transformY(path.lastX, path.lastY)
+            lastXY(
+                transform.transformX(path.lastX, path.lastY),
+                transform.transformY(path.lastX, path.lastY)
+            )
         }
         version++
     }
@@ -364,6 +331,10 @@ open class VectorPath(
         )
     }.trimEnd()
     override fun toString(): String = "VectorPath(${toSvgString()})"
+}
+
+fun VectorBuilder.path(path: VectorPath) {
+    write(path)
 }
 
 fun VectorBuilder.write(path: VectorPath) {
@@ -417,6 +388,7 @@ fun BoundsBuilder.add(path: VectorPath) {
 }
 
 fun VectorPath.applyTransform(m: Matrix): VectorPath {
+    @Suppress("ReplaceManualRangeWithIndicesCalls")
     for (n in 0 until data.size step 2) {
         val x = data.getAt(n + 0)
         val y = data.getAt(n + 1)

@@ -25,6 +25,30 @@ data class Matrix(
         operator fun invoke(m: Matrix, out: Matrix = Matrix()): Matrix = out.copyFrom(m)
     }
 
+    var af: Float
+        get() = a.toFloat()
+        set(value) { a = value.toDouble() }
+
+    var bf: Float
+        get() = b.toFloat()
+        set(value) { b = value.toDouble() }
+
+    var cf: Float
+        get() = c.toFloat()
+        set(value) { c = value.toDouble() }
+
+    var df: Float
+        get() = d.toFloat()
+        set(value) { d = value.toDouble() }
+
+    var txf: Float
+        get() = tx.toFloat()
+        set(value) { tx = value.toDouble() }
+
+    var tyf: Float
+        get() = ty.toFloat()
+        set(value) { ty = value.toDouble() }
+
     enum class Type(val id: Int, val hasRotation: Boolean, val hasScale: Boolean, val hasTranslation: Boolean) {
         IDENTITY(1, hasRotation = false, hasScale = false, hasTranslation = false),
         TRANSLATE(2, hasRotation = false, hasScale = false, hasTranslation = true),
@@ -149,7 +173,16 @@ data class Matrix(
     )
 
     /** Transform point without translation */
-    fun deltaTransformPoint(point: IPoint) = IPoint(point.x * a + point.y * c, point.x * b + point.y * d)
+    fun deltaTransformPoint(point: IPoint, out: Point = Point()) = deltaTransformPoint(point.x, point.y, out)
+    fun deltaTransformPoint(x: Float, y: Float, out: Point = Point()): Point = deltaTransformPoint(x.toDouble(), y.toDouble(), out)
+    fun deltaTransformPoint(x: Double, y: Double, out: Point = Point()): Point {
+        out.x = deltaTransformX(x, y)
+        out.y = deltaTransformY(x, y)
+        return out
+    }
+
+    fun deltaTransformX(x: Double, y: Double): Double = (x * a) + (y * c)
+    fun deltaTransformY(x: Double, y: Double): Double = (x * b) + (y * d)
 
     fun identity() = setTo(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
 
@@ -173,6 +206,8 @@ data class Matrix(
 
         return this
     }
+
+    fun concat(value: Matrix): Matrix = this.multiply(this, value)
 
     fun inverted(out: Matrix = Matrix()) = out.invert(this)
 
@@ -234,12 +269,87 @@ data class Matrix(
     fun transformYf(px: Float, py: Float): Float = transformY(px.toDouble(), py.toDouble()).toFloat()
     fun transformYf(px: Int, py: Int): Float = transformY(px.toDouble(), py.toDouble()).toFloat()
 
+    @Suppress("DuplicatedCode")
+    fun transformRectangle(rectangle: Rectangle, delta: Boolean = false): Unit {
+        val a = this.af
+        val b = this.bf
+        val c = this.cf
+        val d = this.df
+        val tx = if (delta) 0f else this.txf
+        val ty = if (delta) 0f else this.tyf
+
+        val x = rectangle.x
+        val y = rectangle.y
+        val xMax = x + rectangle.width
+        val yMax = y + rectangle.height
+
+        var x0 = a * x + c * y + tx
+        var y0 = b * x + d * y + ty
+        var x1 = a * xMax + c * y + tx
+        var y1 = b * xMax + d * y + ty
+        var x2 = a * xMax + c * yMax + tx
+        var y2 = b * xMax + d * yMax + ty
+        var x3 = a * x + c * yMax + tx
+        var y3 = b * x + d * yMax + ty
+
+        var tmp = 0.0
+
+        if (x0 > x1) {
+            tmp = x0
+            x0 = x1
+            x1 = tmp
+        }
+        if (x2 > x3) {
+            tmp = x2
+            x2 = x3
+            x3 = tmp
+        }
+
+        rectangle.x = floor(if (x0 < x2) x0 else x2)
+        rectangle.width = ceil((if (x1 > x3) x1 else x3) - rectangle.x)
+
+        if (y0 > y1) {
+            tmp = y0
+            y0 = y1
+            y1 = tmp
+        }
+        if (y2 > y3) {
+            tmp = y2
+            y2 = y3
+            y3 = tmp
+        }
+
+        rectangle.y = floor(if (y0 < y2) y0 else y2)
+        rectangle.height = ceil((if (y1 > y3) y1 else y3) - rectangle.y)
+    }
+
+
+
+    fun copyFromArray(value: FloatArray, offset: Int = 0): Matrix = setTo(
+        value[offset + 0], value[offset + 1], value[offset + 2],
+        value[offset + 3], value[offset + 4], value[offset + 5]
+    )
+
+    fun copyFromArray(value: DoubleArray, offset: Int = 0): Matrix = setTo(
+        value[offset + 0].toFloat(), value[offset + 1].toFloat(), value[offset + 2].toFloat(),
+        value[offset + 3].toFloat(), value[offset + 4].toFloat(), value[offset + 5].toFloat()
+    )
+
     data class Transform(
-        var x: Double = 0.0, var y: Double = 0.0,
+        override var x: Double = 0.0, override var y: Double = 0.0,
         var scaleX: Double = 1.0, var scaleY: Double = 1.0,
         var skewX: Angle = 0.radians, var skewY: Angle = 0.radians,
         var rotation: Angle = 0.radians
-    ) : MutableInterpolable<Transform>, Interpolable<Transform> {
+    ) : MutableInterpolable<Transform>, Interpolable<Transform>, XY, XYf {
+
+        override var xf: Float
+            get() = x.toFloat()
+            set(value) { x = value.toDouble() }
+
+        override var yf: Float
+            get() = y.toFloat()
+            set(value) { y = value.toDouble() }
+
         val scaleAvg get() = (scaleX + scaleY) * 0.5
 
         override fun interpolateWith(ratio: Double, other: Transform): Transform = Transform().setToInterpolated(ratio, this, other)
@@ -307,6 +417,26 @@ data class Matrix(
         }
         fun setTo(x: Float, y: Float, scaleX: Float, scaleY: Float, rotation: Angle, skewX: Angle, skewY: Angle): Transform =
             setTo(x.toDouble(), y.toDouble(), scaleX.toDouble(), scaleY.toDouble(), rotation, skewX, skewY)
+
+        fun add(value: Transform): Transform = setTo(
+            x + value.x,
+            y + value.y,
+            scaleX * value.scaleX,
+            scaleY * value.scaleY,
+            rotation + value.rotation,
+            skewX + value.skewX,
+            skewY + value.skewY,
+        )
+
+        fun minus(value: Transform): Transform = setTo(
+            x - value.x,
+            y - value.y,
+            scaleX / value.scaleX,
+            scaleY / value.scaleY,
+            rotation - value.rotation,
+            skewX - value.skewX,
+            skewY - value.skewY,
+        )
 
         fun clone() = Transform().copyFrom(this)
     }
