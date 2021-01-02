@@ -129,12 +129,12 @@ data class Rectangle(
         return out.setTo(x, y, ow, oh)
     }
 
-    fun inflate(dx: Double, dy: Double) {
+    fun inflate(dx: Double, dy: Double = dx) {
         x -= dx; width += 2 * dx
         y -= dy; height += 2 * dy
     }
-    fun inflate(dx: Float, dy: Float) = inflate(dx.toDouble(), dy.toDouble())
-    fun inflate(dx: Int, dy: Int) = inflate(dx.toDouble(), dy.toDouble())
+    fun inflate(dx: Float, dy: Float = dx) = inflate(dx.toDouble(), dy.toDouble())
+    fun inflate(dx: Int, dy: Int = dx) = inflate(dx.toDouble(), dy.toDouble())
 
     fun clear() = setTo(0.0, 0.0, 0.0, 0.0)
 
