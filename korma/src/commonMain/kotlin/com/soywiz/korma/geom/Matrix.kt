@@ -177,17 +177,6 @@ data class Matrix(
         l.tx * r.b + l.ty * r.d + r.ty
     )
 
-    @JvmName("multiplyNullable")
-    fun multiply(l: Matrix?, r: Matrix?): Matrix {
-        when {
-            l != null && r != null -> multiply(l, r)
-            l != null -> copyFrom(l)
-            r != null -> copyFrom(r)
-            else -> identity()
-        }
-        return this
-    }
-
     /** Transform point without translation */
     fun deltaTransformPoint(point: IPoint, out: Point = Point()) = deltaTransformPoint(point.x, point.y, out)
     fun deltaTransformPoint(x: Float, y: Float, out: Point = Point()): Point = deltaTransformPoint(x.toDouble(), y.toDouble(), out)
@@ -496,4 +485,3 @@ data class Matrix(
 
     override fun toString(): String = "Matrix(a=$a, b=$b, c=$c, d=$d, tx=$tx, ty=$ty)"
 }
-

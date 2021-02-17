@@ -88,15 +88,18 @@ operator fun Point.plusAssign(that: IPoint): Unit = run { setTo(this.x + that.x,
 data class Point(
     override var x: Double,
     override var y: Double
+    //override var xf: Float,
+    //override var yf: Float
 ) : MutableInterpolable<Point>, Interpolable<Point>, Comparable<IPoint>, IPoint, XY,XYf {
+    //constructor(x: Double, y: Double) : this(x.toFloat(), y.toFloat())
+    constructor(x: Float, y: Float) : this(x.toDouble(), y.toDouble())
+    constructor(x: Int, y: Int) : this(x.toDouble(), y.toDouble())
 
-    override var xf: Float
-        get() = x.toFloat()
-        set(value) { x = value.toDouble() }
+    //override var x: Double get() = xf.toDouble() ; set(value) { xf = value.toFloat() }
+    //override var y: Double get() = yf.toDouble() ; set(value) { yf = value.toFloat() }
 
-    override var yf: Float
-        get() = y.toFloat()
-        set(value) { y = value.toDouble() }
+    override var xf: Float get() = x.toFloat() ; set(value) { x = value.toDouble() }
+    override var yf: Float get() = y.toFloat() ; set(value) { y = value.toDouble() }
 
     override fun compareTo(other: IPoint): Int = compare(this.x, this.y, other.x, other.y)
     fun compareTo(other: Point): Int = compare(this.x, this.y, other.x, other.y)
@@ -121,8 +124,6 @@ data class Point(
         operator fun invoke(): Point = Point(0.0, 0.0)
         operator fun invoke(v: Point): Point = Point(v.x, v.y)
         operator fun invoke(v: IPoint): Point = Point(v.x, v.y)
-        operator fun invoke(x: Float, y: Float): Point = Point(x.toDouble(), y.toDouble())
-        operator fun invoke(x: Int, y: Int): Point = Point(x.toDouble(), y.toDouble())
         operator fun invoke(xy: Int): Point = Point(xy.toDouble(), xy.toDouble())
         operator fun invoke(xy: Float): Point = Point(xy.toDouble(), xy.toDouble())
         operator fun invoke(xy: Double): Point = Point(xy, xy)
@@ -168,6 +169,12 @@ data class Point(
     fun setTo(x: Double, y: Double): Point {
         this.x = x
         this.y = y
+        return this
+    }
+
+    fun setTo(x: Float, y: Float): Point {
+        this.xf = x
+        this.yf = y
         return this
     }
 
@@ -257,6 +264,7 @@ data class Point(
 
 val Point.unit: IPoint get() = this / length
 
+@Deprecated("Use non Number version")
 inline fun Point.setTo(x: Number, y: Number): Point = setTo(x.toDouble(), y.toDouble())
 
 interface IPointInt {
@@ -286,7 +294,12 @@ inline class PointInt(val p: Point) : IPointInt, Comparable<IPointInt> {
     override var y: Int
         set(value) = run { p.y = value.toDouble() }
         get() = p.y.toInt()
-    fun setTo(x: Int, y: Int) = this.apply { this.x = x; this.y = y }
+    fun setTo(x: Int, y: Int) : PointInt {
+        this.x = x
+        this.y = y
+
+        return this
+    }
     fun setTo(that: IPointInt) = this.setTo(that.x, that.y)
     override fun toString(): String = "($x, $y)"
 }

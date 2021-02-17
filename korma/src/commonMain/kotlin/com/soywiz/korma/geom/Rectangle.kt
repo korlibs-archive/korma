@@ -101,7 +101,10 @@ data class Rectangle(
     infix fun intersectsX(that: Rectangle): Boolean = that.left <= this.right && that.right >= this.left
     infix fun intersectsY(that: Rectangle): Boolean = that.top <= this.bottom && that.bottom >= this.top
 
-    fun setToIntersection(a: Rectangle, b: Rectangle) = this.apply { a.intersection(b, this) }
+    fun setToIntersection(a: Rectangle, b: Rectangle): Rectangle {
+        a.intersection(b, this)
+        return this
+    }
 
     infix fun intersection(that: Rectangle) = intersection(that, Rectangle())
 
@@ -165,8 +168,10 @@ data class Rectangle(
         ratio.interpolate(l.height, r.height)
     )
 
-    fun getAnchoredPosition(anchor: Anchor, out: Point = Point()): Point =
-        out.setTo(left + width * anchor.sx, top + height * anchor.sy)
+    fun getAnchoredPosition(anchor: Anchor, out: Point = Point()): Point = getAnchoredPosition(anchor.sx, anchor.sy, out)
+
+    fun getAnchoredPosition(anchorX: Double, anchorY: Double, out: Point = Point()): Point =
+        out.setTo(left + width * anchorX, top + height * anchorY)
 
     fun toInt() = RectangleInt(x, y, width, height)
     fun floor(): Rectangle {
@@ -183,9 +188,11 @@ data class Rectangle(
     }
 }
 
+@Deprecated("Use non-mixed Int or Double variants for now")
 inline fun Rectangle.setTo(x: Number, y: Number, width: Number, height: Number) =
     this.setTo(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
 
+@Deprecated("Use non-mixed Int or Double variants for now")
 inline fun Rectangle.setBounds(left: Number, top: Number, right: Number, bottom: Number) = setBounds(left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble())
 
 //////////// INT
@@ -261,18 +268,27 @@ inline class RectangleInt(val rect: Rectangle) : IRectangleInt {
 
 fun RectangleInt.setTo(that: RectangleInt) = setTo(that.x, that.y, that.width, that.height)
 
-fun RectangleInt.setTo(x: Int, y: Int, width: Int, height: Int) = this.apply {
+fun RectangleInt.setTo(x: Int, y: Int, width: Int, height: Int): RectangleInt {
     this.x = x
     this.y = y
     this.width = width
     this.height = height
+
+    return this
 }
 
-fun RectangleInt.setPosition(x: Int, y: Int) = this.apply { this.x = x; this.y = y }
+fun RectangleInt.setPosition(x: Int, y: Int):RectangleInt {
+    this.x = x
+    this.y = y
 
-fun RectangleInt.setSize(width: Int, height: Int) = this.apply {
+    return this
+}
+
+fun RectangleInt.setSize(width: Int, height: Int): RectangleInt {
     this.width = width
     this.height = height
+
+    return this
 }
 
 fun RectangleInt.getPosition(out: PointInt = PointInt()): PointInt = out.setTo(x, y)

@@ -5,6 +5,7 @@ import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.bezier.*
 import com.soywiz.korma.internal.*
 import com.soywiz.korma.internal.min2
+import com.soywiz.korma.math.*
 import kotlin.math.*
 
 @KorDslMarker
@@ -99,7 +100,7 @@ fun VectorBuilder.arc(x: Double, y: Double, r: Double, start: Angle, end: Angle)
     val startAngle = start.radians % PI_TWO
     val endAngle = end.radians % PI_TWO
     var remainingAngle = min2(PI_TWO, abs(endAngle - startAngle))
-    if (remainingAngle == 0.0 && start != end) remainingAngle = PI_TWO
+    if (remainingAngle.absoluteValue < EPSILON && start != end) remainingAngle = PI_TWO
     val sgn = if (startAngle < endAngle) +1 else -1
     var a1 = startAngle
     val p1 = Point()
@@ -170,6 +171,15 @@ fun VectorBuilder.lineTo(p: Point) = lineTo(p.x, p.y)
 fun VectorBuilder.quadTo(c: Point, a: Point) = quadTo(c.x, c.y, a.x, a.y)
 fun VectorBuilder.cubicTo(c1: Point, c2: Point, a: Point) = cubicTo(c1.x, c1.y, c2.x, c2.y, a.x, a.y)
 
+fun VectorBuilder.polygon(path: PointArrayList, close: Boolean = true) {
+    moveTo(path.getX(0), path.getY(0))
+    for (i in 1 until path.size) {
+        lineTo(path.getX(i), path.getY(i))
+    }
+    if (close) close()
+}
+fun VectorBuilder.polygon(path: Array<Point>, close: Boolean = true) = polygon(PointArrayList(*path), close)
+fun VectorBuilder.polygon(path: List<Point>, close: Boolean = true) = polygon(PointArrayList(path), close)
 
 fun VectorBuilder.moveToH(x: Double) = moveTo(x, lastY)
 fun VectorBuilder.moveToH(x: Float) = moveToH(x.toDouble())
