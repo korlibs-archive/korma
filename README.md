@@ -2,7 +2,7 @@
 
 <h1 align="center">Korma</h1>
 
-<p align="center">Korma is a Mathematical Library mostly focused on geometry for Multiplatform Kotlin 1.3</p>
+<p align="center">Korma is a Mathematical Library mostly focused on geometry for Multiplatform Kotlin</p>
 
 <!-- BADGES -->
 <p align="center">
