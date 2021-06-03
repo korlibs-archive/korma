@@ -7,24 +7,16 @@
 <!-- BADGES -->
 <p align="center">
 	<a href="https://github.com/korlibs/korma/actions"><img alt="Build Status" src="https://github.com/korlibs/korma/workflows/CI/badge.svg" /></a>
-	<a href="https://bintray.com/korlibs/korlibs/korma"><img alt="Maven Version" src="https://img.shields.io/bintray/v/korlibs/korlibs/korma.svg?style=flat&label=maven" /></a>
+    <a href="https://search.maven.org/artifact/com.soywiz.korlibs.korma/korma"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.soywiz.korlibs.korma/korma"></a>
 	<a href="https://discord.korge.org/"><img alt="Discord" src="https://img.shields.io/discord/728582275884908604?logo=discord" /></a>
 </p>
 <!-- /BADGES -->
 
-<!-- SUPPORT -->
-<h2 align="center">Support korma</h2>
-<p align="center">
-If you like korma, or want your company logo here, please consider <a href="https://github.com/sponsors/soywiz">becoming a sponsor ★</a>,<br />
-in addition to ensure the continuity of the project, you will get exclusive content.
-</p>
-<!-- /SUPPORT -->
+### Full Documentation: <https://korlibs.soywiz.com/korio/>
 
 ## Info:
 
 It includes structures for Points and Matrices (2D and 3D), Typed Angles, Rectangles, BoundsBuilder, Anchors, Vector graphics with Bezier curves support and Context2D-like API for building vectors, Interpolation facilities, Easing, Triangulation, BinPacking and Path Finding in Bidimensional arrays and Triangulated Spatial Meshes.
-
-### Full Documentation: https://korlibs.soywiz.com/korma/
 
 ### Some samples:
 
@@ -78,10 +70,10 @@ assertEquals(
 ### Usage with gradle:
 
 ```kotlin
-def kormaVersion = "1.9.1"
+def kormaVersion = "..." // Check latest version on the top of this README
 
 repositories {
-    maven { url "https://dl.bintray.com/korlibs/korlibs" }
+    mavenCentral()
 }
 
 dependencies {
@@ -100,6 +92,4 @@ dependencies {
     implementation "com.soywiz.korlibs.korma:korma-shape:$kormaVersion"
 }
 
-// settigs.gradle
-enableFeaturePreview('GRADLE_METADATA')
 ```
