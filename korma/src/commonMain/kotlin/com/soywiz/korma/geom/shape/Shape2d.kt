@@ -178,7 +178,7 @@ inline fun approximateCurve(
     crossinline compute: (ratio: Double, get: (x: Double, y: Double) -> Unit) -> Unit,
     crossinline emit: (x: Double, y: Double) -> Unit
 ) {
-    val rcurveSteps = max2(curveSteps, 20)
+    val rcurveSteps = max(curveSteps, 20)
     val dt = 1.0 / rcurveSteps
     var lastX = 0.0
     var lastY = 0.0
@@ -252,6 +252,9 @@ fun VectorPath.toPathList(): List<IPointArrayList> {
     var path = PointArrayList()
     emitPoints({
         if (path.isNotEmpty()) {
+            //if (path.getX(0) == path.getX(path.size - 1) && path.getY(0) == path.getY(path.size - 1)) path.removeAt(path.size - 1)
+            //println("POINTS:" + path.size)
+            //for (p in path.toPoints()) println(" - $p")
             paths += path
             path = PointArrayList()
         }

@@ -3,9 +3,6 @@ package com.soywiz.korma.geom.vector
 import com.soywiz.korma.annotations.KorDslMarker
 import com.soywiz.korma.geom.*
 import com.soywiz.korma.geom.bezier.*
-import com.soywiz.korma.internal.*
-import com.soywiz.korma.internal.min2
-import com.soywiz.korma.math.*
 import kotlin.math.*
 
 @KorDslMarker
@@ -54,7 +51,8 @@ fun VectorBuilder.arcTo(ax: Double, ay: Double, cx: Double, cy: Double, r: Doubl
 fun VectorBuilder.arcTo(ax: Float, ay: Float, cx: Float, cy: Float, r: Float) = arcTo(ax.toDouble(), ay.toDouble(), cx.toDouble(), cy.toDouble(), r.toDouble())
 fun VectorBuilder.arcTo(ax: Int, ay: Int, cx: Int, cy: Int, r: Int) = arcTo(ax.toDouble(), ay.toDouble(), cx.toDouble(), cy.toDouble(), r.toDouble())
 
-fun VectorBuilder.rect(rect: Rectangle) = rect(rect.x, rect.y, rect.width, rect.height)
+fun VectorBuilder.rect(rect: IRectangleInt) = rect(rect.x, rect.y, rect.width, rect.height)
+fun VectorBuilder.rect(rect: IRectangle) = rect(rect.x, rect.y, rect.width, rect.height)
 fun VectorBuilder.rect(x: Double, y: Double, width: Double, height: Double) {
     moveTo(x, y)
     lineTo(x + width, y)
@@ -83,6 +81,7 @@ fun VectorBuilder.roundRect(x: Double, y: Double, w: Double, h: Double, rx: Doub
         this.arcTo(x + w, y + h, x, y + h, r)
         this.arcTo(x, y + h, x, y, r)
         this.arcTo(x, y, x + w, y, r)
+        this.close()
     }
 }
 fun VectorBuilder.roundRect(x: Float, y: Float, w: Float, h: Float, rx: Float, ry: Float = rx) = roundRect(x.toDouble(), y.toDouble(), w.toDouble(), h.toDouble(), rx.toDouble(), ry.toDouble())
@@ -99,7 +98,7 @@ fun VectorBuilder.arc(x: Double, y: Double, r: Double, start: Angle, end: Angle)
 
     val startAngle = start.radians % PI_TWO
     val endAngle = end.radians % PI_TWO
-    var remainingAngle = min2(PI_TWO, abs(endAngle - startAngle))
+    var remainingAngle = min(PI_TWO, abs(endAngle - startAngle))
     if (remainingAngle.absoluteValue < EPSILON && start != end) remainingAngle = PI_TWO
     val sgn = if (startAngle < endAngle) +1 else -1
     var a1 = startAngle
@@ -109,7 +108,7 @@ fun VectorBuilder.arc(x: Double, y: Double, r: Double, start: Angle, end: Angle)
     val p4 = Point()
     var index = 0
     while (remainingAngle > EPSILON) {
-        val a2 = a1 + sgn * min2(remainingAngle, PI_OVER_TWO)
+        val a2 = a1 + sgn * min(remainingAngle, PI_OVER_TWO)
 
         val k = 0.5522847498
         val a = (a2 - a1) / 2.0
@@ -162,14 +161,45 @@ fun VectorBuilder.ellipse(x: Double, y: Double, rw: Double, rh: Double) {
     cubicTo(xm + ox, y, xe, ym - oy, xe, ym)
     cubicTo(xe, ym + oy, xm + ox, ye, xm, ye)
     cubicTo(xm - ox, ye, x, ym + oy, x, ym)
+    close()
 }
 fun VectorBuilder.ellipse(x: Float, y: Float, rw: Float, rh: Float) = ellipse(x.toDouble(), y.toDouble(), rw.toDouble(), rh.toDouble())
 fun VectorBuilder.ellipse(x: Int, y: Int, rw: Int, rh: Int) = ellipse(x.toDouble(), y.toDouble(), rw.toDouble(), rh.toDouble())
 
-fun VectorBuilder.moveTo(p: Point) = moveTo(p.x, p.y)
-fun VectorBuilder.lineTo(p: Point) = lineTo(p.x, p.y)
-fun VectorBuilder.quadTo(c: Point, a: Point) = quadTo(c.x, c.y, a.x, a.y)
-fun VectorBuilder.cubicTo(c1: Point, c2: Point, a: Point) = cubicTo(c1.x, c1.y, c2.x, c2.y, a.x, a.y)
+
+fun VectorPath.star(points: Int, radiusSmall: Double, radiusBig: Double, rotated: Angle = 0.degrees) {
+    _regularPolygonStar(points * 2, radiusSmall, radiusBig, rotated)
+}
+
+fun VectorPath.regularPolygon(points: Int, radius: Double, rotated: Angle = 0.degrees) {
+    _regularPolygonStar(points, radius, radius, rotated)
+}
+
+fun VectorPath.starHole(points: Int, radiusSmall: Double, radiusBig: Double, rotated: Angle = 0.degrees) {
+    _regularPolygonStar(points * 2, radiusSmall, radiusBig, rotated, true)
+}
+
+fun VectorPath.regularPolygonHole(points: Int, radius: Double, rotated: Angle = 0.degrees) {
+    _regularPolygonStar(points, radius, radius, rotated, true)
+}
+
+internal fun VectorPath._regularPolygonStar(points: Int, radiusSmall: Double = 20.0, radiusBig: Double = 50.0, rotated: Angle = 0.degrees, hole: Boolean = false) {
+    for (n in 0 until points) {
+        val baseAngle = (360.degrees * (n.toDouble() / points))
+        val realAngle = if (hole) -baseAngle else baseAngle
+        val angle = realAngle - 90.degrees + rotated
+        val radius = if (n % 2 == 0) radiusSmall else radiusBig
+        val x = angle.cosine * radius
+        val y = angle.sine * radius
+        if (n == 0) moveTo(x, y) else lineTo(x, y)
+    }
+    close()
+}
+
+fun VectorBuilder.moveTo(p: IPoint) = moveTo(p.x, p.y)
+fun VectorBuilder.lineTo(p: IPoint) = lineTo(p.x, p.y)
+fun VectorBuilder.quadTo(c: IPoint, a: IPoint) = quadTo(c.x, c.y, a.x, a.y)
+fun VectorBuilder.cubicTo(c1: IPoint, c2: IPoint, a: IPoint) = cubicTo(c1.x, c1.y, c2.x, c2.y, a.x, a.y)
 
 fun VectorBuilder.polygon(path: PointArrayList, close: Boolean = true) {
     moveTo(path.getX(0), path.getY(0))
@@ -178,8 +208,8 @@ fun VectorBuilder.polygon(path: PointArrayList, close: Boolean = true) {
     }
     if (close) close()
 }
-fun VectorBuilder.polygon(path: Array<Point>, close: Boolean = true) = polygon(PointArrayList(*path), close)
-fun VectorBuilder.polygon(path: List<Point>, close: Boolean = true) = polygon(PointArrayList(path), close)
+fun VectorBuilder.polygon(path: Array<IPoint>, close: Boolean = true) = polygon(PointArrayList(*path), close)
+fun VectorBuilder.polygon(path: List<IPoint>, close: Boolean = true) = polygon(PointArrayList(path), close)
 
 fun VectorBuilder.moveToH(x: Double) = moveTo(x, lastY)
 fun VectorBuilder.moveToH(x: Float) = moveToH(x.toDouble())

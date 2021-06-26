@@ -2,6 +2,7 @@ package com.soywiz.korma.geom
 
 import com.soywiz.korma.internal.*
 import com.soywiz.korma.interpolation.*
+import kotlin.math.*
 
 interface IRectangle {
     val x: Double
@@ -102,16 +103,15 @@ data class Rectangle(
     infix fun intersectsX(that: Rectangle): Boolean = that.left <= this.right && that.right >= this.left
     infix fun intersectsY(that: Rectangle): Boolean = that.top <= this.bottom && that.bottom >= this.top
 
-    fun setToIntersection(a: Rectangle, b: Rectangle): Rectangle {
-        a.intersection(b, this)
-        return this
+    fun setToIntersection(a: Rectangle, b: Rectangle): Rectangle? {
+        return if (a.intersection(b, this) != null) this else null
     }
 
     infix fun intersection(that: Rectangle) = intersection(that, Rectangle())
 
     fun intersection(that: Rectangle, target: Rectangle = Rectangle()) = if (this intersects that) target.setBounds(
-        max2(this.left, that.left), max2(this.top, that.top),
-        min2(this.right, that.right), min2(this.bottom, that.bottom)
+        max(this.left, that.left), max(this.top, that.top),
+        min(this.right, that.right), min(this.bottom, that.bottom)
     ) else null
 
     fun displaced(dx: Double, dy: Double) = Rectangle(this.x + dx, this.y + dy, width, height)
@@ -132,13 +132,9 @@ data class Rectangle(
         val y = (this.height - oh) * anchor.sy
         return out.setTo(x, y, ow, oh)
     }
-
-    fun inflate(dx: Double, dy: Double = dx) {
-        x -= dx; width += 2 * dx
-        y -= dy; height += 2 * dy
-    }
-    fun inflate(dx: Float, dy: Float = dx) = inflate(dx.toDouble(), dy.toDouble())
-    fun inflate(dx: Int, dy: Int = dx) = inflate(dx.toDouble(), dy.toDouble())
+    
+    fun inflate(left: Double, top: Double = left, right: Double = left, bottom: Double = top): Rectangle = setBounds(this.left - left, this.top - top, this.right + right, this.bottom + bottom)
+    inline fun inflate(left: Number, top: Number = left, right: Number = left, bottom: Number = top): Rectangle = inflate(left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble())
 
     fun clear() = setTo(0.0, 0.0, 0.0, 0.0)
 
@@ -350,11 +346,17 @@ fun Iterable<IRectangle>.bounds(target: Rectangle = Rectangle()): Rectangle {
             bottom = r.bottom
             first = false
         } else {
-            left = min2(left, r.left)
-            right = max2(right, r.right)
-            top = min2(top, r.top)
-            bottom = max2(bottom, r.bottom)
+            left = min(left, r.left)
+            right = max(right, r.right)
+            top = min(top, r.top)
+            bottom = max(bottom, r.bottom)
         }
     }
     return target.setBounds(left, top, right, bottom)
 }
+
+fun Rectangle.without(padding: Margin): Rectangle =
+    Rectangle.fromBounds(left + padding.left, top + padding.top, right - padding.right, bottom - padding.bottom)
+
+fun Rectangle.with(margin: Margin): Rectangle =
+    Rectangle.fromBounds(left - margin.left, top - margin.top, right + margin.right, bottom + margin.bottom)

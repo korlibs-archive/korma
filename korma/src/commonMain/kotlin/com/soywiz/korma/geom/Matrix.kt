@@ -2,6 +2,7 @@
 
 package com.soywiz.korma.geom
 
+import com.soywiz.kds.*
 import com.soywiz.korma.interpolation.Interpolable
 import com.soywiz.korma.interpolation.MutableInterpolable
 import com.soywiz.korma.interpolation.interpolate

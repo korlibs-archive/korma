@@ -3,6 +3,8 @@ package com.soywiz.korma.geom.triangle
 import com.soywiz.korma.geom.*
 import kotlin.math.*
 
+val Triangle.center get() = Point((p0.x + p1.x + p2.x) / 3, (p0.y + p1.y + p2.y) / 3)
+
 interface Triangle {
     val p0: IPoint
     val p1: IPoint
@@ -130,15 +132,18 @@ fun Triangle.containsEdge(edge: Edge): Boolean = containsEdgePoints(edge.p, edge
 // In a triangle to check if contains and edge is enough to check if it contains the two vertices.
 fun Triangle.containsEdgePoints(p1: IPoint, p2: IPoint): Boolean = containsPoint(p1) && containsPoint(p2)
 
-private fun _product(p1: IPoint, p2: IPoint, p3: IPoint): Double = (p1.x - p3.x) * (p2.y - p3.y) - (p1.y - p3.y) * (p2.x - p3.x)
+private fun _product(p1x: Double, p1y: Double, p2x: Double, p2y: Double, p3x: Double, p3y: Double): Double = (p1x - p3x) * (p2y - p3y) - (p1y - p3y) * (p2x - p3x)
+private fun _product(p1: IPoint, p2: IPoint, p3: IPoint): Double = _product(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
 
-fun Triangle.pointInsideTriangle(pp: IPoint): Boolean {
-    val sign0 = _product(p0, p1, p2)
-    val sign1 = _product(p0, p1, pp)
-    val sign2 = _product(p1, p2, pp)
-    val sign3 = _product(p2, p0, pp)
+fun Triangle.pointInsideTriangle(x: Double, y: Double): Boolean {
+    val sign0 = _product(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y)
+    val sign1 = _product(p0.x, p0.y, p1.x, p1.y, x, y)
+    val sign2 = _product(p1.x, p1.y, p2.x, p2.y, x, y)
+    val sign3 = _product(p2.x, p2.y, p0.x, p0.y, x, y)
     return if (sign0 >= 0) (sign1 >= 0) && (sign2 >= 0) && (sign3 >= 0) else (sign1 <= 0) && (sign2 <= 0) && (sign3 <= 0)
 }
+
+fun Triangle.pointInsideTriangle(pp: IPoint): Boolean = pointInsideTriangle(pp.x, pp.y)
 
 // Optimized?
 fun Triangle.getPointIndexOffsetNoThrow(p: IPoint, offset: Int = 0, notFound: Int = Int.MIN_VALUE): Int {
@@ -200,4 +205,43 @@ fun Triangle.edgeIndex(p1: IPoint, p2: IPoint): Int {
         }
     }
     return -1
+}
+
+class TriangleList(val points: PointArrayList, val indices: IntArray, val numTriangles: Int = indices.size / 3) : Iterable<Triangle> {
+    val numIndices get() = numTriangles * 3
+    val pointCount get() = points.size
+
+    val size get() = numTriangles
+
+    @PublishedApi
+    internal val tempTriangle: MutableTriangle = MutableTriangle()
+
+    class MutableTriangle : Triangle {
+        override val p0 = Point()
+        override val p1 = Point()
+        override val p2 = Point()
+        override fun toString(): String = "Triangle($p0, $p1, $p2)"
+    }
+
+    fun getTriangle(index: Int, out: MutableTriangle = MutableTriangle()): MutableTriangle {
+        points.getPoint(indices[index * 3 + 0], out.p0)
+        points.getPoint(indices[index * 3 + 1], out.p1)
+        points.getPoint(indices[index * 3 + 2], out.p2)
+        return out
+    }
+
+    fun getTriangles(): List<Triangle> = (0 until numTriangles).map { getTriangle(it) }
+    fun toTriangleList(): List<Triangle> = (0 until numTriangles).map { getTriangle(it) }
+
+    override fun toString(): String = "TriangleList[$numTriangles](${getTriangles()})"
+
+    inline fun fastForEach(block: (MutableTriangle) -> Unit) {
+        for (n in 0 until numTriangles) block(getTriangle(n, tempTriangle))
+    }
+
+    inline fun <T> map(block: (MutableTriangle) -> T): List<T> {
+        return  arrayListOf<T>().also { out -> fastForEach { out += block(it) } }
+    }
+
+    override fun iterator(): Iterator<Triangle> = toTriangleList().iterator()
 }
