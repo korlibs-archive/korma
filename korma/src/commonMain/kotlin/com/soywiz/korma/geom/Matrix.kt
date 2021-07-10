@@ -25,6 +25,9 @@ data class Matrix(
             Matrix(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
 
         operator fun invoke(m: Matrix, out: Matrix = Matrix()): Matrix = out.copyFrom(m)
+
+        fun transformXf(a: Float, b: Float, c: Float, d: Float, tx: Float, ty: Float, px: Float, py: Float): Float = a * px + c * py + tx
+        fun transformYf(a: Float, b: Float, c: Float, d: Float, tx: Float, ty: Float, px: Float, py: Float): Float = d * py + b * px + ty
     }
 
     var af: Float
@@ -73,13 +76,15 @@ data class Matrix(
         }
     }
 
-    fun setTo(a: Double, b: Double, c: Double, d: Double, tx: Double, ty: Double): Matrix = this.apply {
+    fun setTo(a: Double, b: Double, c: Double, d: Double, tx: Double, ty: Double): Matrix {
         this.a = a
         this.b = b
         this.c = c
         this.d = d
         this.tx = tx
         this.ty = ty
+        return this
+
     }
     fun setTo(a: Float, b: Float, c: Float, d: Float, tx: Float, ty: Float): Matrix = setTo(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
     fun setTo(a: Int, b: Int, c: Int, d: Int, tx: Int, ty: Int): Matrix = setTo(a.toDouble(), b.toDouble(), c.toDouble(), d.toDouble(), tx.toDouble(), ty.toDouble())
@@ -191,6 +196,7 @@ data class Matrix(
     fun deltaTransformY(x: Double, y: Double): Double = (x * b) + (y * d)
 
     fun identity() = setTo(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
+    fun setToNan() = setTo(Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN)
 
     fun isIdentity() = getType() == Type.IDENTITY
 
@@ -331,8 +337,6 @@ data class Matrix(
         rectangle.y = floor(if (y0 < y2) y0 else y2)
         rectangle.height = ceil((if (y1 > y3) y1 else y3) - rectangle.y)
     }
-
-
 
     fun copyFromArray(value: FloatArray, offset: Int = 0): Matrix = setTo(
         value[offset + 0], value[offset + 1], value[offset + 2],
