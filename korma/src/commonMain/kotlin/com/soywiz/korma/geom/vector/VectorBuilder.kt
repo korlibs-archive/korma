@@ -41,7 +41,7 @@ fun VectorBuilder.arcTo(ax: Double, ay: Double, cx: Double, cy: Double, r: Doubl
     val c = IPoint(cx, cy)
     val AB = b - a
     val AC = c - a
-    val angle = Point.angle(AB, AC).radians * 0.5
+    val angle = Point.angleArc(AB, AC).radians * 0.5
     val x = r * sin((PI / 2.0) - angle) / sin(angle)
     val A = a + AB.unit * x
     val B = a + AC.unit * x
@@ -167,31 +167,31 @@ fun VectorBuilder.ellipse(x: Float, y: Float, rw: Float, rh: Float) = ellipse(x.
 fun VectorBuilder.ellipse(x: Int, y: Int, rw: Int, rh: Int) = ellipse(x.toDouble(), y.toDouble(), rw.toDouble(), rh.toDouble())
 
 
-fun VectorPath.star(points: Int, radiusSmall: Double, radiusBig: Double, rotated: Angle = 0.degrees) {
-    _regularPolygonStar(points * 2, radiusSmall, radiusBig, rotated)
+fun VectorBuilder.star(points: Int, radiusSmall: Double, radiusBig: Double, rotated: Angle = 0.degrees, x: Double = 0.0, y: Double = 0.0) {
+    _regularPolygonStar(points * 2, radiusSmall, radiusBig, rotated, false, x, y)
 }
 
-fun VectorPath.regularPolygon(points: Int, radius: Double, rotated: Angle = 0.degrees) {
-    _regularPolygonStar(points, radius, radius, rotated)
+fun VectorBuilder.regularPolygon(points: Int, radius: Double, rotated: Angle = 0.degrees, x: Double = 0.0, y: Double = 0.0) {
+    _regularPolygonStar(points, radius, radius, rotated, false, x, y)
 }
 
-fun VectorPath.starHole(points: Int, radiusSmall: Double, radiusBig: Double, rotated: Angle = 0.degrees) {
-    _regularPolygonStar(points * 2, radiusSmall, radiusBig, rotated, true)
+fun VectorBuilder.starHole(points: Int, radiusSmall: Double, radiusBig: Double, rotated: Angle = 0.degrees, x: Double = 0.0, y: Double = 0.0) {
+    _regularPolygonStar(points * 2, radiusSmall, radiusBig, rotated, true, x, y)
 }
 
-fun VectorPath.regularPolygonHole(points: Int, radius: Double, rotated: Angle = 0.degrees) {
-    _regularPolygonStar(points, radius, radius, rotated, true)
+fun VectorBuilder.regularPolygonHole(points: Int, radius: Double, rotated: Angle = 0.degrees, x: Double = 0.0, y: Double = 0.0) {
+    _regularPolygonStar(points, radius, radius, rotated, true, x, y)
 }
 
-internal fun VectorPath._regularPolygonStar(points: Int, radiusSmall: Double = 20.0, radiusBig: Double = 50.0, rotated: Angle = 0.degrees, hole: Boolean = false) {
+internal fun VectorBuilder._regularPolygonStar(points: Int, radiusSmall: Double = 20.0, radiusBig: Double = 50.0, rotated: Angle = 0.degrees, hole: Boolean = false, x: Double = 0.0, y: Double = 0.0) {
     for (n in 0 until points) {
         val baseAngle = (360.degrees * (n.toDouble() / points))
         val realAngle = if (hole) -baseAngle else baseAngle
         val angle = realAngle - 90.degrees + rotated
         val radius = if (n % 2 == 0) radiusSmall else radiusBig
-        val x = angle.cosine * radius
-        val y = angle.sine * radius
-        if (n == 0) moveTo(x, y) else lineTo(x, y)
+        val px = angle.cosine * radius
+        val py = angle.sine * radius
+        if (n == 0) moveTo(x + px, y + py) else lineTo(x + px, y + py)
     }
     close()
 }
@@ -201,7 +201,7 @@ fun VectorBuilder.lineTo(p: IPoint) = lineTo(p.x, p.y)
 fun VectorBuilder.quadTo(c: IPoint, a: IPoint) = quadTo(c.x, c.y, a.x, a.y)
 fun VectorBuilder.cubicTo(c1: IPoint, c2: IPoint, a: IPoint) = cubicTo(c1.x, c1.y, c2.x, c2.y, a.x, a.y)
 
-fun VectorBuilder.polygon(path: PointArrayList, close: Boolean = true) {
+fun VectorBuilder.polygon(path: IPointArrayList, close: Boolean = true) {
     moveTo(path.getX(0), path.getY(0))
     for (i in 1 until path.size) {
         lineTo(path.getX(i), path.getY(i))

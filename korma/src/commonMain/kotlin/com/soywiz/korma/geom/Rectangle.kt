@@ -36,6 +36,10 @@ val IRectangle.topRight get() = Point(right, top)
 val IRectangle.bottomLeft get() = Point(left, bottom)
 val IRectangle.bottomRight get() = Point(right, bottom)
 
+val IRectangle.centerX get() = (right + left) * 0.5
+val IRectangle.centerY get() = (bottom + top) * 0.5
+val IRectangle.center get() = Point(centerX, centerY)
+
 operator fun IRectangle.contains(that: IPoint) = contains(that.x, that.y)
 operator fun IRectangle.contains(that: IPointInt) = contains(that.x, that.y)
 fun IRectangle.contains(x: Double, y: Double) = (x >= left && x < right) && (y >= top && y < bottom)
@@ -360,3 +364,11 @@ fun Rectangle.without(padding: Margin): Rectangle =
 
 fun Rectangle.with(margin: Margin): Rectangle =
     Rectangle.fromBounds(left - margin.left, top - margin.top, right + margin.right, bottom + margin.bottom)
+
+fun Rectangle.applyTransform(m: Matrix): Rectangle {
+    val l = m.transformX(left, top)
+    val t = m.transformY(left, top)
+    val r = m.transformX(right, bottom)
+    val b = m.transformY(right, bottom)
+    return setTo(l, t, r - l, b - t)
+}
