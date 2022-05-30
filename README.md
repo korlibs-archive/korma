@@ -12,7 +12,7 @@
 </p>
 <!-- /BADGES -->
 
-### Full Documentation: <https://korlibs.soywiz.com/korio/>
+### Full Documentation: https://docs.korge.org/korma/
 
 ## Info:
 
